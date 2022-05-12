@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LinkContainer from 'react-router-bootstrap/LinkContainer';
 import { auth } from '../config/firebase';
 
-const Header = () => {
-  const token = window.localStorage.getItem('token');
-
+const Header = ({ token }) => {
   return (
     <div>
       <Navbar collapseOnSelect expand="md" bg="dark" variant="dark">

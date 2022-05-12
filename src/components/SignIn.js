@@ -39,6 +39,7 @@ export const SignIn = () => {
 
   useEffect(() => {
     if (auth.currentUser) {
+      console.log(auth.currentUser);
       navigate('/');
     }
   }, [navigate]);

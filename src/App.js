@@ -8,10 +8,11 @@ import Logout from './components/Logout';
 function App() {
   const { user } = useAuthentication();
 
+  const token = window.localStorage.getItem('token');
 
   return (
     <div>
-      <Header />
+      <Header token={token} />
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="/SignIn" element={<SignIn />} />
