@@ -5,12 +5,14 @@ import Home from './components/Home';
 import { SignIn } from './components/SignIn';
 import Logout from './components/Logout';
 import SignUp from './components/SignUp';
+import {startAuth} from './config/firebase'
 function App() {
+  console.log(startAuth)
   const token = window.localStorage.getItem('token');
 
   return (
     <div>
-      <Header token={token} />
+      <Header props={startAuth} />
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="/SignIn" element={<SignIn />} />

@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  browserSessionPersistence,
+  setPersistence,
+  getAuth
 } from 'firebase/auth';
-import { auth, db } from '../config/firebase';
+import { db, auth } from '../config/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
+import {setLocal} from '../config/Auth';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -27,6 +31,7 @@ const SignUp = () => {
     }
 
     try {
+
       await createUserWithEmailAndPassword(auth, value.email, value.password);
 
       let newUserDoc = await doc(db, `users`, `${auth.currentUser.uid}`);
@@ -47,8 +52,9 @@ const SignUp = () => {
       //photo collection
       //pay account information
 
+
       if (auth.currentUser) {
-        await signInWithEmailAndPassword(auth, value.email, value.password);
+        setLocal(value.email, value.password)
         window.localStorage.setItem('token', auth.currentUser.accessToken);
         navigate('/');
       }
@@ -59,6 +65,13 @@ const SignUp = () => {
       });
     }
   }
+  useEffect(() => {
+    if (auth.currentUser) {
+      console.log(auth.currentUser);
+      navigate('/');
+    }
+  }, [navigate]);
+
 
   return (
     <div>
