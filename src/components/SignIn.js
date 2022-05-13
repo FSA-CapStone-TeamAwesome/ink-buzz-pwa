@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserSessionPersistence,
+} from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { setLocal } from '../config/Auth';
 
 export const SignIn = () => {
   const navigate = useNavigate();
@@ -23,12 +29,8 @@ export const SignIn = () => {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, value.email, value.password);
-
-      if (auth.currentUser) {
-        window.localStorage.setItem('token', auth.currentUser.accessToken);
-        navigate('/');
-      }
+      setLocal(value.email, value.password);
+      navigate('/');
     } catch (error) {
       setValue({
         ...value,
@@ -39,7 +41,6 @@ export const SignIn = () => {
 
   useEffect(() => {
     if (auth.currentUser) {
-      console.log(auth.currentUser);
       navigate('/');
     }
   }, [navigate]);
