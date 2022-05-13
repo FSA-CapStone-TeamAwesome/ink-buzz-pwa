@@ -27,6 +27,8 @@ const startUp = async () => {
   //  Create Web3
   web3 = new Web3(provider);
   //   web3Provider = new providers.Web3Provider(provider);
+  web3.eth.getAccounts().then(console.log);
+  console.log("wallet is ", web3.eth.accounts.wallet);
 };
 
 export const CryptoTest = () => {
