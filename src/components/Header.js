@@ -3,9 +3,17 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LinkContainer from 'react-router-bootstrap/LinkContainer';
-import { auth } from '../config/firebase';
+import { startAuth} from '../config/firebase';
 
-const Header = ({ token }) => {
+
+
+const Header = () => {
+  const [load, loaded] = useState(null)
+
+  useEffect({
+    loaded(true)
+  }, [])
+
   return (
     <div>
       <Navbar collapseOnSelect expand="md" bg="dark" variant="dark">
@@ -16,18 +24,20 @@ const Header = ({ token }) => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
-              {token ? (
+              {startAuth.currentUser && startAuth.currentUser.email  ? (
                 <LinkContainer to="/Logout">
                   <Nav.Link>Logout</Nav.Link>
                 </LinkContainer>
               ) : (
+                <>
                 <LinkContainer to="/SignIn">
                   <Nav.Link>Log In</Nav.Link>
                 </LinkContainer>
+                 <LinkContainer to="/SignUp">
+                 <Nav.Link>Sign Up</Nav.Link>
+               </LinkContainer>
+               </>
               )}
-              <LinkContainer to="/SignUp">
-                <Nav.Link>Sign Up</Nav.Link>
-              </LinkContainer>
               <LinkContainer to="/results">
                 <Nav.Link>Something else</Nav.Link>
               </LinkContainer>
