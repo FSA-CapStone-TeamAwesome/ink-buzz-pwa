@@ -8,9 +8,8 @@ import SignUp from './components/SignUp';
 import SingleNFT from './components/SingleNFT';
 import ErrorPage from './components/ErrorPage';
 
-import {startAuth} from './config/firebase'
+import { startAuth } from './config/firebase';
 function App() {
-  console.log(startAuth)
   const token = window.localStorage.getItem('token');
 
   return (

@@ -3,16 +3,20 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LinkContainer from 'react-router-bootstrap/LinkContainer';
-import { startAuth} from '../config/firebase';
-
-
+import { startAuth } from '../config/firebase';
+import { auth } from '../config/firebase';
+import { useAuthentication } from '../hooks/useAuthentication';
 
 const Header = () => {
-  const [load, loaded] = useState(null)
+  const { user } = useAuthentication();
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect({
-    loaded(true)
-  }, [])
+  // setIsLoggedIn(auth);
+
+  // useEffect(() => {
+
+  // }, []);
+  console.log(user);
 
   return (
     <div>
@@ -24,19 +28,19 @@ const Header = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
-              {startAuth.currentUser && startAuth.currentUser.email  ? (
+              {user && user.email ? (
                 <LinkContainer to="/Logout">
                   <Nav.Link>Logout</Nav.Link>
                 </LinkContainer>
               ) : (
                 <>
-                <LinkContainer to="/SignIn">
-                  <Nav.Link>Log In</Nav.Link>
-                </LinkContainer>
-                 <LinkContainer to="/SignUp">
-                 <Nav.Link>Sign Up</Nav.Link>
-               </LinkContainer>
-               </>
+                  <LinkContainer to="/SignIn">
+                    <Nav.Link>Log In</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="/SignUp">
+                    <Nav.Link>Sign Up</Nav.Link>
+                  </LinkContainer>
+                </>
               )}
               <LinkContainer to="/results">
                 <Nav.Link>Something else</Nav.Link>

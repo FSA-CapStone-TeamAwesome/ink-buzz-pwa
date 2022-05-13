@@ -8,7 +8,7 @@ import {
 import { auth } from '../config/firebase';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import {setLocal} from '../config/Auth';
+import { setLocal } from '../config/Auth';
 
 export const SignIn = () => {
   const navigate = useNavigate();
@@ -29,12 +29,8 @@ export const SignIn = () => {
     }
 
     try {
-
-      setLocal(value.email, value.password)
-      if (auth.currentUser) {
-        window.localStorage.setItem('token', auth.currentUser.accessToken);
-        navigate('/');
-      }
+      setLocal(value.email, value.password);
+      navigate('/');
     } catch (error) {
       setValue({
         ...value,
