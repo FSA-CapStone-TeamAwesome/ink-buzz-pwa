@@ -22,11 +22,11 @@ const Header = ({ token }) => {
                 </LinkContainer>
               ) : (
                 <LinkContainer to="/SignIn">
-                  <Nav.Link>Sign In</Nav.Link>
+                  <Nav.Link>Log In</Nav.Link>
                 </LinkContainer>
               )}
-              <LinkContainer to="/standings">
-                <Nav.Link>View All</Nav.Link>
+              <LinkContainer to="/SignUp">
+                <Nav.Link>Sign Up</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/results">
                 <Nav.Link>Something else</Nav.Link>

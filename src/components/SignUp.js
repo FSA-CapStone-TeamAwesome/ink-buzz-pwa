@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebase';
-import { Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { auth, db } from '../config/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 
-export const SignIn = () => {
+const SignUp = () => {
   const navigate = useNavigate();
   const [value, setValue] = useState({
     email: '',
@@ -12,7 +16,7 @@ export const SignIn = () => {
     error: '',
   });
 
-  async function signIn(evt) {
+  async function signUp(evt) {
     evt.preventDefault();
     if (value.email === '' || value.password === '') {
       setValue({
@@ -23,9 +27,28 @@ export const SignIn = () => {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, value.email, value.password);
+      await createUserWithEmailAndPassword(auth, value.email, value.password);
+
+      let newUserDoc = await doc(db, `users`, `${auth.currentUser.uid}`);
+      //doc will make an new User doc for us in the users collection, and the name will be the user.uid
+
+      await setDoc(newUserDoc, {
+        name: '',
+        profileImage: '',
+        data: {
+          email: value.email,
+          location: '',
+        },
+        photos: [],
+        accounts: {},
+      });
+      //User information will be display name, profileImage
+      //data stored as an object containing the email, location, followers and following
+      //photo collection
+      //pay account information
 
       if (auth.currentUser) {
+        await signInWithEmailAndPassword(auth, value.email, value.password);
         window.localStorage.setItem('token', auth.currentUser.accessToken);
         navigate('/');
       }
@@ -37,18 +60,11 @@ export const SignIn = () => {
     }
   }
 
-  useEffect(() => {
-    if (auth.currentUser) {
-      console.log(auth.currentUser);
-      navigate('/');
-    }
-  }, [navigate]);
-
   return (
     <div>
-      <h1>Log In</h1>
+      <h1>Sign Up</h1>
       {!!value.error && <div className="error">{value.error}</div>}
-      <form className="controls" onSubmit={signIn}>
+      <form className="controls" onSubmit={signUp}>
         <input
           placeholder="Email"
           type="email"
@@ -68,3 +84,5 @@ export const SignIn = () => {
     </div>
   );
 };
+
+export default SignUp;
