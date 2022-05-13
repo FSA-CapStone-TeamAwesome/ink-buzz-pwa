@@ -1,8 +1,8 @@
-import React from 'react';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import LinkContainer from 'react-router-bootstrap/LinkContainer';
+import React from "react";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import LinkContainer from "react-router-bootstrap/LinkContainer";
 
 const Header = () => (
   <div>
@@ -23,8 +23,8 @@ const Header = () => (
             <LinkContainer to="/results">
               <Nav.Link>Something else</Nav.Link>
             </LinkContainer>
-            <LinkContainer to="/register">
-              <Nav.Link>Test</Nav.Link>
+            <LinkContainer to="/crypto">
+              <Nav.Link>Crypto</Nav.Link>
             </LinkContainer>
           </Nav>
         </Navbar.Collapse>
