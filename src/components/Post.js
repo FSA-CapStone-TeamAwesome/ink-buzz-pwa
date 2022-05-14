@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 
 const Post = ({ data }) => {
+  console.log(data)
   const { id, name, creator, price, description, image } = data;
   return (
     <Container className="mb-3">

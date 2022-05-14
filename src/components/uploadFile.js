@@ -21,7 +21,7 @@ const UploadFile = () => {
 
   const { user } = useAuthentication()
 
-  const imagesListRef = ref(storage, "images/");
+  // const imagesListRef = ref(storage, "images/");
 
   const uploadFile = async (evt) => {
     evt.preventDefault();
@@ -54,23 +54,25 @@ const UploadFile = () => {
       price: (value.price*100),
       creator: `${user.email}`,
       description: value.description,
-      image:`/images/universal/${user.uid}/${value.name+ date}`
-
+      image:`/images/universal/${user.uid}/${value.name+ date}`,
+      created:`${date}`
     })
-    let getIt = await getDownloadURL(ref(storage, `/images/universal/${user.uid}/${value.name+ date}`))
-    setImageUrls((prev)=>[...prev, getIt])
 
+    let getIt = await getDownloadURL(ref(storage, `/images/universal/${user.uid}/${value.name+ date}`))
+    console.log(getIt)
+    setImageUrls((prev)=>[...prev, getIt])
+    //rendering the image to prove we can, consider it a preview
   };
 
-  useEffect(() => {
-    listAll(imagesListRef).then((response) => {
-      response.items.forEach((item) => {
-        getDownloadURL(item).then((url) => {
-          setImageUrls((prev) => [...prev, url]);
-        });
-      });
-    });
-  }, []);
+  // useEffect(() => {
+  //   listAll(imagesListRef).then((response) => {
+  //     response.items.forEach((item) => {
+  //       getDownloadURL(item).then((url) => {
+  //         setImageUrls((prev) => [...prev, url]);
+  //       });
+  //     });
+  //   });
+  // }, []);
 
   return (
     <div className="App">
