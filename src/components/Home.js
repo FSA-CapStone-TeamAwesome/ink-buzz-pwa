@@ -11,20 +11,19 @@ import { useAuthentication } from '../hooks/useAuthentication';
 
 const Home =  () => {
   const [list, setList] = useState([])
-  const [render, rendering] = useState([])
+
 
   const { user } = useAuthentication();
-  console.log(user)
   const aFunction = async () => {
     let enterTheCollector =  await collection(db, 'NFTs')
     let docs =  await query(enterTheCollector,orderBy("name"), limit(3))
-    let quick = []
+
      await onSnapshot(docs, (querySnapshot) =>{
       querySnapshot.forEach((doc) =>{
-        quick.push(doc.data())
+        setList((prev) => [...prev, doc.data()])
       })
     })
-    setList(quick)
+
 
   }
 
@@ -34,12 +33,8 @@ const Home =  () => {
     aFunction()
   },[])
 
-  useEffect(()=>{
-    rendering(list)
-  },[list])
 
 
-  console.log(render)
   if(!user){return <h2>Too bad</h2>}
   return (
   <Container className="d-flex flex-column align-items-center my-3">
@@ -48,8 +43,8 @@ const Home =  () => {
       <h5>Check out some tattoo NFTs below</h5>
     </div>
     <div>
-      {render.map((nft) => {
-        console.log(nft)
+      {list.map((nft) => {
+
         return <Post key={nft.id} data={nft} />
       }
       )
