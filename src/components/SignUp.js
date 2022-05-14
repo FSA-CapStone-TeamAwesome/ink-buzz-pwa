@@ -44,7 +44,7 @@ const SignUp = () => {
           email: value.email,
           location: '',
         },
-        photos: [],
+        images: [],
         accounts: {},
       });
       //User information will be display name, profileImage

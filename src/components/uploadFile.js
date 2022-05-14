@@ -7,7 +7,8 @@ import {
 } from "firebase/storage";
 import { useAuthentication } from '../hooks/useAuthentication';
 import {db, storage} from '../config/firebase'
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
+import { storageBucket } from "../secrets";
 
 const UploadFile = () => {
   const [imageUpload, setImageUpload] = useState(null);
@@ -18,25 +19,38 @@ const UploadFile = () => {
   const imagesListRef = ref(storage, "images/");
 
   const uploadFile = async () => {
+    let date = Date.now()
     if (imageUpload == null) return;
-    const imageRef = ref(storage, `images/universal/${user.uid}/${imageUpload.name}`);
+    const imageRef = ref(storage, `images/universal/${user.uid}/${imageUpload.name+date}`);
     await uploadBytes(imageRef, imageUpload)
 
     let url = await ref(storage ,'images/universal/5Yq3gp4lSlhh59zGSWgcKWjHZeQ2/test1.png')
-    console.log(url)
-    setImageUrls((prev) => [...prev, 'https://firebasestorage.googleapis.com/v0/b/ink-buzz.appspot.com/o/images%2Funiversal%2FuploadTests%2Ftest1.png?alt=media&token=2a0c8f45-dc2c-4e65-a917-d28ced3fe888 '])
+
 
     let change = await doc(db, 'users', `${user.uid}`)
+
     //After photo uploads to storage, we make an entry on the users account
     await updateDoc(change, {
-      photos: arrayUnion({
-        path: `/images/universal/${user.uid}/${imageUpload.name}`,
-        caption: '',
+      images: arrayUnion({
+        path: `/images/universal/${user.uid}/${imageUpload.name + date}`,
         likes: 0,
         comments: 0,
+        purchases: 0,
       })
     })
+    const changeP = await doc(db, 'NFTs',`${imageUpload.name + date}`)
 
+    await setDoc(changeP, {
+      id:`${user.uid+date}`,
+      name:`userInput`,
+      price: 0,
+      creator: `${user.email}`,
+      description:'',
+      image:`/images/universal/${user.uid}/${imageUpload.name + date}`
+
+    })
+    let getIt = await getDownloadURL(ref(storage, `/images/universal/${user.uid}/${imageUpload.name + date}`))
+    setImageUrls([getIt])
 
   };
 
