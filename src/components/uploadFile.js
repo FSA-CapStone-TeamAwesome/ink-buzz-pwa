@@ -13,44 +13,52 @@ import { storageBucket } from "../secrets";
 const UploadFile = () => {
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
+  const [value, setValue] = useState({
+    price: 0,
+    name: '',
+    description: '',
+})
 
   const { user } = useAuthentication()
 
   const imagesListRef = ref(storage, "images/");
 
-  const uploadFile = async () => {
+  const uploadFile = async (evt) => {
+    evt.preventDefault();
     let date = Date.now()
     if (imageUpload == null) return;
-    const imageRef = ref(storage, `images/universal/${user.uid}/${imageUpload.name+date}`);
+    //quits if nothing uploaded
+
+    //We're uploading a photo to the storage, its path is the user's folder, and the filename is the userdecided filename with the date
+    const imageRef = ref(storage, `images/universal/${user.uid}/${value.name+date}`);
     await uploadBytes(imageRef, imageUpload)
 
-    let url = await ref(storage ,'images/universal/5Yq3gp4lSlhh59zGSWgcKWjHZeQ2/test1.png')
 
 
+    //The user gets a copy to their firebaseFolder
     let change = await doc(db, 'users', `${user.uid}`)
-
-    //After photo uploads to storage, we make an entry on the users account
     await updateDoc(change, {
       images: arrayUnion({
-        path: `/images/universal/${user.uid}/${imageUpload.name + date}`,
+        path: `/images/universal/${user.uid}/${value.name + date}`,
         likes: 0,
         comments: 0,
         purchases: 0,
       })
     })
-    const changeP = await doc(db, 'NFTs',`${imageUpload.name + date}`)
 
+    //Finally there's a file with detailed information for that NFT
+    const changeP = await doc(db, 'NFTs',`${value.name + date}`)
     await setDoc(changeP, {
       id:`${user.uid+date}`,
-      name:`userInput`,
-      price: 0,
+      name: value.name,
+      price: (value.price*100),
       creator: `${user.email}`,
-      description:'',
-      image:`/images/universal/${user.uid}/${imageUpload.name + date}`
+      description: value.description,
+      image:`/images/universal/${user.uid}/${value.name+ date}`
 
     })
-    let getIt = await getDownloadURL(ref(storage, `/images/universal/${user.uid}/${imageUpload.name + date}`))
-    setImageUrls([getIt])
+    let getIt = await getDownloadURL(ref(storage, `/images/universal/${user.uid}/${value.name+ date}`))
+    setImageUrls((prev)=>[...prev, getIt])
 
   };
 
@@ -66,16 +74,42 @@ const UploadFile = () => {
 
   return (
     <div className="App">
+      <form onSubmit={uploadFile}>
+      <h3>Name:</h3>
+      <input
+      type='text'
+      value={value.name}
+      onChange={(evt) => setValue({ ...value, name: evt.target.value })}
+      />
+
+      <h3>Price:</h3>
+      <input
+      type='number'
+      min='0'
+      step='0.01'
+      value={value.price}
+      onChange={(evt) => setValue({ ...value, price: evt.target.value })}
+      >
+
+      </input>
+
+      <h3>Description:</h3>
+      <textarea rows="2" cols="50"
+      name="description"
+      value={value.description}
+      onChange={(evt) => setValue({ ...value, description: evt.target.value })}
+      /> <br/>
       <input
         type="file"
         onChange={(event) => {
           setImageUpload(event.target.files[0]);
         }}
       />
-      <button onClick={uploadFile}> Upload Image</button>
-      {imageUrls.map((url) => {
-        return <img src={url} alt={url} />;
+      <button type='submit'> Upload Image</button> <br/>
+      {imageUrls.map((url, index) => {
+        return <img src={url} alt={url} style={{width:300}}/>;
       })}
+      </form>
     </div>
   );
 }
