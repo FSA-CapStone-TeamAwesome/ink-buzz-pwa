@@ -6,9 +6,13 @@ import { getStorage, ref, listAll } from "firebase/storage";
 import { collection, doc, setDoc, query, orderBy, limit, where, getDocs, onSnapshot, loadBundle } from "firebase/firestore"
 import { useAuthentication } from '../hooks/useAuthentication';
 
+
+
+
 const Home =  () => {
   const [list, setList] = useState([])
-  const [reload, setLoad] = useState(false)
+  const [render, rendering] = useState([])
+
   const { user } = useAuthentication();
   console.log(user)
   const aFunction = async () => {
@@ -24,15 +28,18 @@ const Home =  () => {
 
   }
 
-  const loads = () => {
-    setLoad(true)
-  }
+
 
   useEffect(()=>{
     aFunction()
   },[])
 
-  console.log(list)
+  useEffect(()=>{
+    rendering(list)
+  },[list])
+
+
+  console.log(render)
   if(!user){return <h2>Too bad</h2>}
   return (
   <Container className="d-flex flex-column align-items-center my-3">
@@ -41,11 +48,12 @@ const Home =  () => {
       <h5>Check out some tattoo NFTs below</h5>
     </div>
     <div>
-      {list.length ? list.map((nft) => {
+      {render.map((nft) => {
         console.log(nft)
         return <Post key={nft.id} data={nft} />
-      })
-      : <>doop</>}
+      }
+      )
+    }
     </div>
   </Container>)
 }

@@ -39,12 +39,8 @@ const Header = () => {
                   </LinkContainer>
                 </>
               )}
-              <LinkContainer to="/results">
-                <Nav.Link>Something else</Nav.Link>
-              </LinkContainer>
-
-              <LinkContainer to="/register">
-                <Nav.Link>Test</Nav.Link>
+              <LinkContainer to="/crypto">
+                <Nav.Link>Wallet</Nav.Link>
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>
