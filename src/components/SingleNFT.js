@@ -81,7 +81,7 @@ const SingleNFT = () => {
     if(userProfile.favorites && userProfile.favorites.includes(`${data.id}`)){
       await updateDoc(userProf, {
         favorites: arrayRemove(
-          data.id,
+          data.id
         )
       })
       setFavor(false)
@@ -92,14 +92,14 @@ const SingleNFT = () => {
     else {
       await updateDoc(userProf, {
         favorites: arrayUnion(
-          data.id,
+          data.id
         )
       })
       setFavor(true)
       setUser(
         {...userProfile, favorites:[...userProfile.favorites, data.id]}
       )
-  }
+  }}
 
 
 
