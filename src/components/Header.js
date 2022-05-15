@@ -42,6 +42,9 @@ const Header = () => {
                   </LinkContainer>
                 </>
               )}
+              <LinkContainer to="/Chat">
+                  <Nav.Link>Chat</Nav.Link>
+                </LinkContainer>
               <LinkContainer to="/results">
                 <Nav.Link>Something else</Nav.Link>
               </LinkContainer>

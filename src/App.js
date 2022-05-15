@@ -7,6 +7,7 @@ import Logout from './components/Logout';
 import SignUp from './components/SignUp';
 import SingleNFT from './components/SingleNFT';
 import ErrorPage from './components/ErrorPage';
+import Chat from './components/Chat'
 
 import { startAuth } from './config/firebase';
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route exact path="/SignIn" element={<SignIn />} />
         <Route exact path="/Logout" element={<Logout />} />
         <Route exact path="/SignUp" element={<SignUp />} />
+        <Route exact path="/Chat" element={<Chat />} />
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
