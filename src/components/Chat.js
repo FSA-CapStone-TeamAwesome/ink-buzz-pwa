@@ -13,12 +13,12 @@ const Chat = ({ navigation }) => {
 
   const recipient = 'L814iNPsM1h7WE99xnRi0v74zFI3'
 
-  const sendMessage = () => {
+  const sendMessage = (content) => {
 
     addDoc(collection(db,
       `messages/queue/${recipient}`),
       {artReference: null,
-      content: "Yo and lo.",
+      content,
       fromName: auth.currentUser.email,
       fromId: auth.currentUser.uid,
       photoUrl: null,
@@ -29,7 +29,7 @@ const Chat = ({ navigation }) => {
   return (
     <>
     <h1>Chat</h1>
-    <Button variant="primary" onClick={sendMessage}>
+    <Button variant="primary" onClick={sendMessage('')}>
       Send Message
     </Button>
     </>
