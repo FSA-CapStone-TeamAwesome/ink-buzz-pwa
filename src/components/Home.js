@@ -24,9 +24,7 @@ const Home =  () => {
       })
     })
 
-
   }
-
 
 
   useEffect(()=>{
@@ -42,7 +40,7 @@ const Home =  () => {
       <h1>Welcome to Ink Buzz!</h1>
       <h5>Check out some tattoo NFTs below</h5>
     </div>
-    <div>
+    <div style={{display:'flex'}}>
       {list.map((nft) => {
 
         return <Post key={nft.id} data={nft} />

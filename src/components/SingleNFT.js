@@ -4,18 +4,21 @@ import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from 'react-router-dom';
-import { collection, query, where, onSnapshot,  } from "firebase/firestore"
+import { collection, doc, query, where, onSnapshot, updateDoc, arrayUnion, getDoc, getDocs, arrayRemove,  } from "firebase/firestore"
 import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
+import { useAuthentication } from '../hooks/useAuthentication';
 const SingleNFT = () => {
   const [data, setData] = useState(null)
   const [photo, setPhoto] = useState(null)
+  const [follows, setFollow] = useState(false)
+  const [userProfile, setUser] = useState(null)
+  const [favored, setFavor] = useState(null)
+  const { nftId } = useParams();
+  const { user } = useAuthentication()
 
-  let { nftId } = useParams();
 
-
-
-  //function querys server for that Id and finds the right doc
+  //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
   const aFunction = async () => {
     let docData = await query(collection(db, 'NFTs'), where('id', '==', `${nftId}`));
     await onSnapshot(docData, (query)=> {
@@ -25,31 +28,109 @@ const SingleNFT = () => {
     })
   }
 
+  //function that loads photo and sets the user state on loading
   async function getPhoto () {
     let getIt = await getDownloadURL(ref(storage, data.image))
     setPhoto(getIt)
+
+    let userRef = doc(db, 'users', user.auth.currentUser.uid)
+    let getUser = await getDoc(userRef)
+    let userInfo = await getUser.data()
+    setUser((userInfo))
+
+    if(userInfo.following && userInfo.following.includes(`${data.creator}`)){
+      setFollow(true)
+    }
+    else {setFollow(false)}
+    if(userInfo.favorites && userInfo.favorites.includes(`${data.id}`)){
+      setFavor(true)
+    }
+    else {setFavor(false)}
   }
+
+
+  //function for toggling the state of following an artist
+  const followToggle = async () => {
+    let userProf = await doc(db, 'users', `${user.auth.currentUser.uid}`)
+    if(userProfile.following && userProfile.following.includes(`${data.creator}`)){
+      await updateDoc(userProf, {
+        following: arrayRemove(
+          data.creator,
+        )
+      })
+      setFollow(false)
+      setUser(
+        {...userProfile, following: [userProfile.following.filter((follow) => follow !== data.creator)]
+      })
+  }
+   else {
+    await updateDoc(userProf, {
+      following: arrayUnion(
+        data.creator,
+      )
+    })
+    setFollow(true)
+    setUser(
+      {...userProfile, following:[...userProfile.following, data.creator]}
+    )
+  }}
+
+
+  const favorToggle = async () => {
+    let userProf = await doc(db, 'users', `${user.auth.currentUser.uid}`)
+    if(userProfile.favorites && userProfile.favorites.includes(`${data.id}`)){
+      await updateDoc(userProf, {
+        favorites: arrayRemove(
+          data.id,
+        )
+      })
+      setFavor(false)
+      setUser(
+        {...userProfile, favorites: [userProfile.favorites.filter((favor) => favor !== data.id)]
+      })
+    }
+    else {
+      await updateDoc(userProf, {
+        favorites: arrayUnion(
+          data.id,
+        )
+      })
+      setFavor(true)
+      setUser(
+        {...userProfile, favorites:[...userProfile.favorites, data.id]}
+      )
+  }
+
+
 
 
     useEffect(()=>{
       aFunction()
-      getPhoto()
     },[])
+    useEffect(()=>{
+      getPhoto()
+    },[data])
 
 
 
 
-  console.log(data)
   if(!data)return <h2>Loading</h2>
   const { id, name, creator, price, description, bids } = data;
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center">
       <h1>{name}</h1>
       <h4>Created by {creator}</h4>
-      <Image fluid src={photo} />
+      <Image fluid style={{height: '400px'}} src={photo} />
       <h5 className="mt-3">${price}</h5>
       <p>{description}</p>
+      <div style={{display:'flex'}}>
       <Button>Message Artist</Button>
+      {favored ?
+      <Button onClick={favorToggle}>Favorite It</Button> : <Button onClick={favorToggle}>Unfavorite</Button> }
+      {follows ?
+      <Button onClick={followToggle}>Unfollow Artist</Button> : <Button onClick={followToggle}>Follow Artist</Button>
+      }
+      </div>
       <h5 className="mt-3">Current Bids</h5>
       {bids ?
       <ListGroup className="my-2">

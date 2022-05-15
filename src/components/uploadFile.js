@@ -53,6 +53,7 @@ const UploadFile = () => {
       name: value.name,
       price: (value.price*100),
       creator: `${user.email}`,
+      creatorId: `${user.uid}`,
       description: value.description,
       image:`/images/universal/${user.uid}/${value.name+ date}`,
       created:`${date}`
