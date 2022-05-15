@@ -5,7 +5,13 @@ import { Button } from 'react-bootstrap';
 import { auth, db, app } from "../config/firebase";
 
 import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { confirmPasswordReset } from 'firebase/auth';
 
+// chat2@chat.com
+// YnK59v2GMRcRtFTZ7jlSXIaxu1G3
+
+// chat1@chat.com
+// JotxkdT73WZxdfVuw00itwp2GWr1
 
 const Chat = ({ navigation }) => {
 
@@ -13,21 +19,18 @@ const Chat = ({ navigation }) => {
 
   const [message, setMessage] = useState({
     content: '',
-    recipient: '',
+    // Hardcoded, should change
+    recipient: 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3',
     photoUrl: '',
   });
 
-
-  const recipient = 'L814iNPsM1h7WE99xnRi0v74zFI3'
-
   const sendMessage = async (evt) => {
-
     evt.preventDefault();
     console.log(evt.target.value)
 
     try {
       await addDoc(collection(db,
-        `messages/queue/${recipient}`),
+        `messages/queue/${message.recipient}`),
         {artReference: null,
         content: message.content,
         fromName: auth.currentUser.email,
@@ -40,6 +43,28 @@ const Chat = ({ navigation }) => {
     }
 
   }
+
+  const fetchMessages = async () => {
+
+    const queue = collection(db, 'messages');
+
+
+
+    console.log("runnin", queue)
+
+    const snapshot = await queue.get();
+
+
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+    });
+
+  }
+
+  console.log("R")
+
+  fetchMessages();
+
 
   return (
     <>
