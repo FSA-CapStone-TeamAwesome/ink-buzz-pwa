@@ -10,6 +10,7 @@ import SignUp from "./components/SignUp";
 import SingleNFT from "./components/SingleNFT";
 import ErrorPage from "./components/ErrorPage";
 import { startAuth } from "./config/firebase";
+import Upload from './components/uploadFile'
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
       <Header props={startAuth} />
       <Routes>
         <Route exact path="/" element={<Home />} />
-
+        <Route exact path='upLoad' element={<Upload />} />
         <Route exact path="/SignIn" element={<SignIn />} />
         <Route exact path="/crypto" element={<CryptoTest />} />
         <Route exact path="/Logout" element={<Logout />} />

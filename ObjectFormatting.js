@@ -1,5 +1,21 @@
 //Database Object Formatting
 
+//user folder name is there uid
+const userObj = {
+  name: '',
+  profileImage: '',
+  data: {
+  email: 'email',
+  location: '',
+        },
+  images: [],
+  accounts: {},
+  boughtImages: [],
+  followers: [],
+  following: [],
+  messages: [],
+  favorites:[],
+}
 
 let nftObj = {
   id: "TBD",
@@ -10,6 +26,8 @@ let nftObj = {
   description:
     "The action painter abstract expressionists were directly influenced by automatism. Pollock channelled this into producing gestural. The action painter abstract expressionists were directly influenced by automatism. Pollock channelled this into producing gestural. The action painter abstract expressionists were directly influenced by automatism. Pollock channelled this into producing gestural.",
   image: 'pathToStorage',
+  //should put watermark
+  hiRes:'pathTostorage',
   bids: [
     {
       id: "BID-11",

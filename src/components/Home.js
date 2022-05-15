@@ -10,19 +10,28 @@ import { useAuthentication } from '../hooks/useAuthentication';
 
 
 const Home =  () => {
-  const [list, setList] = useState([])
-
+  const [alphaList, setList] = useState([])
+  const [newList, setNew] = useState([])
 
   const { user } = useAuthentication();
   const aFunction = async () => {
     let enterTheCollector =  await collection(db, 'NFTs')
-    let docs =  await query(enterTheCollector,orderBy("name"), limit(3))
+    let docs =  await query(enterTheCollector,orderBy("name"), limit(5))
 
      await onSnapshot(docs, (querySnapshot) =>{
       querySnapshot.forEach((doc) =>{
         setList((prev) => [...prev, doc.data()])
       })
     })
+
+    let newDocs = await query(enterTheCollector,orderBy("created", "desc"), limit(5))
+
+    await onSnapshot(newDocs, (querySnapshot) => {
+      querySnapshot.forEach((doc) =>{
+        setNew((prev) => [...prev, doc.data()])
+      })
+    })
+
 
   }
 
@@ -33,20 +42,25 @@ const Home =  () => {
 
 
 
-  if(!user){return <h2>Too bad</h2>}
+  if(!user){return <h2>Loading</h2>}
   return (
   <Container className="d-flex flex-column align-items-center my-3">
     <div className="text-center">
       <h1>Welcome to Ink Buzz!</h1>
       <h5>Check out some tattoo NFTs below</h5>
     </div>
-    <div style={{display:'flex'}}>
-      {list.map((nft) => {
-
+    <div style={{display:'flex', flexWrap:'wrap', justifyContent:'space-around'}}>
+      {alphaList.map((nft) => {
         return <Post key={nft.id} data={nft} />
       }
-      )
-    }
+      )}
+    </div>
+    <h1 style={{textAlign:'center'}}>New Designs</h1>
+    <div style={{display: 'flex', flexWrap:'wrap'}}>
+    {newList.map((nft) => {
+        return <Post key={nft.id} data={nft} />
+      }
+    )}
     </div>
   </Container>)
 }

@@ -121,7 +121,7 @@ const SingleNFT = () => {
       <h1>{name}</h1>
       <h4>Created by {creator}</h4>
       <Image fluid style={{height: '400px'}} src={photo} />
-      <h5 className="mt-3">${price}</h5>
+      <h5 className="mt-3">${(price/100).toFixed(2)}</h5>
       <p>{description}</p>
       <div style={{display:'flex'}}>
       <Button>Message Artist</Button>
