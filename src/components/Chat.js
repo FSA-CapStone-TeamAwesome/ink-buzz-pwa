@@ -4,6 +4,8 @@ import { Button } from 'react-bootstrap';
 
 import { auth, db, app } from "../config/firebase";
 
+import { useAuthentication } from '../hooks/useAuthentication';
+
 import { document,
     getDocs,
    collection,
@@ -12,7 +14,6 @@ import { document,
     onSnapshot,
     query } from "firebase/firestore";
 
-import { confirmPasswordReset } from 'firebase/auth';
 
 // chat2@chat.com
 // YnK59v2GMRcRtFTZ7jlSXIaxu1G3
@@ -22,9 +23,28 @@ import { confirmPasswordReset } from 'firebase/auth';
 
 const Chat = ({ navigation }) => {
 
+  const {user} = useAuthentication();
+
+  const [myId, setMyId] = useState('');
+
+  useEffect(() => {
+    if (!myId && user){
+      setMyId(user.uid)
+    }
+  })
+
+  // if (user){
+
+  //   console.log("we have user ino")
+  //   console.log(user.email)
+  // }
+
+
   // console.log(auth.currentUser)
 
-  const myId = 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3'
+  // const [myId, setId]
+
+  // const myId = 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3'
 
 
   const [message, setMessage] = useState({
@@ -36,7 +56,6 @@ const Chat = ({ navigation }) => {
 
   const sendMessage = async (evt) => {
     evt.preventDefault();
-    console.log(evt.target.value)
 
     try {
       await addDoc(collection(db,
@@ -73,11 +92,9 @@ const Chat = ({ navigation }) => {
     }
 
 
-
     console.log("runnin", queue)
 
     const snapshot = await queue.get();
-
 
     snapshot.forEach(doc => {
       console.log(doc.id, '=>', doc.data());
@@ -85,7 +102,6 @@ const Chat = ({ navigation }) => {
 
   }
 
-  console.log("R")
 
   fetchMessages();
 
