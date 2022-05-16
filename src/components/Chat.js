@@ -74,12 +74,12 @@ const Chat = ({ navigation }) => {
 
   }
 
-  const fetchMessages = async () => {
+  // const fetchMessages = async () => {
 
-    let queue;
+  //   let queue;
 
-    try {
-      queue = query(collection(db, 'messages/queue', myId));
+  //   try {
+  //     queue = query(collection(db, 'messages/queue', myId));
 
       let messageHolder = []
 
@@ -94,9 +94,9 @@ const Chat = ({ navigation }) => {
       setMessages(messageHolder);
 
 
-    } catch (err){
-      console.log(err)
-    }
+  //   } catch (err){
+  //     console.log(err)
+  //   }
 
   }
 
