@@ -6,6 +6,8 @@ import { auth, db, app } from "../config/firebase";
 
 import { useAuthentication } from '../hooks/useAuthentication';
 
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+
 import { document,
     getDocs,
     collection,
@@ -17,21 +19,27 @@ import { document,
 
 // chat2@chat.com
 // YnK59v2GMRcRtFTZ7jlSXIaxu1G3
+// 0xb936376169B6E0593922611F64A6B46b847cb262
 
 // chat1@chat.com
 // JotxkdT73WZxdfVuw00itwp2GWr1
+// 0xd18ac37aAbA82aAdBfC8BFD6fEF8A42DF1c28352
 
 const Chat = ({ navigation }) => {
 
   const { user } = useAuthentication();
 
-  const [myId, setMyId] = useState('');
+  const [myId, setMyId] = useState('JotxkdT73WZxdfVuw00itwp2GWr1');
 
   useEffect(() => {
     if (!myId && user){
       setMyId(user.uid)
     }
   })
+
+  const messageQueue = await query(collection(db, 'messages/queue', myId));
+
+  const [messages] = useCollectionData(messageQueue, { idField: 'id' });
 
   const [message, setMessage] = useState({
     content: '',
@@ -60,37 +68,39 @@ const Chat = ({ navigation }) => {
 
   }
 
-  const fetchMessages = async () => {
+  // const fetchMessages = async () => {
 
-    let queue;
+  //   let queue;
 
-    try {
-      queue = query(collection(db, 'messages/queue', myId));
+  //   try {
+  //     queue = query(collection(db, 'messages/queue', myId));
 
-      const querySnapshot = await getDocs(queue);
-        querySnapshot.forEach((doc) => {
+  //     const querySnapshot = await getDocs(queue);
+  //       querySnapshot.forEach((doc) => {
 
-        console.log(doc.id, " => ", doc.data());
-        });
-
-
-    } catch (err){
-      console.log(err)
-    }
+  //       console.log(doc.id, " => ", doc.data());
+  //       });
 
 
-    console.log("runnin", queue)
-
-    // const snapshot = await queue.get();
-
-    // snapshot.forEach(doc => {
-    //   console.log(doc.id, '->', doc.data());
-    // });
-
-  }
+  //   } catch (err){
+  //     console.log(err)
+  //   }
 
 
-  fetchMessages();
+  //   console.log("runnin", queue)
+
+  //   // const snapshot = await queue.get();
+
+  //   // snapshot.forEach(doc => {
+  //   //   console.log(doc.id, '->', doc.data());
+  //   // });
+
+  // }
+
+
+  // fetchMessages();
+
+
 
 
   return (
