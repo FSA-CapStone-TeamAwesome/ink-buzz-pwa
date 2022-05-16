@@ -23,6 +23,7 @@ function App() {
         <Route exact path="/crypto" element={<CryptoTest />} />
         <Route exact path="/Logout" element={<Logout />} />
         <Route exact path="/SignUp" element={<SignUp />} />
+        <Route exact path="/Chat" element={<Chat />} />
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
