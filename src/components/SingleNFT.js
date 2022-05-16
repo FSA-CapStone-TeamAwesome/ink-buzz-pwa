@@ -5,9 +5,11 @@ import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from 'react-router-dom';
 import { collection, doc, query, where, onSnapshot, updateDoc, arrayUnion, getDoc, getDocs, arrayRemove,  } from "firebase/firestore"
+import { useDispatch, useSelector } from 'react-redux';
 import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { useAuthentication } from '../hooks/useAuthentication';
+import { updateUser } from '../store/userStore';
 const SingleNFT = () => {
   const [data, setData] = useState(null)
   const [photo, setPhoto] = useState(null)
@@ -15,7 +17,9 @@ const SingleNFT = () => {
   const [userProfile, setUser] = useState(null)
   const [favored, setFavor] = useState(null)
   const { nftId } = useParams();
-  const { user } = useAuthentication()
+  const user = useSelector((state) => state.user.user);
+
+  const dispatch = useDispatch()
 
 
   //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
@@ -33,16 +37,13 @@ const SingleNFT = () => {
     let getIt = await getDownloadURL(ref(storage, data.image))
     setPhoto(getIt)
 
-    let userRef = doc(db, 'users', user.auth.currentUser.uid)
-    let getUser = await getDoc(userRef)
-    let userInfo = await getUser.data()
-    setUser((userInfo))
+    setUser((user))
 
-    if(userInfo.following && userInfo.following.includes(`${data.creator}`)){
+    if(user.following && user.following.includes(`${data.creator}`)){
       setFollow(true)
     }
     else {setFollow(false)}
-    if(userInfo.favorites && userInfo.favorites.includes(`${data.id}`)){
+    if(user.favorites && user.favorites.includes(`${data.id}`)){
       setFavor(true)
     }
     else {setFavor(false)}
@@ -51,24 +52,30 @@ const SingleNFT = () => {
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
-    let userProf = await doc(db, 'users', `${user.auth.currentUser.uid}`)
+
     if(userProfile.following && userProfile.following.includes(`${data.creator}`)){
-      await updateDoc(userProf, {
-        following: arrayRemove(
-          data.creator,
-        )
-      })
+      dispatch(updateUser({
+        user,
+        update: {following: arrayRemove(
+            data.creator,
+          )}
+        }))
+
       setFollow(false)
       setUser(
         {...userProfile, following: [userProfile.following.filter((follow) => follow !== data.creator)]
       })
   }
    else {
-    await updateDoc(userProf, {
-      following: arrayUnion(
-        data.creator,
-      )
-    })
+    dispatch(updateUser({
+      user,
+      update: {
+        following: arrayUnion(
+          data.creator,
+        )
+      }
+    }))
+
     setFollow(true)
     setUser(
       {...userProfile, following:[...userProfile.following, data.creator]}
