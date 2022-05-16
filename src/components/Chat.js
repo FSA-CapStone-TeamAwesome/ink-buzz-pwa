@@ -50,6 +50,10 @@ const Chat = ({ navigation }) => {
     photoUrl: '',
   });
 
+
+  // Sending a message should place it in your queue folder as well
+
+
   const sendMessage = async (evt) => {
     evt.preventDefault();
 
