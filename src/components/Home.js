@@ -6,14 +6,17 @@ import { getStorage, ref, listAll } from "firebase/storage";
 import { collection, doc, setDoc, query, orderBy, limit, where, getDocs, onSnapshot, loadBundle } from "firebase/firestore"
 import { useAuthentication } from '../hooks/useAuthentication';
 import Search from './SearchBar';
-
+import { connect } from 'react-redux';
 
 
 const Home =  () => {
   const [alphaList, setList] = useState([])
   const [newList, setNew] = useState([])
+  const [following, setFollow] = useState([])
+  const [userProfile, setUser] = useState(null)
 
   const { user } = useAuthentication();
+  console.log(user)
   const aFunction = async () => {
     let enterTheCollector =  await collection(db, 'NFTs')
     let docs =  await query(enterTheCollector,orderBy("name"), limit(5))
@@ -43,14 +46,14 @@ const Home =  () => {
 
 
 
-  if(!user){return <h2>Loading</h2>}
+
   return (
   <Container className="d-flex flex-column align-items-center my-3">
     <div className="text-center">
       <h1>Welcome to Ink Buzz!</h1>
       <h5>Check out some tattoo NFTs below</h5>
     </div>
-    <div style={{display:'flex', flexWrap:'wrap', justifyContent:'space-around'}}>
+    <div style={{display:'flex', gap:'30px', flexWrap:'wrap', textAlign:'center', justifyContent:'space-evenly'}}>
       {alphaList.map((nft) => {
         return <Post key={nft.id} data={nft} />
       }
@@ -66,5 +69,11 @@ const Home =  () => {
     <Search></Search>
   </Container>)
 }
+function mapState (state) {
+  return {
+    user: state.user
+  }
+}
 
-export default Home;
+
+export default connect(mapState)(Home)

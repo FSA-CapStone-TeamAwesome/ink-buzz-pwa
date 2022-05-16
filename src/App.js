@@ -12,8 +12,19 @@ import ErrorPage from './components/ErrorPage';
 import { startAuth } from './config/firebase';
 import Upload from './components/uploadFile';
 import Chat from './components/Chat';
+import { getUser } from './store/userStore';
+import {useDispatch} from 'react-redux'
+import {useEffect} from 'react'
 
 function App() {
+
+const {user} = useAuthentication()
+  const dispatch = useDispatch()
+
+useEffect(() => {
+  dispatch(getUser(user));
+  });
+
   return (
     <div>
       <Header props={startAuth} />

@@ -23,7 +23,7 @@ const Post = ({ data }) => {
 
   return (
     <Container className="mb-3">
-      <Card style={{ width: '18rem' }}>
+      <Card style={{ width: '300px' }}>
         <Card.Img variant="top" src={photo} className="NFTimage" />
         <Card.Body className="text-center">
           <Card.Title>{name}</Card.Title>
