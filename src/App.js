@@ -13,6 +13,8 @@ import { startAuth } from './config/firebase';
 import Upload from './components/uploadFile';
 import Chat from './components/Chat';
 import Profile from './components/Profile';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -30,6 +32,7 @@ function App() {
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }
