@@ -37,14 +37,14 @@ const Chat = ({ navigation }) => {
     }
   })
 
-  const messageQueue = await query(collection(db, 'messages/queue', myId));
+  // const messageQueue = query(collection(db, 'messages/queue', myId));
 
-  const [messages] = useCollectionData(messageQueue, { idField: 'id' });
+  // const [messages] = useCollectionData(messageQueue, { idField: 'id' });
 
   const [message, setMessage] = useState({
     content: '',
     // Hardcoded, should change
-    recipient: 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3',
+    recipient: 'HaFb8KmFHZPUXvOyEe9lf2qRrJo2',
     photoUrl: '',
   });
 
@@ -68,37 +68,30 @@ const Chat = ({ navigation }) => {
 
   }
 
-  // const fetchMessages = async () => {
+  const fetchMessages = async () => {
 
-  //   let queue;
+    let queue;
 
-  //   try {
-  //     queue = query(collection(db, 'messages/queue', myId));
+    try {
+      queue = query(collection(db, 'messages/queue', myId));
 
-  //     const querySnapshot = await getDocs(queue);
-  //       querySnapshot.forEach((doc) => {
-
-  //       console.log(doc.id, " => ", doc.data());
-  //       });
-
-
-  //   } catch (err){
-  //     console.log(err)
-  //   }
+      const querySnapshot = await getDocs(queue);
+        querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+        });
 
 
-  //   console.log("runnin", queue)
-
-  //   // const snapshot = await queue.get();
-
-  //   // snapshot.forEach(doc => {
-  //   //   console.log(doc.id, '->', doc.data());
-  //   // });
-
-  // }
+    } catch (err){
+      console.log(err)
+    }
 
 
-  // fetchMessages();
+    //console.log("runnin", queue)
+
+  }
+
+
+
 
 
 
@@ -118,9 +111,9 @@ const Chat = ({ navigation }) => {
         <Button type="submit">Send</Button>
       </form>
 
-    {/* <Button variant="primary" onClick={sendMessage('New message.')}>
-      Send Message
-    </Button> */}
+    <Button variant="primary" onClick={fetchMessages}>
+      Get Messages
+    </Button>
     </>
   );
 };
