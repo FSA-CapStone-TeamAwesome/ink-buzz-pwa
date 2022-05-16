@@ -56,37 +56,6 @@ const Home =  () => {
     aFunction();
   }, []);
 
-<<<<<<< HEAD
-
-  return (
-  <Container className="d-flex flex-column align-items-center my-3">
-    <div className="text-center">
-      <h1>Welcome to Ink Buzz!</h1>
-      <h5>Check out some tattoo NFTs below</h5>
-    </div>
-    <div style={{display:'flex', gap:'30px', flexWrap:'wrap', textAlign:'center', justifyContent:'space-evenly'}}>
-      {alphaList.map((nft) => {
-        return <Post key={nft.id} data={nft} />
-      }
-      )}
-    </div>
-    <h1 style={{textAlign:'center'}}>New Designs</h1>
-    <div style={{display: 'flex', flexWrap:'wrap'}}>
-    {newList.map((nft) => {
-        return <Post key={nft.id} data={nft} />
-      }
-    )}
-    </div>
-    <Search></Search>
-  </Container>)
-}
-function mapState (state) {
-  return {
-    user: state.user
-  }
-}
-
-=======
   return (
     <Container className="d-flex flex-column align-items-center my-3">
       <div className="text-center">
@@ -108,6 +77,5 @@ function mapState (state) {
     </Container>
   );
 };
->>>>>>> 813a9fb55c4128f271f44c55e384397a7ce149c0
 
 export default connect(mapState)(Home)
