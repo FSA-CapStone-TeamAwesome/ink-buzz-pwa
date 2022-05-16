@@ -17,6 +17,7 @@ const UploadFile = () => {
     price: 0,
     name: '',
     description: '',
+    tags: []
 })
 
   const { user } = useAuthentication()
@@ -56,7 +57,8 @@ const UploadFile = () => {
       creatorId: `${user.uid}`,
       description: value.description,
       image:`/images/universal/${user.uid}/${value.name+ date}`,
-      created:`${date}`
+      created:`${date}`,
+      tags: value.tags
     })
 
     let getIt = await getDownloadURL(ref(storage, `/images/universal/${user.uid}/${value.name+ date}`))
@@ -108,6 +110,21 @@ const UploadFile = () => {
           setImageUpload(event.target.files[0]);
         }}
       />
+     {
+       value.tags.map((tag, index) => {
+         return <input type='text' key={`${index}`} onChange={(evt) => {
+        {let array = value.tags;
+          array[index] = evt.target.value
+          setValue({...value, tags:array})}}}
+          value ={value.tags[index]}
+          ></input>
+       })
+     }
+
+
+      <button type='button' onClick={
+        (prev) => setValue({...value, tags:[...value.tags, '']})} >
+        Add another Tag</button>
       <button type='submit'> Upload Image</button> <br/>
       {imageUrls.map((url, index) => {
         return <img src={url} alt={url} style={{width:300}}/>;
