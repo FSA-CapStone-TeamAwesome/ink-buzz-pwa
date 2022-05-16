@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .NFTimage {
   max-height: 200px;
   max-width: 300px;
