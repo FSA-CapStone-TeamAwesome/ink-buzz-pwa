@@ -78,4 +78,4 @@ const Home =  () => {
   );
 };
 
-export default connect(mapState)(Home)
+export default Home
