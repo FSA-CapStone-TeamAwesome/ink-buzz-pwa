@@ -29,6 +29,9 @@ const Header = (props) => {
                   <LinkContainer to="/upLoad">
                     <Nav.Link>Upload Image</Nav.Link>
                   </LinkContainer>
+                  <LinkContainer to="/profile">
+                    <Nav.Link>My Profile</Nav.Link>
+                  </LinkContainer>
                 </>
               ) : (
                 <>
@@ -42,12 +45,6 @@ const Header = (props) => {
               )}
               <LinkContainer to="/Chat">
                 <Nav.Link>Chat</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/results">
-                <Nav.Link>Something else</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/register">
-                <Nav.Link>Test</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/crypto">
                 <Nav.Link>Wallet</Nav.Link>
