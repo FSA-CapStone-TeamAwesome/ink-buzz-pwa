@@ -3,56 +3,91 @@ import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
 import { assets } from '../constants';
 import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useAuthentication } from '../hooks/useAuthentication';
 
 const Profile = () => {
   const [show, setShow] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [formName, setFormName] = useState('');
+
+  const { user } = useAuthentication();
 
   const handleShow = () => {
     setShow(!show);
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+
+    await updateDoc(userProfile, {
+      displayName: formName,
+    });
+
     injectStyle();
     toast.success('Profile Updated!');
 
     setShow(!show);
   };
 
+  const loadUser = async () => {
+    console.log(user);
+    let userRef = doc(db, 'users', user.uid);
+    let getUser = await getDoc(userRef);
+    let userInfo = await getUser.data();
+    setUserProfile(userInfo);
+  };
+
+  useEffect(() => {
+    loadUser();
+  }, [user]);
+
   useEffect(() => {}, [show]);
 
   return (
     <Container className="mt-3">
       <h1>My Profile</h1>
-      <div className="d-flex align-items-center">
-        <div className="d-flex flex-column align-items-center">
-          <img src={assets.person01} alt="person" />
+      {userProfile ? (
+        <div>
+          <div className="d-flex align-items-center">
+            <div className="d-flex flex-column align-items-center">
+              <img src={assets.person01} alt="person" />
+            </div>
+            <div className="ms-3">
+              <h3>Name: {userProfile.name}</h3>
+              <h3>Email: {userProfile.data.email}</h3>
+            </div>
+          </div>
+          <div className="mt-1 mx-auto">
+            {!show ? (
+              <Button
+                variant="secondary"
+                onClick={handleShow}
+                disabled={show === true}>
+                Edit Profile
+              </Button>
+            ) : (
+              <div></div>
+            )}
+          </div>
         </div>
-        <div className="ms-3">
-          <h3>Name: Alec Eiber</h3>
-          <h3>Email: alec@alec.com</h3>
-        </div>
-      </div>
-      <div className="mt-1 mx-auto">
-        {!show ? (
-          <Button
-            variant="secondary"
-            onClick={handleShow}
-            disabled={show === true}>
-            Edit Profile
-          </Button>
-        ) : (
-          <div></div>
-        )}
-      </div>
+      ) : (
+        <div></div>
+      )}
 
       {show ? (
         <div className="mt-3">
           <h3>Profile Settings:</h3>
           <Form onSubmit={onSubmit}>
             <Form.Group className="mb-3" controlId="name">
-              <Form.Label>Updated Name:</Form.Label>
-              <Form.Control type="text" placeholder="Enter Name" />
+              <Form.Label>Updated Display Name:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Display Name"
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="email">
@@ -114,21 +149,6 @@ const Profile = () => {
             </Col>
           </Row>
         </Tab.Container>
-
-        {/* <Tabs defaultActiveKey="feed" id="feed" className="mb-3">
-          <Tab eventKey="feed" title="Main Feed">
-            <h3>Here's your feed</h3>
-          </Tab>
-          <Tab eventKey="followers" title="Followers">
-            <h3>You have 17 Followers</h3>
-          </Tab>
-          <Tab eventKey="following" title="Following">
-            <h3>You are following 28 artists</h3>
-          </Tab>
-          <Tab eventKey="favorites" title="Favorites">
-            <h3>You have 19 favorites</h3>
-          </Tab>
-        </Tabs> */}
       </div>
     </Container>
   );
