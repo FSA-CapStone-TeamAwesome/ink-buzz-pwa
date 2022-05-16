@@ -4,7 +4,14 @@ import { Button } from 'react-bootstrap';
 
 import { auth, db, app } from "../config/firebase";
 
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { document,
+    getDocs,
+   collection,
+    addDoc,
+    Timestamp,
+    onSnapshot,
+    query } from "firebase/firestore";
+
 import { confirmPasswordReset } from 'firebase/auth';
 
 // chat2@chat.com
@@ -16,6 +23,9 @@ import { confirmPasswordReset } from 'firebase/auth';
 const Chat = ({ navigation }) => {
 
   // console.log(auth.currentUser)
+
+  const myId = 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3'
+
 
   const [message, setMessage] = useState({
     content: '',
@@ -46,7 +56,21 @@ const Chat = ({ navigation }) => {
 
   const fetchMessages = async () => {
 
-    const queue = collection(db, 'messages');
+    let queue;
+
+    try {
+      queue = query(collection(db, 'messages/queue', myId));
+
+      const querySnapshot = await getDocs(queue);
+        querySnapshot.forEach((doc) => {
+
+        console.log(doc.id, " => ", doc.data());
+        });
+
+
+    } catch (err){
+      console.log(err)
+    }
 
 
 
