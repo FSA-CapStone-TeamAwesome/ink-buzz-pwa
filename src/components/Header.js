@@ -39,19 +39,11 @@ const Header = () => {
                   </LinkContainer>
                 </>
               )}
-<<<<<<< HEAD
-              <LinkContainer to="/Chat">
-                  <Nav.Link>Chat</Nav.Link>
-                </LinkContainer>
-              <LinkContainer to="/results">
-                <Nav.Link>Something else</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/register">
-                <Nav.Link>Test</Nav.Link>
-=======
               <LinkContainer to="/crypto">
                 <Nav.Link>Wallet</Nav.Link>
->>>>>>> origin
+              </LinkContainer>
+              <LinkContainer to="/Chat">
+                <Nav.Link>Chat</Nav.Link>
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>

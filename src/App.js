@@ -1,16 +1,18 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { CryptoTest } from "./components/CryptoTest";
 import { useAuthentication } from "./hooks/useAuthentication";
+import { startAuth } from "./config/firebase";
+
+import { CryptoTest } from "./components/CryptoTest";
+import { SignIn } from "./components/SignIn";
 import Header from "./components/Header";
 import Home from "./components/Home";
-import { SignIn } from "./components/SignIn";
 import Logout from "./components/Logout";
 import SignUp from "./components/SignUp";
 import SingleNFT from "./components/SingleNFT";
 import ErrorPage from "./components/ErrorPage";
-import { startAuth } from "./config/firebase";
-import Upload from './components/uploadFile'
+import Upload from './components/uploadFile';
+import Chat from './components/Chat'
 
 function App() {
   return (

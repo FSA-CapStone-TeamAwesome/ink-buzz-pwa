@@ -42,8 +42,6 @@ const Home =  () => {
   },[])
 
 
-
-  if(!user){return <h2>Loading</h2>}
   return (
   <Container className="d-flex flex-column align-items-center my-3">
     <div className="text-center">

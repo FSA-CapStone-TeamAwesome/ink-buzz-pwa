@@ -8,7 +8,7 @@ import { useAuthentication } from '../hooks/useAuthentication';
 
 import { document,
     getDocs,
-   collection,
+    collection,
     addDoc,
     Timestamp,
     onSnapshot,
@@ -80,11 +80,11 @@ const Chat = ({ navigation }) => {
 
     console.log("runnin", queue)
 
-    const snapshot = await queue.get();
+    // const snapshot = await queue.get();
 
-    snapshot.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
-    });
+    // snapshot.forEach(doc => {
+    //   console.log(doc.id, '->', doc.data());
+    // });
 
   }
 
