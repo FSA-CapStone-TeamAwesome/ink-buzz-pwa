@@ -3,20 +3,12 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LinkContainer from 'react-router-bootstrap/LinkContainer';
-import { startAuth } from '../config/firebase';
-import { auth } from '../config/firebase';
+
 import { useAuthentication } from '../hooks/useAuthentication';
 
 const Header = () => {
   const { user } = useAuthentication();
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // setIsLoggedIn(auth);
-
-  // useEffect(() => {
-
-  // }, []);
-  // console.log(user);
 
   return (
     <div>
@@ -29,9 +21,14 @@ const Header = () => {
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
               {user && user.email ? (
+                <>
                 <LinkContainer to="/Logout">
                   <Nav.Link>Logout</Nav.Link>
                 </LinkContainer>
+                <LinkContainer to="/upLoad">
+                <Nav.Link>Upload Image</Nav.Link>
+                </LinkContainer>
+              </>
               ) : (
                 <>
                   <LinkContainer to="/SignIn">
@@ -42,6 +39,7 @@ const Header = () => {
                   </LinkContainer>
                 </>
               )}
+<<<<<<< HEAD
               <LinkContainer to="/Chat">
                   <Nav.Link>Chat</Nav.Link>
                 </LinkContainer>
@@ -50,6 +48,10 @@ const Header = () => {
               </LinkContainer>
               <LinkContainer to="/register">
                 <Nav.Link>Test</Nav.Link>
+=======
+              <LinkContainer to="/crypto">
+                <Nav.Link>Wallet</Nav.Link>
+>>>>>>> origin
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>
