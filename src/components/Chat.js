@@ -23,7 +23,7 @@ import { document,
 
 const Chat = ({ navigation }) => {
 
-  const {user} = useAuthentication();
+  const { user } = useAuthentication();
 
   const [myId, setMyId] = useState('');
 
@@ -32,20 +32,6 @@ const Chat = ({ navigation }) => {
       setMyId(user.uid)
     }
   })
-
-  // if (user){
-
-  //   console.log("we have user ino")
-  //   console.log(user.email)
-  // }
-
-
-  // console.log(auth.currentUser)
-
-  // const [myId, setId]
-
-  // const myId = 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3'
-
 
   const [message, setMessage] = useState({
     content: '',

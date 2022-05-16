@@ -16,7 +16,7 @@ const Header = () => {
   // useEffect(() => {
 
   // }, []);
-  console.log(user);
+  // console.log(user);
 
   return (
     <div>
