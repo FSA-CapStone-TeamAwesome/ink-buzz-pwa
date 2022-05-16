@@ -108,7 +108,7 @@ const Profile = () => {
                   <h3>You are following 28 artists</h3>
                 </Tab.Pane>
                 <Tab.Pane eventKey="favorites">
-                  <h3>You have 19 favorites</h3>
+                  <h3>You have 42 favorites</h3>
                 </Tab.Pane>
               </Tab.Content>
             </Col>

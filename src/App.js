@@ -32,7 +32,7 @@ function App() {
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer position="top-center" autoClose={2000} />
     </div>
   );
 }
