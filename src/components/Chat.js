@@ -50,6 +50,7 @@ const Chat = ({ navigation }) => {
         content: message.content,
         fromName: auth.currentUser.email,
         fromId: auth.currentUser.uid,
+        toId: message.recipient,
         photoUrl: null,
         timestamp: Timestamp.fromMillis(Date.now())})
     } catch (err) {
