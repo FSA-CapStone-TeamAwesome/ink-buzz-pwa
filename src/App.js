@@ -12,6 +12,9 @@ import ErrorPage from './components/ErrorPage';
 import { startAuth } from './config/firebase';
 import Upload from './components/uploadFile';
 import Chat from './components/Chat';
+import Profile from './components/Profile';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -23,11 +26,13 @@ function App() {
         <Route exact path="/SignIn" element={<SignIn />} />
         <Route exact path="/crypto" element={<CryptoTest />} />
         <Route exact path="/Logout" element={<Logout />} />
+        <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/SignUp" element={<SignUp />} />
         <Route exact path="/Chat" element={<Chat />} />
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
+      <ToastContainer position="top-center" autoClose={2000} />
     </div>
   );
 }
