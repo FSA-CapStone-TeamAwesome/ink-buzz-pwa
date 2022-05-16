@@ -31,6 +31,8 @@ const Chat = ({ navigation }) => {
 
   const [myId, setMyId] = useState('JotxkdT73WZxdfVuw00itwp2GWr1');
 
+  const [messages, setMessages] = useState([]);
+
   useEffect(() => {
     if (!myId && user){
       setMyId(user.uid)
@@ -75,9 +77,13 @@ const Chat = ({ navigation }) => {
     try {
       queue = query(collection(db, 'messages/queue', myId));
 
-      const querySnapshot = await getDocs(queue);
+      let querySnapshot = await getDocs(queue);
+
         querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
+
+        setMessages([...messages, { id : doc.id, content: doc.data().content }]);
+
+        console.log(doc.data().fromName, " : ", doc.data().content);
         });
 
 
@@ -85,16 +91,7 @@ const Chat = ({ navigation }) => {
       console.log(err)
     }
 
-
-    //console.log("runnin", queue)
-
   }
-
-
-
-
-
-
 
   return (
     <>
@@ -114,6 +111,9 @@ const Chat = ({ navigation }) => {
     <Button variant="primary" onClick={fetchMessages}>
       Get Messages
     </Button>
+
+    {messages && messages.map(msg => <h2 key={msg.id}>{msg.content}</h2>)}
+
     </>
   );
 };
