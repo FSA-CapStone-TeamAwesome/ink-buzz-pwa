@@ -77,14 +77,17 @@ const Chat = ({ navigation }) => {
     try {
       queue = query(collection(db, 'messages/queue', myId));
 
+      let messageHolder = []
+
       let querySnapshot = await getDocs(queue);
 
         querySnapshot.forEach((doc) => {
 
-        setMessages([...messages, { id : doc.id, content: doc.data().content }]);
+          messageHolder.push({ id : doc.id, content: doc.data().content })
+        // console.log(doc.data().fromName, " : ", doc.data().content);
+      });
 
-        console.log(doc.data().fromName, " : ", doc.data().content);
-        });
+      setMessages(messageHolder);
 
 
     } catch (err){
@@ -93,6 +96,7 @@ const Chat = ({ navigation }) => {
 
   }
 
+  console.log(messages)
   return (
     <>
     <h1>Chat</h1>
@@ -112,7 +116,7 @@ const Chat = ({ navigation }) => {
       Get Messages
     </Button>
 
-    {messages && messages.map(msg => <h2 key={msg.id}>{msg.content}</h2>)}
+    {messages && messages.map(msg => <div key={msg.id}>{msg.content}</div>)}
 
     </>
   );
