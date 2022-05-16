@@ -17,12 +17,17 @@ import {
 } from 'firebase/firestore';
 import { useAuthentication } from '../hooks/useAuthentication';
 import Search from './SearchBar';
+import { connect } from 'react-redux';
 
-const Home = () => {
-  const [alphaList, setList] = useState([]);
-  const [newList, setNew] = useState([]);
+
+const Home =  () => {
+  const [alphaList, setList] = useState([])
+  const [newList, setNew] = useState([])
+  const [following, setFollow] = useState([])
+  const [userProfile, setUser] = useState(null)
 
   const { user } = useAuthentication();
+  console.log(user)
   const aFunction = async () => {
     let enterTheCollector = await collection(db, 'NFTs');
     let docs = await query(enterTheCollector, orderBy('name'), limit(5));
@@ -73,4 +78,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Home
