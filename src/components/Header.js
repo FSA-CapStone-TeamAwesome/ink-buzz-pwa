@@ -9,7 +9,6 @@ import { useAuthentication } from '../hooks/useAuthentication';
 const Header = () => {
   const { user } = useAuthentication();
 
-
   return (
     <div>
       <Navbar collapseOnSelect expand="md" bg="dark" variant="dark">
@@ -22,13 +21,13 @@ const Header = () => {
             <Nav className="ms-auto">
               {user && user.email ? (
                 <>
-                <LinkContainer to="/Logout">
-                  <Nav.Link>Logout</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/upLoad">
-                <Nav.Link>Upload Image</Nav.Link>
-                </LinkContainer>
-              </>
+                  <LinkContainer to="/Logout">
+                    <Nav.Link>Logout</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="/upLoad">
+                    <Nav.Link>Upload Image</Nav.Link>
+                  </LinkContainer>
+                </>
               ) : (
                 <>
                   <LinkContainer to="/SignIn">
@@ -39,19 +38,17 @@ const Header = () => {
                   </LinkContainer>
                 </>
               )}
-<<<<<<< HEAD
               <LinkContainer to="/Chat">
-                  <Nav.Link>Chat</Nav.Link>
-                </LinkContainer>
+                <Nav.Link>Chat</Nav.Link>
+              </LinkContainer>
               <LinkContainer to="/results">
                 <Nav.Link>Something else</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/register">
                 <Nav.Link>Test</Nav.Link>
-=======
+              </LinkContainer>
               <LinkContainer to="/crypto">
                 <Nav.Link>Wallet</Nav.Link>
->>>>>>> origin
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>
