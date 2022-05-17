@@ -1,49 +1,30 @@
-<<<<<<< HEAD
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
+import { CryptoTest } from "./components/wallet_stuff/CryptoTest";
 import { useAuthentication } from "./hooks/useAuthentication";
-import { startAuth } from "./config/firebase";
-
-import { CryptoTest } from "./components/CryptoTest";
-import { SignIn } from "./components/SignIn";
 import Header from "./components/Header";
 import Home from "./components/Home";
+import { SignIn } from "./components/SignIn";
 import Logout from "./components/Logout";
 import SignUp from "./components/SignUp";
 import SingleNFT from "./components/SingleNFT";
 import ErrorPage from "./components/ErrorPage";
-import Upload from './components/uploadFile';
-import Chat from './components/Chat'
-=======
-import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import { CryptoTest } from './components/CryptoTest';
-import { useAuthentication } from './hooks/useAuthentication';
-import Header from './components/Header';
-import Home from './components/Home';
-import { SignIn } from './components/SignIn';
-import Logout from './components/Logout';
-import SignUp from './components/SignUp';
-import SingleNFT from './components/SingleNFT';
-import ErrorPage from './components/ErrorPage';
-import { startAuth } from './config/firebase';
-import Upload from './components/uploadFile';
-import Chat from './components/Chat';
-import { getUser } from './store/userStore';
-import {useDispatch} from 'react-redux'
-import {useEffect} from 'react'
-import Profile from './components/Profile';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
->>>>>>> a52a236114bee3d0ddab938a86eeda0da98f98f5
+import { startAuth } from "./config/firebase";
+import Upload from "./components/uploadFile";
+import Chat from "./components/Chat";
+import { getUser } from "./store/userStore";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import Profile from "./components/Profile";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+  const { user } = useAuthentication();
+  const dispatch = useDispatch();
 
-const {user} = useAuthentication()
-  const dispatch = useDispatch()
-
-useEffect(() => {
-  dispatch(getUser(user));
+  useEffect(() => {
+    dispatch(getUser(user));
   });
 
   return (
