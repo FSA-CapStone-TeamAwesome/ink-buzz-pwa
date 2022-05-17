@@ -43,11 +43,11 @@ const Header = (props) => {
                   </LinkContainer>
                 </>
               )}
-              <LinkContainer to="/Chat">
-                <Nav.Link>Chat</Nav.Link>
-              </LinkContainer>
               <LinkContainer to="/crypto">
                 <Nav.Link>Wallet</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/Chat">
+                <Nav.Link>Chat</Nav.Link>
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>

@@ -6,9 +6,11 @@ import { auth, db, app } from "../config/firebase";
 
 import { useAuthentication } from '../hooks/useAuthentication';
 
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+
 import { document,
     getDocs,
-   collection,
+    collection,
     addDoc,
     Timestamp,
     onSnapshot,
@@ -17,15 +19,19 @@ import { document,
 
 // chat2@chat.com
 // YnK59v2GMRcRtFTZ7jlSXIaxu1G3
+// 0xb936376169B6E0593922611F64A6B46b847cb262
 
 // chat1@chat.com
 // JotxkdT73WZxdfVuw00itwp2GWr1
+// 0xd18ac37aAbA82aAdBfC8BFD6fEF8A42DF1c28352
 
 const Chat = ({ navigation }) => {
 
   const { user } = useAuthentication();
 
-  const [myId, setMyId] = useState('');
+  const [myId, setMyId] = useState('JotxkdT73WZxdfVuw00itwp2GWr1');
+
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     if (!myId && user){
@@ -33,12 +39,20 @@ const Chat = ({ navigation }) => {
     }
   })
 
+  // const messageQueue = query(collection(db, 'messages/queue', myId));
+
+  // const [messages] = useCollectionData(messageQueue, { idField: 'id' });
+
   const [message, setMessage] = useState({
     content: '',
     // Hardcoded, should change
-    recipient: 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3',
+    recipient: 'HaFb8KmFHZPUXvOyEe9lf2qRrJo2',
     photoUrl: '',
   });
+
+
+  // Sending a message should place it in your queue folder as well
+
 
   const sendMessage = async (evt) => {
     evt.preventDefault();
@@ -50,6 +64,7 @@ const Chat = ({ navigation }) => {
         content: message.content,
         fromName: auth.currentUser.email,
         fromId: auth.currentUser.uid,
+        toId: message.recipient,
         photoUrl: null,
         timestamp: Timestamp.fromMillis(Date.now())})
     } catch (err) {
@@ -66,32 +81,26 @@ const Chat = ({ navigation }) => {
     try {
       queue = query(collection(db, 'messages/queue', myId));
 
-      const querySnapshot = await getDocs(queue);
+      let messageHolder = []
+
+      let querySnapshot = await getDocs(queue);
+
         querySnapshot.forEach((doc) => {
 
-        console.log(doc.id, " => ", doc.data());
-        });
+          messageHolder.push({ id : doc.id, content: doc.data().content })
+        // console.log(doc.data().fromName, " : ", doc.data().content);
+      });
+
+      setMessages(messageHolder);
 
 
     } catch (err){
       console.log(err)
     }
 
-
-    console.log("runnin", queue)
-
-    const snapshot = await queue.get();
-
-    snapshot.forEach(doc => {
-      console.log(doc.id, '=>', doc.data());
-    });
-
   }
 
-
-  fetchMessages();
-
-
+  console.log(messages)
   return (
     <>
     <h1>Chat</h1>
@@ -107,9 +116,12 @@ const Chat = ({ navigation }) => {
         <Button type="submit">Send</Button>
       </form>
 
-    {/* <Button variant="primary" onClick={sendMessage('New message.')}>
-      Send Message
-    </Button> */}
+    <Button variant="primary" onClick={fetchMessages}>
+      Get Messages
+    </Button>
+
+    {messages && messages.map(msg => <div key={msg.id}>{msg.content}</div>)}
+
     </>
   );
 };
