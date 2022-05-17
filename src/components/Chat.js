@@ -4,6 +4,8 @@ import { Button } from 'react-bootstrap';
 
 import { auth, db, app } from "../config/firebase";
 
+
+
 import { useAuthentication } from '../hooks/useAuthentication';
 
 import { useSelector, useDispatch } from 'react-redux'
@@ -16,7 +18,9 @@ import { document,
     addDoc,
     Timestamp,
     onSnapshot,
-    query } from "firebase/firestore";
+    query,
+    orderBy,
+    limit } from "firebase/firestore";
 
 
 // chat2@chat.com
@@ -108,7 +112,10 @@ const Chat = ({ navigation }) => {
     let queue;
 
     try {
-      queue = query(collection(db, 'messages/queue', myId));
+      queue = query(
+        collection(db, 'messages/queue', myId),
+       orderBy("timestamp"),
+        limit(50));
 
       let messageHolder = []
 
@@ -137,17 +144,6 @@ const Chat = ({ navigation }) => {
   return (
     <>
     <h1>Chat</h1>
-    <form className="controls" onSubmit={sendMessage}>
-        <input
-          placeholder="message"
-          type="content"
-          value={message.content}
-          onChange={(evt) => {
-            setMessage( {...message, content: evt.target.value });
-          }}
-        />
-        <Button type="submit">Send</Button>
-      </form>
 
     <Button variant="primary" onClick={fetchMessages}>
       Get Messages
@@ -167,6 +163,17 @@ const Chat = ({ navigation }) => {
 
     })}
 
+    <form className="controls" style={{display: 'flex', justifyContent:'flex-end'}} onSubmit={sendMessage}>
+        <input
+          placeholder="message"
+          type="content"
+          value={message.content}
+          onChange={(evt) => {
+            setMessage( {...message, content: evt.target.value });
+          }}
+        />
+        <Button type="submit">Send</Button>
+      </form>
     </>
   );
 };
