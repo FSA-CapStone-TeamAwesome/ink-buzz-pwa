@@ -13,7 +13,7 @@ const Header = (props) => {
   const dispatch = useDispatch()
 
   useEffect(()=> {
-    dispatch(getFollowing(user))
+    user.following && dispatch(getFollowing(user))
   }, [user])
 
     return (

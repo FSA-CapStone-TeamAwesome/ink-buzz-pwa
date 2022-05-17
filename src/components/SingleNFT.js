@@ -4,12 +4,15 @@ import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from 'react-router-dom';
-import { collection, doc, query, where, onSnapshot, updateDoc, arrayUnion, getDoc, getDocs, arrayRemove,  } from "firebase/firestore"
+import { collection, doc, query, where, onSnapshot, updateDoc, arrayUnion, getDoc, getDocs, arrayRemove, setDoc, FieldValue,  } from "firebase/firestore"
 import { useDispatch, useSelector } from 'react-redux';
 import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { updateUser } from '../store/userStore';
+// import {admin} from 'firebase-admin'
+
+
 const SingleNFT = () => {
   const [data, setData] = useState(null)
   const [photo, setPhoto] = useState(null)
@@ -49,13 +52,25 @@ const SingleNFT = () => {
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
-    if(userProfile.following && userProfile.following.includes(`${data.creator}`)){
+    const followRef = doc(db,'users', `${data.creatorId}`)
+
+
+    if(userProfile.following && userProfile.following.includes(`${data.creatorId}`)){
       dispatch(updateUser({
         user,
         update: {following: arrayRemove(
-            data.creator,
+            data.creatorId,
           )}
         }))
+
+
+      await setDoc((followRef), {
+        followers: arrayRemove({
+          name: userProfile.name,
+          id: userProfile.data.id,
+          profilePic: userProfile.profilePic
+        })
+      })
       setFollow(false)
   }
    else {
@@ -63,10 +78,17 @@ const SingleNFT = () => {
       user,
       update: {
         following: arrayUnion(
-          data.creator,
+          data.creatorId,
         )
       }
     }))
+    await setDoc((followRef), {
+      followers: arrayUnion({
+        name: userProfile.name,
+        id: userProfile.data.id,
+        profilePic: userProfile.profilePic
+      })
+    })
     setFollow(true)
   }}
 

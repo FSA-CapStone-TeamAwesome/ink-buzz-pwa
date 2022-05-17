@@ -33,7 +33,7 @@ const SignUp = () => {
     try {
 
       await createUserWithEmailAndPassword(auth, value.email, value.password);
-
+      let date = Date.now()
       let newUserDoc = await doc(db, `users`, `${auth.currentUser.uid}`);
       //doc will make an new User doc for us in the users collection, and the name will be the user.uid
 
@@ -46,7 +46,10 @@ const SignUp = () => {
           id: auth.currentUser.uid
         },
         images: [],
+        followers: [],
+        following: [],
         accounts: {},
+        created: `${date}`
       });
       //User information will be display name, profileImage
       //data stored as an object containing the email, location, followers and following

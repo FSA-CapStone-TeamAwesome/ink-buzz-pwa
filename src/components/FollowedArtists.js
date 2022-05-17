@@ -33,7 +33,7 @@ const FollowedArtists = () => {
   }, [user])
 
 
-  console.log(following)
+
   if(!following[0]) {return <h3>Loading</h3>}
   return (
     <div>
