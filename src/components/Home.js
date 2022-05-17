@@ -2,22 +2,18 @@ import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Post from './Post';
 import { db, storage } from '../config/firebase';
-import { getStorage, ref, listAll } from 'firebase/storage';
 import {
   collection,
-  doc,
-  setDoc,
   query,
   orderBy,
   limit,
-  where,
-  getDocs,
   onSnapshot,
-  loadBundle,
+
 } from 'firebase/firestore';
-import { useAuthentication } from '../hooks/useAuthentication';
 import Search from './SearchBar';
-import { connect } from 'react-redux';
+import Favorites from './Favorites';
+import FollowedArtists from './FollowedArtists';
+
 
 
 const Home =  () => {
@@ -26,8 +22,8 @@ const Home =  () => {
   const [following, setFollow] = useState([])
   const [userProfile, setUser] = useState(null)
 
-  const { user } = useAuthentication();
-  console.log(user)
+
+
   const aFunction = async () => {
     let enterTheCollector = await collection(db, 'NFTs');
     let docs = await query(enterTheCollector, orderBy('name'), limit(5));
@@ -53,6 +49,7 @@ const Home =  () => {
   };
 
   useEffect(() => {
+
     aFunction();
   }, []);
 
@@ -73,6 +70,7 @@ const Home =  () => {
           return <Post key={nft.id} data={nft} />;
         })}
       </div>
+      <FollowedArtists />
       <Search></Search>
     </Container>
   );
