@@ -3,15 +3,18 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LinkContainer from 'react-router-bootstrap/LinkContainer';
-import { useAuthentication } from '../hooks/useAuthentication';
-import { connect, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-const Header = (props) => {
-
+import { getFollowing } from '../store/followStore';
+const Header = () => {
   const user = useSelector((state) => state.user.user);
-    // console.log(user)
+  const dispatch = useDispatch();
 
-    return (
+  useEffect(() => {
+    user && user.data && dispatch(getFollowing(user));
+  }, [user, dispatch]);
+
+  return (
     <div>
       <Navbar collapseOnSelect expand="md" bg="dark" variant="dark">
         <Container>
@@ -21,7 +24,7 @@ const Header = (props) => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
-              {user ? (
+              {user && user.data ? (
                 <>
                   <LinkContainer to="/Logout">
                     <Nav.Link>Logout</Nav.Link>
@@ -63,7 +66,5 @@ const Header = (props) => {
 //   }
 // }
 
-
-
 // export default connect(null, mapDispatchToProps)(Header)
-export default Header
+export default Header;

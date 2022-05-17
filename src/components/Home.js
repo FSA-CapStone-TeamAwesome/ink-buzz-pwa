@@ -2,32 +2,23 @@ import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Post from './Post';
 import { db, storage } from '../config/firebase';
-import { getStorage, ref, listAll } from 'firebase/storage';
 import {
   collection,
-  doc,
-  setDoc,
   query,
   orderBy,
   limit,
-  where,
-  getDocs,
   onSnapshot,
-  loadBundle,
 } from 'firebase/firestore';
-import { useAuthentication } from '../hooks/useAuthentication';
 import Search from './SearchBar';
-import { connect } from 'react-redux';
+import Favorites from './Favorites';
+import FollowedArtists from './FollowedArtists';
 
+const Home = () => {
+  const [alphaList, setList] = useState([]);
+  const [newList, setNew] = useState([]);
+  const [following, setFollow] = useState([]);
+  const [userProfile, setUser] = useState(null);
 
-const Home =  () => {
-  const [alphaList, setList] = useState([])
-  const [newList, setNew] = useState([])
-  const [following, setFollow] = useState([])
-  const [userProfile, setUser] = useState(null)
-
-  const { user } = useAuthentication();
-  console.log(user)
   const aFunction = async () => {
     let enterTheCollector = await collection(db, 'NFTs');
     let docs = await query(enterTheCollector, orderBy('name'), limit(5));
@@ -70,12 +61,13 @@ const Home =  () => {
       <h1 className="text-center">New Designs</h1>
       <div className="d-flex flex-wrap justify-content-center align-items-center">
         {newList.map((nft) => {
-          return <Post key={nft.id} data={nft} />;
+          return <Post key={'new' + nft.id} data={nft} />;
         })}
       </div>
+      <FollowedArtists />
       <Search></Search>
     </Container>
   );
 };
 
-export default Home
+export default Home;
