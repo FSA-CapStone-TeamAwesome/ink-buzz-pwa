@@ -15,7 +15,6 @@ export const getFollowing = createAsyncThunk(
   'followers/getFollower',
   async (user, thunkAPI) => {
     let artistArr = []
-    console.log(user)
     if(user === {}){return}
     user.following.forEach( async (coolDude) => {
       let artist = {}
@@ -28,7 +27,6 @@ export const getFollowing = createAsyncThunk(
           email: quick.data.email,
           links: []
         }})
-        console.log(artist)
 
       let userRef=  query(collection(db, 'NFTs'), orderBy('created', 'desc'), where('creator', '==', `${coolDude}`), limit(3))
       await onSnapshot(userRef, (snap) => {
@@ -40,7 +38,6 @@ export const getFollowing = createAsyncThunk(
     // artists.push(artist)
 
   })
-  console.log(artistArr)
   return artistArr
 })
 

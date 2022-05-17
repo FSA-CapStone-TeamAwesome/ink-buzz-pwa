@@ -30,7 +30,7 @@ const UploadFile = () => {
     if (imageUpload == null) return;
     //quits if nothing uploaded
 
-    //We're uploading a photo to the storage, its path is the user's folder, and the filename is the userdecided filename with the date
+    //We're uploading a photo to the storage, its path is the user's folder, and the filename is the user decided filename with the date
     const imageRef = ref(storage, `images/universal/${user.uid}/${value.name+date}`);
     await uploadBytes(imageRef, imageUpload)
 

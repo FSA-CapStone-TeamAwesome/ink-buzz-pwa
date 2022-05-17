@@ -1,10 +1,7 @@
-import { doc,  getDoc, updateDoc} from "firebase/firestore"
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 import { db, storage } from '../config/firebase';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
-
-
 
 export const getUser = createAsyncThunk(
   'user/getUserStatus',
@@ -30,16 +27,8 @@ export const updateUser = createAsyncThunk(
     let userInfo = await getUser.data();
 
     return userInfo;
-<<<<<<< HEAD
   },
 );
-=======
-  }
-)
-
-
-
->>>>>>> main
 export const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -48,9 +37,9 @@ export const userSlice = createSlice({
     error: null,
   },
   reducers: {
-    signOutState:(state) => {
-      state.user = {}
-    }
+    signOutState: (state) => {
+      state.user = {};
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -93,42 +82,6 @@ export const userSlice = createSlice({
   },
 });
 
-<<<<<<< HEAD
+export const { signOutState } = userSlice.actions;
+
 export default userSlice.reducer;
-=======
-
-export const {signOutState} = userSlice.actions
-
-
-
-
-  export default userSlice.reducer;
->>>>>>> main
-
-// export const fetchUser = (user) => {
-//   return { type: FetchUser, user };
-// };
-
-// export const fetchUserThunk = (user) => {
-//   return async function(dispatch) {
-//     try {
-//       let userRef = doc(db, 'users', user.auth.currentUser.uid)
-//       let getUser = await getDoc(userRef)
-//       let userInfo = await getUser.data()
-//       dispatch(userInfo)
-//     }
-//     catch (err) {
-//       console.log(err)
-//     }
-//   }
-// }
-
-// export default function userReducer(state = initialstate, action) {
-//   switch (action.type) {
-//     case FetchUser:
-//       return action.user;
-//     default:
-//       return state;
-//   }
-
-// }
