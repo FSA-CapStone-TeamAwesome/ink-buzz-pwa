@@ -14,7 +14,7 @@ import Upload from "./components/uploadFile";
 import Chat from "./components/Chat";
 import { getUser } from "./store/userStore";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import Profile from "./components/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,7 +22,7 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   const { user } = useAuthentication();
   const dispatch = useDispatch();
-
+  const [account, setAccount] = useState();
   useEffect(() => {
     dispatch(getUser(user));
   });
@@ -34,7 +34,11 @@ function App() {
         <Route exact path="/" element={<Home />} />
         <Route exact path="upLoad" element={<Upload />} />
         <Route exact path="/SignIn" element={<SignIn />} />
-        <Route exact path="/crypto" element={<CryptoTest />} />
+        <Route
+          exact
+          path="/crypto"
+          element={<CryptoTest account={account} setAccount={setAccount} />}
+        />
         <Route exact path="/Logout" element={<Logout />} />
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/SignUp" element={<SignUp />} />
