@@ -4,11 +4,9 @@ import { Button } from 'react-bootstrap';
 
 import { auth, db, app } from "../config/firebase";
 
-
-
 import { useAuthentication } from '../hooks/useAuthentication';
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
 
 
 
@@ -39,19 +37,26 @@ import { document,
 
 const Chat = ({ navigation }) => {
 
-  const user = useSelector((state) => state.user.user);
+
+  const { user } = useAuthentication()
+
+  const [myId, setMyId] = useState('')
+
+  const [myName, setMyName] = useState('')
 
   // console.log("User is", user)
 
-  const [myId, setMyId] = useState('JotxkdT73WZxdfVuw00itwp2GWr1');
-
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    if (!myId && user){
+
+  useEffect(()=> {
+    if (user){
+      console.log("auth user", user)
       setMyId(user.uid)
+      setMyName(user.email)
     }
-  })
+  }, [user])
+
 
   // const messageQueue = query(collection(db, 'messages/queue', myId));
 
@@ -75,13 +80,12 @@ const Chat = ({ navigation }) => {
 
     try {
 
-
       await addDoc(collection(db,
         `messages/queue/${message.recipient}`),
         {artReference: null,
         content: message.content,
-        fromName: auth.currentUser.email,
-        fromId: auth.currentUser.uid,
+        fromName: myName,
+        fromId: myId,
         toId: message.recipient,
         photoUrl: null,
         timestamp })
@@ -94,11 +98,13 @@ const Chat = ({ navigation }) => {
           `messages/queue/${myId}`),
           {artReference: null,
           content: message.content,
-          fromName: auth.currentUser.email,
-          fromId: auth.currentUser.uid,
+          fromName: myName,
+          fromId: myId,
           toId: message.recipient,
           photoUrl: null,
           timestamp })
+
+        fetchMessages()
       } catch (err) {
         console.log(err);
       }
@@ -146,7 +152,7 @@ const Chat = ({ navigation }) => {
     <h1>Chat</h1>
 
     <Button variant="primary" onClick={fetchMessages}>
-      Get Messages
+      Get Messages for {console.log()}
     </Button>
 
     {messages && messages.map(msg => {
@@ -157,11 +163,7 @@ const Chat = ({ navigation }) => {
 
       return <div style={{display: 'flex', justifyContent:'flex-start'}} key={msg.id}>{msg.content}</div>
 
-    }
-
-
-
-    })}
+    }})}
 
     <form className="controls" style={{display: 'flex', justifyContent:'flex-end'}} onSubmit={sendMessage}>
         <input
