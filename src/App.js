@@ -25,7 +25,7 @@ const {user} = useAuthentication()
   const dispatch = useDispatch()
 
 useEffect(() => {
-  dispatch(getUser(user));
+  user && dispatch(getUser(user));
   });
 
   return (

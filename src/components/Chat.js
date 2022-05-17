@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 
 import { auth, db, app } from "../config/firebase";
 
-// import { useAuthentication } from '../hooks/useAuthentication';
+import { useAuthentication } from '../hooks/useAuthentication';
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -36,9 +36,8 @@ import { document,
 const Chat = ({ navigation }) => {
 
   const user = useSelector((state) => state.user.user);
-  // const { user } = useAuthentication();
 
-  console.log("User is", user)
+  // console.log("User is", user)
 
   const [myId, setMyId] = useState('JotxkdT73WZxdfVuw00itwp2GWr1');
 
@@ -68,7 +67,11 @@ const Chat = ({ navigation }) => {
   const sendMessage = async (evt) => {
     evt.preventDefault();
 
+    let timestamp = Timestamp.fromMillis(Date.now())
+
     try {
+
+
       await addDoc(collection(db,
         `messages/queue/${message.recipient}`),
         {artReference: null,
@@ -77,10 +80,29 @@ const Chat = ({ navigation }) => {
         fromId: auth.currentUser.uid,
         toId: message.recipient,
         photoUrl: null,
-        timestamp: Timestamp.fromMillis(Date.now())})
+        timestamp })
     } catch (err) {
       console.log("ERROR!")
       console.log(err);
+    } finally {
+      try {
+        await addDoc(collection(db,
+          `messages/queue/${myId}`),
+          {artReference: null,
+          content: message.content,
+          fromName: auth.currentUser.email,
+          fromId: auth.currentUser.uid,
+          toId: message.recipient,
+          photoUrl: null,
+          timestamp })
+      } catch (err) {
+        console.log(err);
+      }
+
+
+
+
+
     }
 
   }

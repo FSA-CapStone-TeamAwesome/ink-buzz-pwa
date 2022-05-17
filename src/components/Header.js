@@ -9,7 +9,7 @@ import { connect, useSelector } from 'react-redux';
 const Header = (props) => {
 
   const user = useSelector((state) => state.user.user);
-    console.log(user)
+    // console.log(user)
 
     return (
     <div>
