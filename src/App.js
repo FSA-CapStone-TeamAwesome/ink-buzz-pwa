@@ -13,19 +13,18 @@ import { startAuth } from './config/firebase';
 import Upload from './components/uploadFile';
 import Chat from './components/Chat';
 import { getUser } from './store/userStore';
-import {useDispatch} from 'react-redux'
-import {useEffect} from 'react'
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import Profile from './components/Profile';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
+  const { user } = useAuthentication();
+  const dispatch = useDispatch();
 
-const {user} = useAuthentication()
-  const dispatch = useDispatch()
-
-useEffect(() => {
-  dispatch(getUser(user));
+  useEffect(() => {
+    user && dispatch(getUser(user));
   });
 
   return (
