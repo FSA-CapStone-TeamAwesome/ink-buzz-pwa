@@ -9,7 +9,6 @@ import Logout from "./components/Logout";
 import SignUp from "./components/SignUp";
 import SingleNFT from "./components/SingleNFT";
 import ErrorPage from "./components/ErrorPage";
-import { startAuth } from "./config/firebase";
 import Upload from "./components/uploadFile";
 import Chat from "./components/Chat";
 import { getUser } from "./store/userStore";
@@ -23,26 +22,6 @@ import WalletConnect from "@walletconnect/web3-provider";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 
-// const providerOptions = {
-//   coinbasewallet: {
-//     package: CoinbaseWalletSDK,
-//     options: {
-//       appName: "Ink Buzz",
-//       infuraId: "6237838e24b74f8bb53f0cb090a0244d",
-//     },
-//   },
-//   walletconnect: {
-//     package: WalletConnect,
-//     options: {
-//       infuraId: "6237838e24b74f8bb53f0cb090a0244d",
-//     },
-//   },
-// };
-
-// const web3Modal = new Web3Modal({
-//   providerOptions, // required
-// });
-
 function App() {
   const { user } = useAuthentication();
   const dispatch = useDispatch();
@@ -54,7 +33,7 @@ function App() {
   const [chainId, setChainId] = useState();
 
   useEffect(() => {
-    dispatch(getUser(user));
+    user && dispatch(getUser(user));
   });
 
   useEffect(() => {
@@ -126,9 +105,7 @@ function App() {
       const network = await library.getNetwork();
       setProvider(provider);
       setLibrary(library);
-      console.log("ACCOUNTS => ", accounts);
       if (accounts) setAccount(accounts[0]);
-      console.log("ACCOUNT =>", accounts[0]);
       setChainId(network.chainId);
     } catch (error) {
       setError(error);

@@ -12,9 +12,6 @@ import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
 import { Tooltip } from "@chakra-ui/react";
 import { networkParams } from "./networks";
 import { toHex, truncateAddress } from "./utils";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import { providerOptions } from "./providerOptions";
 
 export const CryptoTest = (props) => {
   const {
@@ -33,7 +30,6 @@ export const CryptoTest = (props) => {
     connectWallet,
     web3Modal,
   } = props;
-  console.log("PROPS =>", props);
 
   const handleNetwork = (e) => {
     const id = e.target.value;
@@ -60,20 +56,6 @@ export const CryptoTest = (props) => {
     }
   };
 
-  // const signMessage = async () => {
-  //   if (!library) return;
-  //   try {
-  //     const signature = await library.provider.request({
-  //       method: "personal_sign",
-  //       params: [message, account],
-  //     });
-  //     setSignedMessage(message);
-  //     setSignature(signature);
-  //   } catch (error) {
-  //     setError(error);
-  //   }
-  // };
-
   const refreshState = () => {
     setAccount();
     setChainId();
@@ -91,62 +73,9 @@ export const CryptoTest = (props) => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (provider?.on) {
-  //     const handleAccountsChanged = (accounts) => {
-  //       console.log("accountsChanged", accounts);
-  //       if (accounts) setAccount(accounts[0]);
-  //     };
-
-  //     const handleChainChanged = (_hexChainId) => {
-  //       setChainId(_hexChainId);
-  //     };
-
-  //     const handleDisconnect = () => {
-  //       console.log("disconnect", error);
-  //       disconnect();
-  //     };
-
-  //     provider.on("accountsChanged", handleAccountsChanged);
-  //     provider.on("chainChanged", handleChainChanged);
-  //     provider.on("disconnect", handleDisconnect);
-
-  //     return () => {
-  //       if (provider.removeListener) {
-  //         provider.removeListener("accountsChanged", handleAccountsChanged);
-  //         provider.removeListener("chainChanged", handleChainChanged);
-  //         provider.removeListener("disconnect", handleDisconnect);
-  //       }
-  //     };
-  //   }
-  // }, [provider]);
-
   return (
     <>
       <VStack justifyContent="center" alignItems="center" h="100vh">
-        {/* <HStack marginBottom="10px">
-          <Text
-            margin="0"
-            lineHeight="1.15"
-            fontSize={["1.5em", "2em", "3em", "4em"]}
-            fontWeight="600"
-          >
-            Let's connect with
-          </Text>
-          <Text
-            margin="0"
-            lineHeight="1.15"
-            fontSize={["1.5em", "2em", "3em", "4em"]}
-            fontWeight="600"
-            sx={{
-              background: "linear-gradient(90deg, #1652f0 0%, #b9cbfb 70.35%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Web3Modal
-          </Text>
-        </HStack> */}
         <HStack>
           {!account ? (
             <Button onClick={connectWallet}>Connect Wallet</Button>
@@ -191,56 +120,6 @@ export const CryptoTest = (props) => {
                 </Select>
               </VStack>
             </Box>
-            {/* <Box
-              maxW="sm"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              padding="10px"
-            >
-              <VStack>
-                <Button onClick={signMessage} isDisabled={!message}>
-                  Sign Message
-                </Button>
-                <Input
-                  placeholder="Set Message"
-                  maxLength={20}
-                  onChange={handleInput}
-                  w="140px"
-                />
-                {signature ? (
-                  <Tooltip label={signature} placement="bottom">
-                    <Text>{`Signature: ${truncateAddress(signature)}`}</Text>
-                  </Tooltip>
-                ) : null}
-              </VStack>
-            </Box> */}
-            {/* <Box
-              maxW="sm"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              padding="10px"
-            >
-              <VStack>
-                <Button onClick={verifyMessage} isDisabled={!signature}>
-                  Verify Message
-                </Button>
-                {verified !== undefined ? (
-                  verified === true ? (
-                    <VStack>
-                      <CheckCircleIcon color="green" />
-                      <Text>Signature Verified!</Text>
-                    </VStack>
-                  ) : (
-                    <VStack>
-                      <WarningIcon color="red" />
-                      <Text>Signature Denied!</Text>
-                    </VStack>
-                  )
-                ) : null}
-              </VStack>
-            </Box> */}
           </HStack>
         )}
         <Text>{error ? error.message : null}</Text>

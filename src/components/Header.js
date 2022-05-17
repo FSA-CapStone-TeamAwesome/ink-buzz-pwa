@@ -4,13 +4,17 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import LinkContainer from "react-router-bootstrap/LinkContainer";
 import { Badge } from "@chakra-ui/react";
-import { useAuthentication } from "../hooks/useAuthentication";
-import { connect, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getFollowing } from "../store/followStore";
 
 const Header = (props) => {
   const user = useSelector((state) => state.user.user);
-  console.log("user is:  ", user);
+  const dispatch = useDispatch();
   const { account } = props;
+
+  useEffect(() => {
+    user && user.data && dispatch(getFollowing(user));
+  }, [user, dispatch]);
 
   return (
     <div>
@@ -33,7 +37,7 @@ const Header = (props) => {
               ) : (
                 ""
               )}
-              {user ? (
+              {user && user.data ? (
                 <>
                   <LinkContainer to="/Logout">
                     <Nav.Link>Logout</Nav.Link>
