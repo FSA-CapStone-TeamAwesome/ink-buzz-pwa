@@ -99,10 +99,6 @@ const Chat = ({ navigation }) => {
         console.log(err);
       }
 
-
-
-
-
     }
 
   }
@@ -120,7 +116,11 @@ const Chat = ({ navigation }) => {
 
         querySnapshot.forEach((doc) => {
 
-          messageHolder.push({ id : doc.id, content: doc.data().content })
+          messageHolder.push({
+            id : doc.id,
+            timestamp: doc.data().timestamp,
+            from : doc.data().fromId,
+            content: doc.data().content })
         // console.log(doc.data().fromName, " : ", doc.data().content);
       });
 
@@ -153,7 +153,7 @@ const Chat = ({ navigation }) => {
       Get Messages
     </Button>
 
-    {messages && messages.map(msg => <div key={msg.id}>{msg.content}</div>)}
+    {messages && messages.map(msg => <div key={msg.id}>{msg.from}: {msg.content}</div>)}
 
     </>
   );
