@@ -4,9 +4,11 @@ import { Button } from 'react-bootstrap';
 
 import { auth, db, app } from "../config/firebase";
 
-import { useAuthentication } from '../hooks/useAuthentication';
+// import { useAuthentication } from '../hooks/useAuthentication';
 
-import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useSelector, useDispatch } from 'react-redux'
+
+
 
 import { document,
     getDocs,
@@ -25,9 +27,18 @@ import { document,
 // JotxkdT73WZxdfVuw00itwp2GWr1
 // 0xd18ac37aAbA82aAdBfC8BFD6fEF8A42DF1c28352
 
+// const dispatch = useDispatch()
+
+
+
+
+
 const Chat = ({ navigation }) => {
 
-  const { user } = useAuthentication();
+  const user = useSelector((state) => state.user.user);
+  // const { user } = useAuthentication();
+
+  console.log("User is", user)
 
   const [myId, setMyId] = useState('JotxkdT73WZxdfVuw00itwp2GWr1');
 
