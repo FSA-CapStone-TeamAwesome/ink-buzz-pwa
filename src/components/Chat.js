@@ -59,13 +59,14 @@ const Chat = ({ navigation }) => {
   useEffect(() => {
     if (myId){
 
-      onSnapshot(collection(db, 'messages/queue', myId), (snapshot) => {
+      const unsub = onSnapshot(collection(db, 'messages/queue', myId), (snapshot) => {
 
-        snapshot.docs.map(doc => console.log(doc.data()))
+        snapshot.docs.map(doc => console.log("From effect.", doc.data()))
 
+        setMessages(snapshot.docs.map(doc => doc.data()))
 
       })
-
+      return unsub
     }
 
   }, [myId])
@@ -117,7 +118,7 @@ const Chat = ({ navigation }) => {
           photoUrl: null,
           timestamp })
 
-        fetchMessages()
+        // fetchMessages()
       } catch (err) {
         console.log(err);
       }
@@ -152,7 +153,6 @@ const Chat = ({ navigation }) => {
 
       setMessages(messageHolder);
 
-
     } catch (err){
       console.log(err)
     }
@@ -165,12 +165,12 @@ const Chat = ({ navigation }) => {
     <h1>Chat</h1>
 
     <Button variant="primary" onClick={fetchMessages}>
-      Get Messages for {console.log()}
+      Get Messages
     </Button>
 
     {messages && messages.map(msg => {
 
-    if (msg.from === myId){
+    if (msg.fromId === myId){
       return <div style={{display: 'flex', justifyContent:'flex-end'}} key={msg.id}>{msg.content}</div>
     } else {
 
