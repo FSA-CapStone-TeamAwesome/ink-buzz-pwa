@@ -3,12 +3,14 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import LinkContainer from "react-router-bootstrap/LinkContainer";
+import { Badge } from "@chakra-ui/react";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { connect, useSelector } from "react-redux";
 
 const Header = (props) => {
   const user = useSelector((state) => state.user.user);
   console.log("user is:  ", user);
+  const { account } = props;
 
   return (
     <div>
@@ -20,6 +22,17 @@ const Header = (props) => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
+              {!!account ? (
+                <Badge
+                  colorScheme="green"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  Wallet Connected
+                </Badge>
+              ) : (
+                ""
+              )}
               {user ? (
                 <>
                   <LinkContainer to="/Logout">

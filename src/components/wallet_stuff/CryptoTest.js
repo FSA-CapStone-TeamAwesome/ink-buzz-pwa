@@ -17,48 +17,27 @@ import Web3Modal from "web3modal";
 import { providerOptions } from "./providerOptions";
 
 export const CryptoTest = (props) => {
-  const { account, setAccount } = props;
+  const {
+    account,
+    setAccount,
+    provider,
+    setProvider,
+    library,
+    setLibrary,
+    error,
+    setError,
+    chainId,
+    setChainId,
+    network,
+    setNetwork,
+    connectWallet,
+    web3Modal,
+  } = props;
   console.log("PROPS =>", props);
-  const [provider, setProvider] = useState();
-  const [library, setLibrary] = useState();
-  const [signature, setSignature] = useState("");
-  const [error, setError] = useState("");
-  const [chainId, setChainId] = useState();
-  const [network, setNetwork] = useState();
-  const [message, setMessage] = useState("");
-  const [signedMessage, setSignedMessage] = useState("");
-  const [verified, setVerified] = useState();
-
-  const web3Modal = new Web3Modal({
-    cacheProvider: true, // optional
-    providerOptions, // required
-  });
-
-  const connectWallet = async () => {
-    try {
-      const provider = await web3Modal.connect();
-      const library = new ethers.providers.Web3Provider(provider);
-      const accounts = await library.listAccounts();
-      const network = await library.getNetwork();
-      setProvider(provider);
-      setLibrary(library);
-      console.log("ACCOUNTS => ", accounts);
-      if (accounts) setAccount(accounts[0]);
-      console.log("ACCOUNT =>", accounts[0]);
-      setChainId(network.chainId);
-    } catch (error) {
-      setError(error);
-    }
-  };
 
   const handleNetwork = (e) => {
     const id = e.target.value;
     setNetwork(Number(id));
-  };
-
-  const handleInput = (e) => {
-    const msg = e.target.value;
-    setMessage(msg);
   };
 
   const switchNetwork = async () => {
@@ -81,40 +60,24 @@ export const CryptoTest = (props) => {
     }
   };
 
-  const signMessage = async () => {
-    if (!library) return;
-    try {
-      const signature = await library.provider.request({
-        method: "personal_sign",
-        params: [message, account],
-      });
-      setSignedMessage(message);
-      setSignature(signature);
-    } catch (error) {
-      setError(error);
-    }
-  };
-
-  const verifyMessage = async () => {
-    if (!library) return;
-    try {
-      const verify = await library.provider.request({
-        method: "personal_ecRecover",
-        params: [signedMessage, signature],
-      });
-      setVerified(verify === account.toLowerCase());
-    } catch (error) {
-      setError(error);
-    }
-  };
+  // const signMessage = async () => {
+  //   if (!library) return;
+  //   try {
+  //     const signature = await library.provider.request({
+  //       method: "personal_sign",
+  //       params: [message, account],
+  //     });
+  //     setSignedMessage(message);
+  //     setSignature(signature);
+  //   } catch (error) {
+  //     setError(error);
+  //   }
+  // };
 
   const refreshState = () => {
     setAccount();
     setChainId();
     setNetwork("");
-    setMessage("");
-    setSignature("");
-    setVerified(undefined);
   };
 
   const disconnect = async () => {
@@ -128,40 +91,40 @@ export const CryptoTest = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (provider?.on) {
-      const handleAccountsChanged = (accounts) => {
-        console.log("accountsChanged", accounts);
-        if (accounts) setAccount(accounts[0]);
-      };
+  // useEffect(() => {
+  //   if (provider?.on) {
+  //     const handleAccountsChanged = (accounts) => {
+  //       console.log("accountsChanged", accounts);
+  //       if (accounts) setAccount(accounts[0]);
+  //     };
 
-      const handleChainChanged = (_hexChainId) => {
-        setChainId(_hexChainId);
-      };
+  //     const handleChainChanged = (_hexChainId) => {
+  //       setChainId(_hexChainId);
+  //     };
 
-      const handleDisconnect = () => {
-        console.log("disconnect", error);
-        disconnect();
-      };
+  //     const handleDisconnect = () => {
+  //       console.log("disconnect", error);
+  //       disconnect();
+  //     };
 
-      provider.on("accountsChanged", handleAccountsChanged);
-      provider.on("chainChanged", handleChainChanged);
-      provider.on("disconnect", handleDisconnect);
+  //     provider.on("accountsChanged", handleAccountsChanged);
+  //     provider.on("chainChanged", handleChainChanged);
+  //     provider.on("disconnect", handleDisconnect);
 
-      return () => {
-        if (provider.removeListener) {
-          provider.removeListener("accountsChanged", handleAccountsChanged);
-          provider.removeListener("chainChanged", handleChainChanged);
-          provider.removeListener("disconnect", handleDisconnect);
-        }
-      };
-    }
-  }, [provider]);
+  //     return () => {
+  //       if (provider.removeListener) {
+  //         provider.removeListener("accountsChanged", handleAccountsChanged);
+  //         provider.removeListener("chainChanged", handleChainChanged);
+  //         provider.removeListener("disconnect", handleDisconnect);
+  //       }
+  //     };
+  //   }
+  // }, [provider]);
 
   return (
     <>
       <VStack justifyContent="center" alignItems="center" h="100vh">
-        <HStack marginBottom="10px">
+        {/* <HStack marginBottom="10px">
           <Text
             margin="0"
             lineHeight="1.15"
@@ -183,7 +146,7 @@ export const CryptoTest = (props) => {
           >
             Web3Modal
           </Text>
-        </HStack>
+        </HStack> */}
         <HStack>
           {!account ? (
             <Button onClick={connectWallet}>Connect Wallet</Button>
@@ -228,7 +191,7 @@ export const CryptoTest = (props) => {
                 </Select>
               </VStack>
             </Box>
-            <Box
+            {/* <Box
               maxW="sm"
               borderWidth="1px"
               borderRadius="lg"
@@ -251,8 +214,8 @@ export const CryptoTest = (props) => {
                   </Tooltip>
                 ) : null}
               </VStack>
-            </Box>
-            <Box
+            </Box> */}
+            {/* <Box
               maxW="sm"
               borderWidth="1px"
               borderRadius="lg"
@@ -277,7 +240,7 @@ export const CryptoTest = (props) => {
                   )
                 ) : null}
               </VStack>
-            </Box>
+            </Box> */}
           </HStack>
         )}
         <Text>{error ? error.message : null}</Text>

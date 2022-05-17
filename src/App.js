@@ -18,18 +18,126 @@ import { useState, useEffect } from "react";
 import Profile from "./components/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
+import WalletConnect from "@walletconnect/web3-provider";
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+
+// const providerOptions = {
+//   coinbasewallet: {
+//     package: CoinbaseWalletSDK,
+//     options: {
+//       appName: "Ink Buzz",
+//       infuraId: "6237838e24b74f8bb53f0cb090a0244d",
+//     },
+//   },
+//   walletconnect: {
+//     package: WalletConnect,
+//     options: {
+//       infuraId: "6237838e24b74f8bb53f0cb090a0244d",
+//     },
+//   },
+// };
+
+// const web3Modal = new Web3Modal({
+//   providerOptions, // required
+// });
 
 function App() {
   const { user } = useAuthentication();
   const dispatch = useDispatch();
+  const [provider, setProvider] = useState();
+  const [library, setLibrary] = useState();
   const [account, setAccount] = useState();
+  const [network, setNetwork] = useState();
+  const [error, setError] = useState("");
+  const [chainId, setChainId] = useState();
+
   useEffect(() => {
     dispatch(getUser(user));
   });
 
+  useEffect(() => {
+    if (provider?.on) {
+      const handleAccountsChanged = (accounts) => {
+        console.log("accountsChanged", accounts);
+        if (accounts) setAccount(accounts[0]);
+      };
+
+      const handleChainChanged = (_hexChainId) => {
+        setChainId(_hexChainId);
+      };
+
+      const handleDisconnect = () => {
+        console.log("disconnect", error);
+        disconnect();
+      };
+
+      provider.on("accountsChanged", handleAccountsChanged);
+      provider.on("chainChanged", handleChainChanged);
+      provider.on("disconnect", handleDisconnect);
+
+      return () => {
+        if (provider.removeListener) {
+          provider.removeListener("accountsChanged", handleAccountsChanged);
+          provider.removeListener("chainChanged", handleChainChanged);
+          provider.removeListener("disconnect", handleDisconnect);
+        }
+      };
+    }
+  }, [provider]);
+
+  const refreshState = () => {
+    setAccount();
+    setChainId();
+    setNetwork("");
+  };
+
+  const disconnect = async () => {
+    await web3Modal.clearCachedProvider();
+    refreshState();
+  };
+
+  const providerOptions = {
+    coinbasewallet: {
+      package: CoinbaseWalletSDK,
+      options: {
+        appName: "Ink Buzz",
+        infuraId: "6237838e24b74f8bb53f0cb090a0244d",
+      },
+    },
+    walletconnect: {
+      package: WalletConnect,
+      options: {
+        infuraId: "6237838e24b74f8bb53f0cb090a0244d",
+      },
+    },
+  };
+
+  const web3Modal = new Web3Modal({
+    providerOptions, // required
+  });
+
+  const connectWallet = async () => {
+    try {
+      const provider = await web3Modal.connect();
+      const library = new ethers.providers.Web3Provider(provider);
+      const accounts = await library.listAccounts();
+      const network = await library.getNetwork();
+      setProvider(provider);
+      setLibrary(library);
+      console.log("ACCOUNTS => ", accounts);
+      if (accounts) setAccount(accounts[0]);
+      console.log("ACCOUNT =>", accounts[0]);
+      setChainId(network.chainId);
+    } catch (error) {
+      setError(error);
+    }
+  };
+
   return (
     <div>
-      <Header props={startAuth} />
+      <Header account={account} />
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="upLoad" element={<Upload />} />
@@ -37,7 +145,24 @@ function App() {
         <Route
           exact
           path="/crypto"
-          element={<CryptoTest account={account} setAccount={setAccount} />}
+          element={
+            <CryptoTest
+              provider={provider}
+              setProvider={setProvider}
+              library={library}
+              setLibrary={setLibrary}
+              account={account}
+              setAccount={setAccount}
+              network={network}
+              setNetwork={setNetwork}
+              error={error}
+              setError={setError}
+              chainId={chainId}
+              setChainId={setChainId}
+              connectWallet={connectWallet}
+              web3Modal={web3Modal}
+            />
+          }
         />
         <Route exact path="/Logout" element={<Logout />} />
         <Route exact path="/profile" element={<Profile />} />
