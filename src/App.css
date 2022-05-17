@@ -1,4 +1,17 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .NFTimage {
   max-height: 200px;
   max-width: 300px;
+}
+
+.nav-pills {
+  cursor: pointer;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  background-color: #212529;
 }

@@ -43,6 +43,7 @@ const SignUp = () => {
         data: {
           email: value.email,
           location: '',
+          id: auth.currentUser.uid
         },
         images: [],
         accounts: {},

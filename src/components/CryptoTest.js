@@ -6,7 +6,7 @@ import { providers } from "ethers";
 
 export const CryptoTest = () => {
 
-  let provider, web3Provider;
+  let provider;
 
   const startUp = async () => {
     provider = new WalletConnectProvider({
@@ -74,7 +74,7 @@ export const CryptoTest = () => {
         <button
           onClick={async () => {
             console.log("address is ", address, "type is ", typeof address);
-            console.log("web3 is ", web3, "web3Provider is ", web3Provider);
+            console.log("web3 is ", web3);
             const tx = await web3.eth.sendTransaction({
               from: address,
               to: "0x73dE20c61D696867a656B089762Ad52342DC365e",
