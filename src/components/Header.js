@@ -11,7 +11,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    user.data && dispatch(getFollowing(user));
+    user && user.data && dispatch(getFollowing(user));
   }, [user, dispatch]);
 
   return (
@@ -24,7 +24,7 @@ const Header = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
-              {user.data ? (
+              {user && user.data ? (
                 <>
                   <LinkContainer to="/Logout">
                     <Nav.Link>Logout</Nav.Link>

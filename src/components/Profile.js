@@ -3,7 +3,7 @@ import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
 import { assets } from '../constants';
 import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUser, updateUser } from '../store/userStore';
@@ -13,12 +13,16 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
 } from 'firebase/auth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../config/firebase';
 
 const Profile = () => {
   injectStyle();
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
+  const [imageUpload, setImageUpload] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const user = useSelector((state) => state.user.user);
 
@@ -28,6 +32,11 @@ const Profile = () => {
 
   const handleShow = () => {
     setShow(!show);
+  };
+
+  const handleCancel = () => {
+    setShow(!show);
+    setFormPassword('');
   };
 
   const onSubmit = async (e) => {
@@ -43,7 +52,7 @@ const Profile = () => {
         .then(() => {
           updateEmail(auth.currentUser, formEmail)
             .then(() => {
-              toast.success('Email Updated!');
+              toast.success('Profile Updated!');
             })
             .catch((error) => {
               toast.error('Error Occurred!');
@@ -65,7 +74,28 @@ const Profile = () => {
           },
         }),
       );
-      
+
+      //Start Image Upload Code Here
+      if (imageUpload) {
+        //We're uploading a photo to the storage, its path is the user's folder, and the filename is profile-picture
+        const imageRef = ref(
+          storage,
+          `images/universal/${user.data.id}/profile-picture`,
+        );
+        await uploadBytes(imageRef, imageUpload);
+
+        //The user gets a copy to their firebaseFolder
+        let change = await doc(db, 'users', `${user.data.id}`);
+        await updateDoc(change, {
+          profilePic: `/images/universal/${user.data.id}/profile-picture`,
+        });
+
+        let getIt = await getDownloadURL(
+          ref(storage, `/images/universal/${user.data.id}/profile-picture`),
+        );
+        setImageUrl(getIt);
+      }
+
       setFormPassword('');
       setShow(!show);
     } else {
@@ -77,7 +107,10 @@ const Profile = () => {
     let userRef = doc(db, 'users', user.data.id);
     let getUser = await getDoc(userRef);
     let userInfo = await getUser.data();
-    setUserProfile(userInfo);
+    let getIt = await getDownloadURL(
+      ref(storage, `/images/universal/${user.data.id}/profile-picture`),
+    );
+    if (getIt) setImageUrl(getIt);
   };
 
   const auth = getAuth();
@@ -87,6 +120,7 @@ const Profile = () => {
       loadUser();
       setFormName(user.name);
       setFormEmail(auth.currentUser.email);
+      setImageUrl(`/images/universal/${user.data.id}/profile-picture`);
     }
   }, [user]);
 
@@ -103,7 +137,15 @@ const Profile = () => {
         <div>
           <div className="d-flex align-items-center">
             <div className="d-flex flex-column align-items-center">
-              <img src={assets.person01} alt="person" />
+              {imageUrl ? (
+                <img src={imageUrl} alt="profile" className="profile-picture" />
+              ) : (
+                <img
+                  src={assets.person01}
+                  alt="profile"
+                  className="profile-picture"
+                />
+              )}
             </div>
             <div className="ms-3">
               <h3>Name: {formName}</h3>
@@ -113,7 +155,7 @@ const Profile = () => {
           <div className="mt-1 mx-auto">
             {!show ? (
               <Button
-                variant="secondary"
+                variant="dark"
                 onClick={handleShow}
                 disabled={show === true}>
                 Edit Profile
@@ -154,7 +196,12 @@ const Profile = () => {
 
             <Form.Group className="mb-3" controlId="profile-image">
               <Form.Label>Updated Profile Picture:</Form.Label>
-              <Form.Control type="file" />
+              <Form.Control
+                type="file"
+                onChange={(event) => {
+                  setImageUpload(event.target.files[0]);
+                }}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
@@ -168,6 +215,9 @@ const Profile = () => {
             </Form.Group>
 
             <Button type="submit">Save Changes</Button>
+            <Button variant="secondary" className="ms-3" onClick={handleCancel}>
+              Cancel
+            </Button>
           </Form>
         </div>
       ) : (
