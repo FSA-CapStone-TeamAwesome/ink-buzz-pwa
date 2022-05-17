@@ -153,7 +153,19 @@ const Chat = ({ navigation }) => {
       Get Messages
     </Button>
 
-    {messages && messages.map(msg => <div key={msg.id}>{msg.from}: {msg.content}</div>)}
+    {messages && messages.map(msg => {
+
+    if (msg.from === myId){
+      return <div style={{display: 'flex', justifyContent:'flex-end'}} key={msg.id}>{msg.content}</div>
+    } else {
+
+      return <div style={{display: 'flex', justifyContent:'flex-start'}} key={msg.id}>{msg.content}</div>
+
+    }
+
+
+
+    })}
 
     </>
   );
