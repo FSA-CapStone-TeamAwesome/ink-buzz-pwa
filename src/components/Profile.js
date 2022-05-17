@@ -225,42 +225,59 @@ const Profile = () => {
       )}
 
       <div className="mt-3">
-        <Tab.Container id="left-tabs-example" defaultActiveKey="feed">
-          <Row>
-            <Col sm={3} className="mb-3">
-              <Nav variant="pills" className="flex-column">
-                <Nav.Item>
-                  <Nav.Link eventKey="feed">Main Feed</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="followers">17 Followers</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="following">28 Following</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="favorites">42 Favorites</Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Col>
-            <Col sm={9}>
-              <Tab.Content>
-                <Tab.Pane eventKey="feed">
-                  <h3>Here's your feed</h3>
-                </Tab.Pane>
-                <Tab.Pane eventKey="followers">
-                  <h3>You have 17 Followers</h3>
-                </Tab.Pane>
-                <Tab.Pane eventKey="following">
-                  <h3>You are following 28 artists</h3>
-                </Tab.Pane>
-                <Tab.Pane eventKey="favorites">
-                  <h3>You have 42 favorites</h3>
-                </Tab.Pane>
-              </Tab.Content>
-            </Col>
-          </Row>
-        </Tab.Container>
+        {user && user.data ? (
+          <Tab.Container id="left-tabs-example" defaultActiveKey="feed">
+            <Row>
+              <Col sm={3} className="mb-3">
+                <Nav variant="pills" className="flex-column">
+                  <Nav.Item>
+                    <Nav.Link eventKey="feed">Main Feed</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="followers">17 Followers</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="following">
+                      {user.following.length || 0} Following
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="favorites">42 Favorites</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </Col>
+              <Col sm={9}>
+                <Tab.Content>
+                  <Tab.Pane eventKey="feed">
+                    <h3>Here's your feed</h3>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="followers">
+                    <h3>You have 17 Followers</h3>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="following">
+                    <h3>
+                      You are following {user.following.length || 0} artists:
+                    </h3>
+                    <div className="d-flex flex-column">
+                      {user.following.map((artist, idx) => {
+                        return (
+                          <div className="w-50" key={'artist' + idx}>
+                            <Button className="mt-3">{artist}</Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="favorites">
+                    <h3>You have 42 favorites</h3>
+                  </Tab.Pane>
+                </Tab.Content>
+              </Col>
+            </Row>
+          </Tab.Container>
+        ) : (
+          <h3>User is not logged in</h3>
+        )}
       </div>
     </Container>
   );

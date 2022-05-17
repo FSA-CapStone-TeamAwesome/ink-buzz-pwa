@@ -8,21 +8,16 @@ import {
   orderBy,
   limit,
   onSnapshot,
-
 } from 'firebase/firestore';
 import Search from './SearchBar';
 import Favorites from './Favorites';
 import FollowedArtists from './FollowedArtists';
 
-
-
-const Home =  () => {
-  const [alphaList, setList] = useState([])
-  const [newList, setNew] = useState([])
-  const [following, setFollow] = useState([])
-  const [userProfile, setUser] = useState(null)
-
-
+const Home = () => {
+  const [alphaList, setList] = useState([]);
+  const [newList, setNew] = useState([]);
+  const [following, setFollow] = useState([]);
+  const [userProfile, setUser] = useState(null);
 
   const aFunction = async () => {
     let enterTheCollector = await collection(db, 'NFTs');
@@ -49,7 +44,6 @@ const Home =  () => {
   };
 
   useEffect(() => {
-
     aFunction();
   }, []);
 
@@ -67,7 +61,7 @@ const Home =  () => {
       <h1 className="text-center">New Designs</h1>
       <div className="d-flex flex-wrap justify-content-center align-items-center">
         {newList.map((nft) => {
-          return <Post key={nft.id} data={nft} />;
+          return <Post key={'new' + nft.id} data={nft} />;
         })}
       </div>
       <FollowedArtists />
@@ -76,4 +70,4 @@ const Home =  () => {
   );
 };
 
-export default Home
+export default Home;
