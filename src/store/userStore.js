@@ -1,14 +1,10 @@
 import { doc,  getDoc, updateDoc} from "firebase/firestore"
-// import { useAuthentication } from '../hooks/useAuthentication';
+
 import { db, storage } from '../config/firebase';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 
 
-// async function CallIt () {
-//   const { user } = await useAuthentication();
-//   return user
-// }
 
 export const getUser = createAsyncThunk(
   'user/getUserStatus',
@@ -37,6 +33,9 @@ export const updateUser = createAsyncThunk(
     return userInfo;
   }
 )
+
+
+
 export const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -44,7 +43,11 @@ export const userSlice = createSlice({
     loading: 'idle',
     error: null,
   },
-  reducers: {},
+  reducers: {
+    signOutState:(state) => {
+      state.user = {}
+    }
+  },
   extraReducers: (builder) => {
   builder
   .addCase(getUser.pending, (state) => {
@@ -86,7 +89,7 @@ export const userSlice = createSlice({
   })
 
 
-
+export const {signOutState} = userSlice.actions
 
 
 

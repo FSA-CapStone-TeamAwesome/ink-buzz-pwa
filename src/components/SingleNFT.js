@@ -32,18 +32,15 @@ const SingleNFT = () => {
     })
   }
 
-  //function that loads photo and sets the user state on loading
+  //function that loads photo
   async function getPhoto () {
     let getIt = await getDownloadURL(ref(storage, data.image))
     setPhoto(getIt)
-
-    setUser((user))
-
     if(user.following && user.following.includes(`${data.creator}`)){
       setFollow(true)
     }
     else {setFollow(false)}
-    if(user.favorites && user.favorites.includes(`${data.id}`)){
+    if(user.favorites && user.favorites.includes(data.id)){
       setFavor(true)
     }
     else {setFavor(false)}
@@ -52,7 +49,6 @@ const SingleNFT = () => {
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
-
     if(userProfile.following && userProfile.following.includes(`${data.creator}`)){
       dispatch(updateUser({
         user,
@@ -60,11 +56,7 @@ const SingleNFT = () => {
             data.creator,
           )}
         }))
-
       setFollow(false)
-      setUser(
-        {...userProfile, following: [userProfile.following.filter((follow) => follow !== data.creator)]
-      })
   }
    else {
     dispatch(updateUser({
@@ -75,48 +67,45 @@ const SingleNFT = () => {
         )
       }
     }))
-
     setFollow(true)
-    setUser(
-      {...userProfile, following:[...userProfile.following, data.creator]}
-    )
   }}
 
 
   const favorToggle = async () => {
-    let userProf = await doc(db, 'users', `${user.auth.currentUser.uid}`)
     if(userProfile.favorites && userProfile.favorites.includes(`${data.id}`)){
-      await updateDoc(userProf, {
-        favorites: arrayRemove(
-          data.id
-        )
-      })
+      dispatch(updateUser({
+        user,
+        update: {
+          favorites: arrayRemove(
+            data.id
+            )
+        }
+      }))
       setFavor(false)
-      setUser(
-        {...userProfile, favorites: [userProfile.favorites.filter((favor) => favor !== data.id)]
-      })
+
     }
     else {
-      await updateDoc(userProf, {
+      dispatch(updateUser({
+        user,
+        update: {
         favorites: arrayUnion(
           data.id
-        )
-      })
+        )}
+      }))
       setFavor(true)
-      setUser(
-        {...userProfile, favorites:[...userProfile.favorites, data.id]}
-      )
   }}
-
-
-
 
     useEffect(()=>{
       aFunction()
     },[])
+
     useEffect(()=>{
       getPhoto()
     },[data])
+
+    useEffect(()=>
+    setUser((user)),
+    [user])
 
 
 
@@ -133,7 +122,8 @@ const SingleNFT = () => {
       <div style={{display:'flex'}}>
       <Button>Message Artist</Button>
       {favored ?
-      <Button onClick={favorToggle}>Favorite It</Button> : <Button onClick={favorToggle}>Unfavorite</Button> }
+      <Button onClick={favorToggle}>Unfavorite</Button> :
+      <Button onClick={favorToggle}>Favorite It</Button>}
       {follows ?
       <Button onClick={followToggle}>Unfollow Artist</Button> : <Button onClick={followToggle}>Follow Artist</Button>
       }
