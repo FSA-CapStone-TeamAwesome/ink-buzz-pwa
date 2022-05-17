@@ -6,7 +6,6 @@ import { auth, db, app } from "../config/firebase";
 
 import { useAuthentication } from '../hooks/useAuthentication';
 
-import { useSelector, useDispatch } from 'react-redux';
 
 
 
@@ -56,6 +55,20 @@ const Chat = ({ navigation }) => {
       setMyName(user.email)
     }
   }, [user])
+
+  useEffect(() => {
+    if (myId){
+
+      onSnapshot(collection(db, 'messages/queue', myId), (snapshot) => {
+
+        snapshot.docs.map(doc => console.log(doc.data()))
+
+
+      })
+
+    }
+
+  }, [myId])
 
 
   // const messageQueue = query(collection(db, 'messages/queue', myId));
