@@ -18,8 +18,7 @@ export const updateUser = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
     const { user, update } = userData;
-    console.log(user);
-    console.log(update);
+
     let userProf = await doc(db, 'users', `${user.data.id}`);
     await updateDoc(userProf, update);
 

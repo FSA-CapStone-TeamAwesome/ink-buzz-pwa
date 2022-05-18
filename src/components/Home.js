@@ -64,7 +64,7 @@ const Home = () => {
           return <Post key={'new' + nft.id} data={nft} />;
         })}
       </div>
-      {/* <FollowedArtists /> */}
+      <FollowedArtists />
       <Search></Search>
     </Container>
   );

@@ -8,16 +8,16 @@ import { storage } from '../config/firebase';
 
 const PreviewPost = ({ data, creator }) => {
   const [photo, setPhoto] = useState(null);
-  const { id, name, image } = data;
+  const { id, name, path } = data;
 
   async function getPhoto() {
-    let getIt = await getDownloadURL(ref(storage, image));
+    let getIt = await getDownloadURL(ref(storage, path));
     setPhoto(getIt);
   }
   useEffect(() => {
     getPhoto();
   }, []);
-  console.log(data)
+
   return (
     <div className="mb-3 me-5">
       <Card style={{ width: '300px' }}>
