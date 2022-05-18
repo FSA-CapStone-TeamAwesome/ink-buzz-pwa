@@ -289,18 +289,6 @@ const Profile = () => {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
-<<<<<<< HEAD
-                    <h3>You have {user.favorites && user.favorites.length || 0} favorites:</h3>
-                    <div className="d-flex flex-column">
-                      {user.favorites && user.favorites.map((design, idx) => {
-                        return (
-                          <div className="w-50" key={'design' + idx}>
-                            <Button onClick={()=> navigate(`/nft/${design.id}`)}className="mt-3">{design.name}</Button>
-                          </div>
-                        );
-                      })}
-                      </div>
-=======
                     <h3>
                       You have {(user.favorites && user.favorites.length) || 0}{' '}
                       favorites:
@@ -319,7 +307,6 @@ const Profile = () => {
                           );
                         })}
                     </div>
->>>>>>> 10e5320ff96bfa29e1ff96376160979fd64dc977
                   </Tab.Pane>
                 </Tab.Content>
               </Col>
