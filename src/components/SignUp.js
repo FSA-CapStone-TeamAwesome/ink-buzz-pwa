@@ -4,16 +4,19 @@ import {
   signInWithEmailAndPassword,
   browserSessionPersistence,
   setPersistence,
-  getAuth
+  getAuth,
 } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
-import {setLocal} from '../config/Auth';
+import { setLocal } from '../config/Auth';
+import { useSelector } from 'react-redux';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user.user);
+
   const [value, setValue] = useState({
     email: '',
     password: '',
@@ -31,7 +34,6 @@ const SignUp = () => {
     }
 
     try {
-
       await createUserWithEmailAndPassword(auth, value.email, value.password);
 
       let newUserDoc = await doc(db, `users`, `${auth.currentUser.uid}`);
@@ -43,7 +45,7 @@ const SignUp = () => {
         data: {
           email: value.email,
           location: '',
-          id: auth.currentUser.uid
+          id: auth.currentUser.uid,
         },
         images: [],
         accounts: {},
@@ -53,9 +55,8 @@ const SignUp = () => {
       //photo collection
       //pay account information
 
-
       if (auth.currentUser) {
-        setLocal(value.email, value.password)
+        setLocal(value.email, value.password);
         window.localStorage.setItem('token', auth.currentUser.accessToken);
         navigate('/');
       }
@@ -67,12 +68,12 @@ const SignUp = () => {
     }
   }
   useEffect(() => {
-    if (auth.currentUser) {
-
+    if (user && user.data) {
       navigate('/');
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
+  //here's a comment
 
   return (
     <div>

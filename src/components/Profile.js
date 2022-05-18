@@ -238,7 +238,7 @@ const Profile = () => {
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="following">
-                      {user.following.length || 0} Following
+                      {(user.following && user.following.length) || 0} Following
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
