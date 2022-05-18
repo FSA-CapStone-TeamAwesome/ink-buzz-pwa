@@ -9,9 +9,12 @@ import { auth } from '../config/firebase';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { setLocal } from '../config/Auth';
+import { useSelector } from 'react-redux';
 
 export const SignIn = () => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user.user);
+
   const [value, setValue] = useState({
     email: '',
     password: '',
@@ -40,10 +43,10 @@ export const SignIn = () => {
   }
 
   useEffect(() => {
-    if (auth.currentUser) {
+    if (user && user.data) {
       navigate('/');
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   return (
     <div>
