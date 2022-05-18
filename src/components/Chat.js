@@ -213,12 +213,11 @@ const Chat = (props) => {
           photoUrl: null,
           timestamp,
         });
-
-        // fetchMessages()
       } catch (err) {
         console.log(err);
       }
     }
+    setMessage({...message, content: ''})
   };
 
   return (
@@ -274,8 +273,7 @@ const Chat = (props) => {
       <form
         className="controls"
         style={{ display: "flex", justifyContent: "flex-end" }}
-        onSubmit={sendMessage}
-      >
+        onSubmit={sendMessage}>
         <input
           placeholder="message"
           type="content"
