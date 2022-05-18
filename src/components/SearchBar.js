@@ -12,7 +12,6 @@ export default function Search () {
     const q = query(collection(db, 'NFTs'), where("tags", "array-contains", `${searchValue}`));
     await onSnapshot(q, (querySnap) => {
       querySnap.forEach((doc) => {
-        console.log(doc.data())
         setResults((prev) => [...prev, doc.data()])
       })
     })
@@ -26,7 +25,7 @@ export default function Search () {
   return (
     <div>
     <input type='text' placeholder="Search By Tag" value={searchValue}
-    onChange={(evt)=> setSearch(evt.target.value)}></input>
+    onChange={(evt)=> setSearch(evt.target.value.toLowerCase())}></input>
     <div>
     <h2>Search Results</h2>
     {results.map((nft) => {

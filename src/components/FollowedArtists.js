@@ -44,12 +44,13 @@ const FollowedArtists = () => {
       <h2>A Quick Five from your Faves</h2>
       {following.map((coolDude) => {
         return (
-          <div>
+          <div className="d-flex flex-wrap justify-content-evenly align-items-center">
             <h2>{coolDude.name}</h2>
             {coolDude.images ? (
-              coolDude.images.reverse().map((link, index) => {
-                if(index >= 5){return}
+              coolDude.images.map((link, index) => {
+                if(index >= coolDude.images.length-5){
                 return <PreviewPost key={index} data={link} creator={coolDude.name} />;
+                }
               })
             ) : (
               <></>

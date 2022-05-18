@@ -138,7 +138,7 @@ const UploadFile = () => {
                 key={`${index}`}
                 onChange={(evt) => {
                   let array = value.tags;
-                  array[index] = evt.target.value;
+                  array[index] = evt.target.value.toLowerCase();
                   setValue({ ...value, tags: array });
                 }}
                 value={value.tags[index]}
