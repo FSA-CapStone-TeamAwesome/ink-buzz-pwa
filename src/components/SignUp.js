@@ -73,6 +73,8 @@ const SignUp = () => {
     }
   }, [user, navigate]);
 
+  //here's a comment
+
   return (
     <div>
       <h1>Sign Up</h1>
