@@ -15,6 +15,8 @@ import {
 } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
+import { useNavigate } from 'react-router-dom';
+
 
 const Profile = () => {
   injectStyle();
@@ -25,6 +27,7 @@ const Profile = () => {
   const [imageUrl, setImageUrl] = useState(null);
 
   const user = useSelector((state) => state.user.user);
+  const navigate = useNavigate();
 
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
@@ -234,7 +237,7 @@ const Profile = () => {
                     <Nav.Link eventKey="feed">Main Feed</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="followers">17 Followers</Nav.Link>
+                    <Nav.Link eventKey="followers">{(user.followers && user.followers.length) || 0}  Followers</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="following">
@@ -242,7 +245,7 @@ const Profile = () => {
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="favorites">42 Favorites</Nav.Link>
+                    <Nav.Link eventKey="favorites">{(user.favorites && user.favorites.length) || 0}  Favorites</Nav.Link>
                   </Nav.Item>
                 </Nav>
               </Col>
@@ -252,7 +255,18 @@ const Profile = () => {
                     <h3>Here's your feed</h3>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
-                    <h3>You have 17 Followers</h3>
+                  <h3>
+                      You have {user.followers.length || 0} followers:
+                    </h3>
+                    <div className="d-flex flex-column">
+                      {user.followers.map((user, idx) => {
+                        return (
+                          <div className="w-50" key={'user' + idx}>
+                            <Button className="mt-3">{user.name}</Button>
+                          </div>
+                        );
+                      })}
+                      </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="following">
                     <h3>
@@ -262,14 +276,23 @@ const Profile = () => {
                       {user.following.map((artist, idx) => {
                         return (
                           <div className="w-50" key={'artist' + idx}>
-                            <Button className="mt-3">{artist}</Button>
+                            <Button className="mt-3">{artist.name}</Button>
                           </div>
                         );
                       })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
-                    <h3>You have 42 favorites</h3>
+                    <h3>You have {user.favorites.length || 0} favorites:</h3>
+                    <div className="d-flex flex-column">
+                      {user.favorites.map((design, idx) => {
+                        return (
+                          <div className="w-50" key={'design' + idx}>
+                            <Button onClick={()=> navigate(`/nft/${design.id}`)}className="mt-3">{design.name}</Button>
+                          </div>
+                        );
+                      })}
+                      </div>
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

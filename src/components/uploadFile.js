@@ -24,7 +24,7 @@ const UploadFile = () => {
 
   const uploadFile = async (evt) => {
     evt.preventDefault();
-    let date = Date.now()
+
     if(value.name === '' || value.tags === [] ){
       toast.error('Every upload needs a name and tags!')
       return
@@ -37,6 +37,16 @@ const UploadFile = () => {
       toast.error('Set a username in profile to upload designs.')
       return
     }
+
+     //We're uploading a photo to the storage, its path is the user's folder, and the filename is the user decided filename with the date
+    let date = Date.now()
+    const imageRef = ref(
+      storage,
+      `images/universal/${user.data.id}/${value.name + date}`,
+    );
+    await uploadBytes(imageRef, imageUpload);
+
+
     //The user gets a copy to their firebaseFolder
     let change = await doc(db, 'users', `${user.data.id}`);
     await updateDoc(change, {
@@ -45,6 +55,7 @@ const UploadFile = () => {
         likes: 0,
         comments: 0,
         purchases: 0,
+        name: value.name,
       }),
     });
 
