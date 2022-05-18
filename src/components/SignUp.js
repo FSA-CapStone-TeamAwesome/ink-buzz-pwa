@@ -14,27 +14,28 @@ const SignUp = () => {
   const [value, setValue] = useState({
     email: '',
     password: '',
+    name: '',
     error: '',
   });
 
   async function signUp(evt) {
     evt.preventDefault();
-    if (value.email === '' || value.password === '') {
+    if (value.email === '' || value.password === '' || value.name === '') {
       setValue({
         ...value,
-        error: 'Email and password are mandatory.',
+        error: 'Name, email, and password are mandatory.',
       });
       return;
     }
 
     try {
       await createUserWithEmailAndPassword(auth, value.email, value.password);
-      let date = Date.now()
+      let date = Date.now();
       let newUserDoc = await doc(db, `users`, `${auth.currentUser.uid}`);
       //doc will make an new User doc for us in the users collection, and the name will be the user.uid
 
       await setDoc(newUserDoc, {
-        name: '',
+        name: value.name,
         profilePic: '',
         data: {
           email: value.email,
@@ -45,7 +46,7 @@ const SignUp = () => {
         followers: [],
         following: [],
         accounts: {},
-        created: `${date}`
+        created: `${date}`,
       });
       //User information will be display name, profileImage
       //data stored as an object containing the email, location, followers and following
@@ -76,6 +77,17 @@ const SignUp = () => {
       <div className="d-flex flex-column justify-content-center align-items-center">
         <h1 className="mb-5">Sign Up</h1>
         <Form className="controls w-50" onSubmit={signUp}>
+          <Form.Group className="mb-3" controlId="name">
+            <Form.Control
+              placeholder="Name"
+              type="text"
+              value={value.name}
+              onChange={(evt) => {
+                setValue({ ...value, name: evt.target.value });
+              }}
+            />
+          </Form.Group>
+
           <Form.Group className="mb-3" controlId="email">
             <Form.Control
               placeholder="Email"
