@@ -43,6 +43,8 @@ const Chat = ({ navigation }) => {
 
   const [myName, setMyName] = useState('')
 
+  const [interlocutor, setInterlocutor] = useState('HaFb8KmFHZPUXvOyEe9lf2qRrJo2')
+
   // console.log("User is", user)
 
   const [messages, setMessages] = useState([]);
@@ -79,7 +81,7 @@ const Chat = ({ navigation }) => {
   const [message, setMessage] = useState({
     content: '',
     // Hardcoded, should change
-    recipient: 'HaFb8KmFHZPUXvOyEe9lf2qRrJo2',
+    recipient: interlocutor,
     photoUrl: '',
   });
 
@@ -128,9 +130,7 @@ const Chat = ({ navigation }) => {
   }
 
   const fetchMessages = async () => {
-
     let queue;
-
     try {
       queue = query(
         collection(db, 'messages/queue', myId),
@@ -156,13 +156,17 @@ const Chat = ({ navigation }) => {
     } catch (err){
       console.log(err)
     }
-
   }
 
-  console.log(messages)
+
   return (
     <>
     <h1>Chat</h1>
+    <div id="conversations">
+      <Button style={{margin: 10}} variant="primary" onClick={() => setInterlocutor('YnK59v2GMRcRtFTZ7jlSXIaxu1G3')}>
+      Person 1
+    </Button>
+    </div>
 
     <Button variant="primary" onClick={fetchMessages}>
       Get Messages
