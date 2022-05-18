@@ -16,6 +16,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
 import { useNavigate } from 'react-router-dom';
+import PreviewPost from './previewPost';
 
 const Profile = () => {
   injectStyle();
@@ -261,6 +262,13 @@ const Profile = () => {
                 <Tab.Content>
                   <Tab.Pane eventKey="feed">
                     <h3>Here's your feed</h3>
+                    <h3>You have {user.images.length || 0} Designs!</h3>
+                    <div className="d-flex flex-wrap justify-content-evenly align-items-center">
+                    {user.images.map((link, index) => {
+
+                      return <PreviewPost key={index} data={link} creator={user.name} />;
+                    })}
+                    </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
                     <h3>You have {user.followers.length || 0} followers:</h3>
