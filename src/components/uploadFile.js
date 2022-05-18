@@ -59,6 +59,7 @@ const UploadFile = () => {
         comments: 0,
         purchases: 0,
         name: value.name,
+        id: `${user.data.id + date}`,
       }),
     });
 

@@ -9,7 +9,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db, storage } from '../config/firebase';
-import Post from './Post';
+import PreviewPost from './previewPost';
 import { useSelector } from 'react-redux';
 
 const FollowedArtists = () => {
@@ -33,12 +33,11 @@ const FollowedArtists = () => {
   useEffect(() => {
     loader();
   }, [followingState]);
-  console.log(user)
-  console.log(followingState)
+
   if (!following[0]) {
     return <h3>Loading</h3>;
   }
-  console.log(followingState)
+
   return (
     <div>
       <h1>Here's the latest from your favorites.</h1>
@@ -46,10 +45,11 @@ const FollowedArtists = () => {
       {following.map((coolDude) => {
         return (
           <div>
-            <h2>{coolDude}</h2>
-            {coolDude.links ? (
-              coolDude.links.map((link, index) => {
-                return <Post key={index} data={link} />;
+            <h2>{coolDude.name}</h2>
+            {coolDude.images ? (
+              coolDude.images.reverse().map((link, index) => {
+                if(index >= 5){return}
+                return <PreviewPost key={index} data={link} creator={coolDude.name} />;
               })
             ) : (
               <></>
