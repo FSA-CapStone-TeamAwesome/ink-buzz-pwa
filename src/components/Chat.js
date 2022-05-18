@@ -77,19 +77,20 @@ const Chat = ({ navigation }) => {
   }, [user])
 
   useEffect(() => {
+
     if (myId){
 
       const unsub = onSnapshot(collection(db, 'messages/queue', myId), (snapshot) => {
 
-        // snapshot.docs.map(doc => console.log("From effect.", doc.data()))
-
         setMessages(snapshot.docs.map(doc => doc.data()))
 
       })
+
       return unsub
+
     }
 
-  })
+  }, [myId])
 
 
   // const messageQueue = query(collection(db, 'messages/queue', myId));
@@ -183,7 +184,6 @@ const Chat = ({ navigation }) => {
     <div id="conversations">
     {convoList.map(conversation => {
       return (
-
       <Button key={conversation.uid} style={{margin: 10}} variant="primary" onClick={() => setInterlocutor(conversation.uid)}>
       {conversation.name}
     </Button>)
@@ -192,6 +192,7 @@ const Chat = ({ navigation }) => {
     <Button style={{margin: 10}} variant="primary" onClick={() => setInterlocutor('')}>
       No One
     </Button>
+
     </div>
 
     <Button variant="primary" onClick={fetchMessages}>
