@@ -38,7 +38,7 @@ export const getFollowing = createAsyncThunk(
       //   })
       // }))
 
-      console.log(artistArr)
+     return artistArr
 
 
 
