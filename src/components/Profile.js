@@ -80,6 +80,7 @@ const Profile = () => {
 
       //Start Image Upload Code Here
       if (imageUpload) {
+
         //We're uploading a photo to the storage, its path is the user's folder, and the filename is profile-picture
         const imageRef = ref(
           storage,

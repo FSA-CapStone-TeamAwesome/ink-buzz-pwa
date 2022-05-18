@@ -51,7 +51,8 @@ const Home = () => {
     <Container className="d-flex flex-column align-items-center my-3">
       <div className="text-center">
         <h1>Welcome to Ink Buzz!</h1>
-        <h5>Check out some tattoo NFTs below</h5>
+        <h5>Check out some tattoo designs below</h5>
+        <h5>Upload as an artist and sell your designs!</h5>
       </div>
       <div className="d-flex flex-wrap justify-content-center align-items-start">
         {alphaList.map((nft) => {
