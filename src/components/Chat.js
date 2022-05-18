@@ -6,6 +6,8 @@ import { auth, db, app } from "../config/firebase";
 
 import { useAuthentication } from "../hooks/useAuthentication";
 
+import { useSelector } from "react-redux";
+
 import {
   document,
   getDocs,
@@ -42,7 +44,9 @@ const convoList = [
 ];
 
 const Chat = (props) => {
-  const { user } = useAuthentication();
+  // const { user } = useAuthentication();
+
+  const user = useSelector((state) => state.user.user);
 
   const [myId, setMyId] = useState("");
 
@@ -54,13 +58,18 @@ const Chat = (props) => {
 
   const [amount, setAmount] = useState(0);
 
+  const [message, setMessage] = useState({
+    content: "",
+    recipient: interlocutor,
+    photoUrl: "",
+  });
+
+
   useEffect(() => {
-    if (user) {
-      console.log("auth user", user);
-      setMyId(user.uid);
-      setMyName(user.email);
+    if (user && user.data) {
+      setMyId(user.data.id)
     }
-  }, [user]);
+  }, [user])
 
   useEffect(() => {
     if (myId) {
@@ -78,11 +87,10 @@ const Chat = (props) => {
     }
   }, [myId, interlocutor]);
 
-  const [message, setMessage] = useState({
-    content: "",
-    recipient: interlocutor,
-    photoUrl: "",
-  });
+
+  useEffect(() => {
+    setMessage({...message, recipient: interlocutor})
+  }, [interlocutor])
 
   const {
     navigation,
@@ -173,12 +181,19 @@ const Chat = (props) => {
 
     let timestamp = Timestamp.fromMillis(Date.now());
 
+    let fromAddress = '';
+
+    if (account) {
+      fromAddress = account;
+    }
+
     try {
       await addDoc(collection(db, `messages/queue/${message.recipient}`), {
         artReference: null,
         content: message.content,
         fromName: myName,
         fromId: myId,
+        fromAddress: fromAddress,
         toId: message.recipient,
         photoUrl: null,
         timestamp,
@@ -193,6 +208,7 @@ const Chat = (props) => {
           content: message.content,
           fromName: myName,
           fromId: myId,
+          fromAddress: fromAddress,
           toId: message.recipient,
           photoUrl: null,
           timestamp,
@@ -202,35 +218,6 @@ const Chat = (props) => {
       } catch (err) {
         console.log(err);
       }
-    }
-  };
-
-  const fetchMessages = async () => {
-    let queue;
-    try {
-      queue = query(
-        collection(db, "messages/queue", myId),
-        orderBy("timestamp"),
-        limit(50)
-      );
-
-      let messageHolder = [];
-
-      let querySnapshot = await getDocs(queue);
-
-      querySnapshot.forEach((doc) => {
-        messageHolder.push({
-          id: doc.id,
-          timestamp: doc.data().timestamp,
-          from: doc.data().fromId,
-          content: doc.data().content,
-        });
-        // console.log(doc.data().fromName, " : ", doc.data().content);
-      });
-
-      setMessages(messageHolder);
-    } catch (err) {
-      console.log(err);
     }
   };
 
@@ -259,10 +246,6 @@ const Chat = (props) => {
           No One
         </Button>
       </div>
-
-      <Button variant="primary" onClick={fetchMessages}>
-        Get Messages
-      </Button>
 
       {messages &&
         messages.map((msg) => {
