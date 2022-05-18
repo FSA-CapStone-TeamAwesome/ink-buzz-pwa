@@ -16,6 +16,7 @@ import { document,
     Timestamp,
     onSnapshot,
     query,
+    where,
     orderBy,
     limit } from "firebase/firestore";
 
@@ -28,11 +29,7 @@ import { document,
 // JotxkdT73WZxdfVuw00itwp2GWr1
 // 0xd18ac37aAbA82aAdBfC8BFD6fEF8A42DF1c28352
 
-// const dispatch = useDispatch()
-
 // This global variable will be replaced with a converation list
-
-
 const convoList = [
   {name: 'Person 1',
   uid: 'HaFb8KmFHZPUXvOyEe9lf2qRrJo2'},
@@ -41,15 +38,6 @@ const convoList = [
   {name: 'Person 3',
   uid: 'JotxkdT73WZxdfVuw00itwp2GWr1'}
 ]
-
-
-
-
-
-
-
-
-
 
 
 const Chat = ({ navigation }) => {
@@ -63,10 +51,7 @@ const Chat = ({ navigation }) => {
 
   const [interlocutor, setInterlocutor] = useState('')
 
-  // console.log("User is", user)
-
   const [messages, setMessages] = useState([]);
-
 
   useEffect(()=> {
     if (user){
@@ -80,7 +65,12 @@ const Chat = ({ navigation }) => {
 
     if (myId){
 
-      const unsub = onSnapshot(collection(db, 'messages/queue', myId), (snapshot) => {
+      let q = query(
+        collection(db, 'messages/queue', myId),
+        orderBy("timestamp"),
+        limit(100));
+
+        const unsub = onSnapshot(q, (snapshot) => {
 
         setMessages(snapshot.docs.map(doc => doc.data()))
 
@@ -90,24 +80,15 @@ const Chat = ({ navigation }) => {
 
     }
 
-  }, [myId])
-
-
-  // const messageQueue = query(collection(db, 'messages/queue', myId));
-
-  // const [messages] = useCollectionData(messageQueue, { idField: 'id' });
+  }, [myId, interlocutor])
 
   const [message, setMessage] = useState({
     content: '',
-    // Hardcoded, should change
     recipient: interlocutor,
     photoUrl: '',
   });
 
-
   // Sending a message should place it in your queue folder as well
-
-
   const sendMessage = async (evt) => {
     evt.preventDefault();
 
@@ -201,12 +182,11 @@ const Chat = ({ navigation }) => {
 
     {messages && messages.map(msg => {
 
-    if (msg.fromId === myId){
+    if (msg.fromId === myId && msg.toId === interlocutor){
       return <div style={{display: 'flex', justifyContent:'flex-end'}} key={msg.id}>{msg.content}</div>
     } else if (msg.fromId === interlocutor) {
       return <div style={{display: 'flex', justifyContent:'flex-start'}} key={msg.id}>{msg.content}</div>
     } else {
-      return <div>Who you want to talk to?</div>
     }
     })}
 
