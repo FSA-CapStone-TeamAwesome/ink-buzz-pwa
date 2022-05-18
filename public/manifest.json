@@ -3,12 +3,12 @@
   "name": "Ink Buzz PWA",
   "icons": [
     {
-      "src": "/images/logo2.jpg",
+      "src": "/images/inkbuzz-transparent-bg.png",
       "type": "image/jpg",
       "sizes": "512x512"
     },
     {
-      "src": "/images/logo2.jpg",
+      "src": "/images/inkbuzz-transparent-bg.png",
       "type": "image/jpg",
       "sizes": "512x512",
       "purpose": "maskable"
