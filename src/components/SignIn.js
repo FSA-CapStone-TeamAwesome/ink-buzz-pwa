@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form } from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { setLocal } from '../config/Auth';
 import { useSelector } from 'react-redux';
