@@ -13,6 +13,7 @@ import {
   updateDoc,
   arrayUnion,
   getDoc,
+  setDoc,
   getDocs,
   arrayRemove,
 } from 'firebase/firestore';
@@ -30,6 +31,7 @@ const SingleNFT = () => {
   const [follows, setFollow] = useState(false);
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
+  const [searchObj, setSearchObj] = useState(null)
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
 
@@ -52,7 +54,7 @@ const SingleNFT = () => {
   async function getPhoto() {
     let getIt = await getDownloadURL(ref(storage, data.image));
     setPhoto(getIt);
-    if (user.following && user.following.includes(`${data.creator}`)) {
+    if (user.following && user.following.some(item => item.id ===`${data.creatorId}`)) {
       setFollow(true);
     } else {
       setFollow(false);
@@ -69,16 +71,20 @@ const SingleNFT = () => {
     const followRef = doc(db,'users', `${data.creatorId}`)
 
 
-    if(userProfile.following && userProfile.following.includes(`${data.creatorId}`)){
+    if(userProfile.following && user.following.some(item => item.id ===`${data.creatorId}`)){
       dispatch(updateUser({
         user,
-        update: {following: arrayRemove(
-            data.creatorId,
-          )}
-        }))
+        update: {
+          following: arrayRemove({
+          id: data.creatorId,
+          name: data.creator
+        })
+      }
+      })
+      )
 
 
-      await setDoc((followRef), {
+      await updateDoc((followRef), {
         followers: arrayRemove({
           name: userProfile.name,
           id: userProfile.data.id,
@@ -91,12 +97,13 @@ const SingleNFT = () => {
     dispatch(updateUser({
       user,
       update: {
-        following: arrayUnion(
-          data.creatorId,
-        )
+        following: arrayUnion({
+          id: data.creatorId,
+          name: data.creator
+      })
       }
     }))
-    await setDoc((followRef), {
+    await updateDoc((followRef), {
       followers: arrayUnion({
         name: userProfile.name,
         id: userProfile.data.id,
@@ -105,6 +112,7 @@ const SingleNFT = () => {
     })
     setFollow(true)
   }}
+
 
 
   const favorToggle = async () => {
@@ -136,7 +144,11 @@ const SingleNFT = () => {
   }, []);
 
   useEffect(() => {
-    data && getPhoto();
+    data && getPhoto() &&
+    setSearchObj({
+      id: data.creatorId,
+      name: data.creator
+    })
   }, [data]);
 
   useEffect(() => setUser(user), [user]);

@@ -39,7 +39,7 @@ const SignUp = () => {
 
       await setDoc(newUserDoc, {
         name: '',
-        profileImage: '',
+        profilePic: '',
         data: {
           email: value.email,
           location: '',

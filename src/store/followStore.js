@@ -5,6 +5,8 @@ import {
   limit,
   onSnapshot,
   where,
+  doc,
+  getDoc,
 } from 'firebase/firestore';
 import { db, storage } from '../config/firebase';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
@@ -12,38 +14,34 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 export const getFollowing = createAsyncThunk(
   'followers/getFollower',
   async (user, thunkAPI) => {
-    let artistArr = [];
+
     if (user === {}) {
       return;
     }
-    user.following.forEach(async (coolDude) => {
-      let artist = {};
-      let docs = query(
-        collection(db, 'users'),
-        where('data.email', '==', `${coolDude}`),
-      );
-      await onSnapshot(docs, async (snap) => {
-        snap.forEach((doc) => {
-          let quick = doc.data();
-          artist = {
-            name: quick.name,
-            email: quick.data.email,
-            links: [],
-          };
-        });
 
-        // let userRef=  query(collection(db, 'NFTs'), orderBy('created', 'desc'), where('creator', '==', `${coolDude}`), limit(3))
-        // await onSnapshot(userRef, (snap) => {
-        //   snap.forEach((doc) => artist.links.push(doc.data()))
-        // })
-        // console.log(artist)
-        // artistArr.push(artist)
-      });
-      // artists.push(artist)
-    });
-    return artistArr;
-  },
-);
+    function getIt(user){Promise.all(user.following.map(async (coolDude) => {
+      let artistArr = []
+      let docRef = await doc(db, 'users', `${coolDude.id}`)
+      let getArtist = await getDoc(docRef)
+      let artistInfo = await getArtist.data()
+      artistArr = [...artistArr, artistInfo]
+      artistArr.map(async (coolDude) => {
+
+        let artRef = await query(collection(db, 'NFTs'), orderBy('created', 'desc'), where('creator', '==', `${coolDude.data.id}`), limit(3))
+        await onSnapshot(artRef, (snap) => {
+          snap.forEach(async (doc) => {
+            let data = await doc.data()
+            coolDude.list = [...coolDude.list, data]})
+        })
+
+      })
+      return artistArr
+    }))}
+
+    getIt(user).then(function(what) {console.log(what)})
+
+  })
+
 
 export const followingSlice = createSlice({
   name: 'following',

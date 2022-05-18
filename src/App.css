@@ -16,3 +16,7 @@ html {
 .nav-pills .show > .nav-link {
   background-color: #212529;
 }
+
+.mb-3.container {
+  width: auto;
+}

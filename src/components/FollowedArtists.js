@@ -32,11 +32,13 @@ const FollowedArtists = () => {
 
   useEffect(() => {
     loader();
-  }, [user]);
-
+  }, [followingState]);
+  console.log(user)
+  console.log(followingState)
   if (!following[0]) {
     return <h3>Loading</h3>;
   }
+  console.log(followingState)
   return (
     <div>
       <h1>Here's the latest from your favorites.</h1>
