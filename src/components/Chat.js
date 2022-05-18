@@ -6,6 +6,8 @@ import { auth, db, app } from "../config/firebase";
 
 import { useAuthentication } from "../hooks/useAuthentication";
 
+import { useSelector } from "react-redux";
+
 import {
   document,
   getDocs,
@@ -42,7 +44,11 @@ const convoList = [
 ];
 
 const Chat = (props) => {
-  const { user } = useAuthentication();
+  // const { user } = useAuthentication();
+
+  const user = useSelector((state) => state.user.user);
+
+  const [userData, setUserData] = useState();
 
   const [myId, setMyId] = useState("");
 
@@ -55,12 +61,21 @@ const Chat = (props) => {
   const [amount, setAmount] = useState(0);
 
   useEffect(() => {
-    if (user) {
-      console.log("auth user", user);
-      setMyId(user.uid);
-      setMyName(user.email);
+    if (user && user.data) {
+      console.log(user)
     }
-  }, [user]);
+
+
+  }, [user])
+
+
+  // useEffect(() => {
+  //   if (user) {
+  //     console.log("auth user", user);
+  //     setMyId(user.uid);
+  //     setMyName(user.email);
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     if (myId) {
