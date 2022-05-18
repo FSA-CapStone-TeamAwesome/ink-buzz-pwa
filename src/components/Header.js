@@ -21,7 +21,16 @@ const Header = (props) => {
       <Navbar collapseOnSelect expand="md" bg="dark" variant="dark">
         <Container>
           <LinkContainer to="/">
-            <Navbar.Brand>Ink Buzz</Navbar.Brand>
+            <Navbar.Brand>
+              <img
+                alt=""
+                src="./images/logo2.jpg"
+                width="50"
+                height="50"
+                className="d-inline-block align-center"
+              />{' '}
+              Ink Buzz
+            </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">

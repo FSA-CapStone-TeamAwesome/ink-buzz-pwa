@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { Button } from "react-bootstrap";
+import { Container, Button } from 'react-bootstrap';
 
-import { auth, db, app } from "../config/firebase";
+import { auth, db, app } from '../config/firebase';
 
-import { useAuthentication } from "../hooks/useAuthentication";
+import { useAuthentication } from '../hooks/useAuthentication';
 
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
 import {
   document,
@@ -19,14 +19,14 @@ import {
   where,
   orderBy,
   limit,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
-import { VStack, Text, HStack, Select, Input, Box } from "@chakra-ui/react";
-import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
-import { Tooltip } from "@chakra-ui/react";
-import { networkParams } from "./wallet_stuff/networks";
-import { toHex, truncateAddress } from "./wallet_stuff/utils";
-import { ethers } from "ethers";
+import { VStack, Text, HStack, Select, Input, Box } from '@chakra-ui/react';
+import { CheckCircleIcon, WarningIcon } from '@chakra-ui/icons';
+import { Tooltip } from '@chakra-ui/react';
+import { networkParams } from './wallet_stuff/networks';
+import { toHex, truncateAddress } from './wallet_stuff/utils';
+import { ethers } from 'ethers';
 
 // chat2@chat.com
 // YnK59v2GMRcRtFTZ7jlSXIaxu1G3
@@ -45,36 +45,36 @@ const Chat = (props) => {
 
   const [convoList, setConvoList] = useState([]);
 
-  const [myId, setMyId] = useState("");
+  const [myId, setMyId] = useState('');
 
-  const [myName, setMyName] = useState("");
+  const [myName, setMyName] = useState('');
 
-  const [interlocutor, setInterlocutor] = useState("");
+  const [interlocutor, setInterlocutor] = useState('');
 
   const [messages, setMessages] = useState([]);
 
   const [amount, setAmount] = useState(0);
 
   const [message, setMessage] = useState({
-    content: "",
+    content: '',
     recipient: interlocutor,
-    photoUrl: "",
+    photoUrl: '',
   });
-
 
   useEffect(() => {
     if (user && user.data) {
-      setMyId(user.data.id)
-      setConvoList([...user.followers, ...user.following])
+      setMyId(user.data.id);
+      setConvoList([...user.followers, ...user.following]);
+      setMyName(user.name);
     }
-  }, [user])
+  }, [user]);
 
   useEffect(() => {
     if (myId) {
       let q = query(
-        collection(db, "messages/queue", myId),
-        orderBy("timestamp"),
-        limit(100)
+        collection(db, 'messages/queue', myId),
+        orderBy('timestamp'),
+        limit(100),
       );
 
       const unsub = onSnapshot(q, (snapshot) => {
@@ -85,10 +85,9 @@ const Chat = (props) => {
     }
   }, [myId, interlocutor]);
 
-
   useEffect(() => {
-    setMessage({...message, recipient: interlocutor})
-  }, [interlocutor])
+    setMessage({ ...message, recipient: interlocutor });
+  }, [interlocutor]);
 
   const {
     navigation,
@@ -121,32 +120,32 @@ const Chat = (props) => {
   const sendTransaction = async () => {
     try {
       const tx = await library.provider.request({
-        method: "eth_sendTransaction",
+        method: 'eth_sendTransaction',
         params: [
           {
             from: account,
-            to: "0xbB398f050223c11ae1e516371B73e7856Bfae077",
-            value: ethers.utils.parseUnits(amount, "ether").toHexString(),
+            to: '0xbB398f050223c11ae1e516371B73e7856Bfae077',
+            value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
           },
         ],
       });
-      console.log("tx is ", tx);
+      console.log('tx is ', tx);
     } catch (txError) {
-      console.log("txError was ", txError);
+      console.log('txError was ', txError);
     }
   };
 
   const switchNetwork = async () => {
     try {
       await library.provider.request({
-        method: "wallet_switchEthereumChain",
+        method: 'wallet_switchEthereumChain',
         params: [{ chainId: toHex(network) }],
       });
     } catch (switchError) {
       if (switchError.code === 4902) {
         try {
           await library.provider.request({
-            method: "wallet_addEthereumChain",
+            method: 'wallet_addEthereumChain',
             params: [networkParams[toHex(network)]],
           });
         } catch (error) {
@@ -159,7 +158,7 @@ const Chat = (props) => {
   const refreshState = () => {
     setAccount();
     setChainId();
-    setNetwork("");
+    setNetwork('');
   };
 
   const disconnect = async () => {
@@ -197,7 +196,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log("ERROR!");
+      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -215,21 +214,21 @@ const Chat = (props) => {
         console.log(err);
       }
     }
-    setMessage({...message, content: ''})
+    setMessage({ ...message, content: '' });
   };
 
   return (
-    <>
-      <h1>Chat</h1>
+    <Container>
+      <h1 className="text-center h1">Chat</h1>
       <div id="conversations">
-        {convoList.map((conversation) => {
+        <h3 style={{ fontSize: 'large' }}>Conversations:</h3>
+        {convoList.map((conversation, idx) => {
           return (
             <Button
-              key={conversation.id}
+              key={idx + conversation.id}
               style={{ margin: 10 }}
               variant="primary"
-              onClick={() => setInterlocutor(conversation.id)}
-            >
+              onClick={() => setInterlocutor(conversation.id)}>
               {conversation.name}
             </Button>
           );
@@ -241,19 +240,17 @@ const Chat = (props) => {
           if (msg.fromId === myId && msg.toId === interlocutor) {
             return (
               <div
-                style={{ display: "flex", justifyContent: "flex-end" }}
-                key={msg.id}
-              >
+                style={{ display: 'flex', justifyContent: 'flex-end' }}
+                key={msg.id}>
                 {msg.content}
               </div>
             );
           } else if (msg.fromId === interlocutor) {
             return (
               <div
-                style={{ display: "flex", justifyContent: "flex-start" }}
-                key={msg.id}
-              >
-                {msg.content}
+                style={{ display: 'flex', justifyContent: 'flex-start' }}
+                key={msg.id}>
+                {msg.fromName}: {msg.content}
               </div>
             );
           } else {
@@ -262,7 +259,7 @@ const Chat = (props) => {
 
       <form
         className="controls"
-        style={{ display: "flex", justifyContent: "flex-end" }}
+        style={{ display: 'flex', justifyContent: 'flex-end' }}
         onSubmit={sendMessage}>
         <input
           placeholder="message"
@@ -295,7 +292,7 @@ const Chat = (props) => {
           <Tooltip label={account} placement="right">
             <Text>{`Account: ${truncateAddress(account)}`}</Text>
           </Tooltip>
-          <Text>{`Network ID: ${chainId ? chainId : "No Network"}`}</Text>
+          <Text>{`Network ID: ${chainId ? chainId : 'No Network'}`}</Text>
         </VStack>
         {account && (
           <HStack justifyContent="flex-start" alignItems="flex-start">
@@ -304,8 +301,7 @@ const Chat = (props) => {
               borderWidth="1px"
               borderRadius="lg"
               overflow="hidden"
-              padding="10px"
-            >
+              padding="10px">
               <VStack>
                 <Button onClick={switchNetwork}>Switch Network</Button>
                 <Select placeholder="Select network" onChange={handleNetwork}>
@@ -322,8 +318,7 @@ const Chat = (props) => {
               borderWidth="1px"
               borderRadius="lg"
               overflow="hidden"
-              padding="10px"
-            >
+              padding="10px">
               <VStack>
                 <Button onClick={sendTransaction}>Send Ether</Button>
                 <Input
@@ -338,7 +333,7 @@ const Chat = (props) => {
         )}
         <Text>{error ? error.message : null}</Text>
       </VStack>
-    </>
+    </Container>
   );
 };
 
