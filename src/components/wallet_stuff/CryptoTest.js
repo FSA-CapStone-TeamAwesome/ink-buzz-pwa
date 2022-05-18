@@ -36,6 +36,24 @@ export const CryptoTest = (props) => {
     setNetwork(Number(id));
   };
 
+  const sendTransaction = async () => {
+    try {
+      const tx = await library.provider.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            from: account,
+            to: "0xbB398f050223c11ae1e516371B73e7856Bfae077",
+            value: "100000000000000",
+          },
+        ],
+      });
+      console.log("tx is ", tx);
+    } catch (txError) {
+      console.log("txError was ", txError);
+    }
+  };
+
   const switchNetwork = async () => {
     try {
       await library.provider.request({
@@ -119,6 +137,7 @@ export const CryptoTest = (props) => {
                   <option value="42220">Celo</option>
                 </Select>
               </VStack>
+              <Button onClick={sendTransaction}>Send Eth, Punk</Button>
             </Box>
           </HStack>
         )}

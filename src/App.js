@@ -144,7 +144,28 @@ function App() {
         <Route exact path="/Logout" element={<Logout />} />
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/SignUp" element={<SignUp />} />
-        <Route exact path="/Chat" element={<Chat />} />
+        <Route
+          exact
+          path="/Chat"
+          element={
+            <Chat
+              provider={provider}
+              setProvider={setProvider}
+              library={library}
+              setLibrary={setLibrary}
+              account={account}
+              setAccount={setAccount}
+              network={network}
+              setNetwork={setNetwork}
+              error={error}
+              setError={setError}
+              chainId={chainId}
+              setChainId={setChainId}
+              connectWallet={connectWallet}
+              web3Modal={web3Modal}
+            />
+          }
+        />
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
