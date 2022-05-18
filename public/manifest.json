@@ -4,12 +4,12 @@
   "icons": [
     {
       "src": "/images/inkbuzz-transparent-bg.png",
-      "type": "image/jpg",
+      "type": "image/png",
       "sizes": "512x512"
     },
     {
       "src": "/images/inkbuzz-transparent-bg.png",
-      "type": "image/jpg",
+      "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
     }
