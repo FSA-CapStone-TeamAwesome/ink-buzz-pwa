@@ -17,7 +17,6 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
 import { useNavigate } from 'react-router-dom';
 
-
 const Profile = () => {
   injectStyle();
   const dispatch = useDispatch();
@@ -110,10 +109,15 @@ const Profile = () => {
     let userRef = doc(db, 'users', user.data.id);
     let getUser = await getDoc(userRef);
     let userInfo = await getUser.data();
-    let getIt = await getDownloadURL(
-      ref(storage, `/images/universal/${user.data.id}/profile-picture`),
-    );
-    if (getIt) setImageUrl(getIt);
+    try {
+      let getIt = await getDownloadURL(
+        ref(storage, `/images/universal/${user.data.id}/profile-picture`),
+      );
+      if (getIt) setImageUrl(getIt);
+    } catch (error) {
+      console.log(error);
+      setImageUrl();
+    }
   };
 
   const auth = getAuth();
@@ -144,7 +148,7 @@ const Profile = () => {
                 <img src={imageUrl} alt="profile" className="profile-picture" />
               ) : (
                 <img
-                  src={assets.person01}
+                  src={assets.profilePic}
                   alt="profile"
                   className="profile-picture"
                 />
@@ -237,7 +241,9 @@ const Profile = () => {
                     <Nav.Link eventKey="feed">Main Feed</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="followers">{(user.followers && user.followers.length) || 0}  Followers</Nav.Link>
+                    <Nav.Link eventKey="followers">
+                      {(user.followers && user.followers.length) || 0} Followers
+                    </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="following">
@@ -245,7 +251,9 @@ const Profile = () => {
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="favorites">{(user.favorites && user.favorites.length) || 0}  Favorites</Nav.Link>
+                    <Nav.Link eventKey="favorites">
+                      {(user.favorites && user.favorites.length) || 0} Favorites
+                    </Nav.Link>
                   </Nav.Item>
                 </Nav>
               </Col>
@@ -255,9 +263,7 @@ const Profile = () => {
                     <h3>Here's your feed</h3>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
-                  <h3>
-                      You have {user.followers.length || 0} followers:
-                    </h3>
+                    <h3>You have {user.followers.length || 0} followers:</h3>
                     <div className="d-flex flex-column">
                       {user.followers.map((user, idx) => {
                         return (
@@ -266,7 +272,7 @@ const Profile = () => {
                           </div>
                         );
                       })}
-                      </div>
+                    </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="following">
                     <h3>
@@ -283,6 +289,7 @@ const Profile = () => {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
+<<<<<<< HEAD
                     <h3>You have {user.favorites && user.favorites.length || 0} favorites:</h3>
                     <div className="d-flex flex-column">
                       {user.favorites && user.favorites.map((design, idx) => {
@@ -293,6 +300,26 @@ const Profile = () => {
                         );
                       })}
                       </div>
+=======
+                    <h3>
+                      You have {(user.favorites && user.favorites.length) || 0}{' '}
+                      favorites:
+                    </h3>
+                    <div className="d-flex flex-column">
+                      {user.favorites &&
+                        user.favorites.map((design, idx) => {
+                          return (
+                            <div className="w-50" key={'design' + idx}>
+                              <Button
+                                onClick={() => navigate(`/nft/${design.id}`)}
+                                className="mt-3">
+                                {design.name}
+                              </Button>
+                            </div>
+                          );
+                        })}
+                    </div>
+>>>>>>> 10e5320ff96bfa29e1ff96376160979fd64dc977
                   </Tab.Pane>
                 </Tab.Content>
               </Col>
