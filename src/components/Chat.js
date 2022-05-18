@@ -37,16 +37,13 @@ import { ethers } from "ethers";
 // 0xd18ac37aAbA82aAdBfC8BFD6fEF8A42DF1c28352
 
 // This global variable will be replaced with a converation list
-const convoList = [
-  { name: "Person 1", uid: "HaFb8KmFHZPUXvOyEe9lf2qRrJo2" },
-  { name: "Person 2", uid: "YnK59v2GMRcRtFTZ7jlSXIaxu1G3" },
-  { name: "Person 3", uid: "JotxkdT73WZxdfVuw00itwp2GWr1" },
-];
 
 const Chat = (props) => {
   // const { user } = useAuthentication();
 
   const user = useSelector((state) => state.user.user);
+
+  const [convoList, setConvoList] = useState([]);
 
   const [myId, setMyId] = useState("");
 
@@ -68,6 +65,7 @@ const Chat = (props) => {
   useEffect(() => {
     if (user && user.data) {
       setMyId(user.data.id)
+      setConvoList([...user.followers, ...user.following])
     }
   }, [user])
 
@@ -213,12 +211,11 @@ const Chat = (props) => {
           photoUrl: null,
           timestamp,
         });
-
-        // fetchMessages()
       } catch (err) {
         console.log(err);
       }
     }
+    setMessage({...message, content: ''})
   };
 
   return (
@@ -228,23 +225,15 @@ const Chat = (props) => {
         {convoList.map((conversation) => {
           return (
             <Button
-              key={conversation.uid}
+              key={conversation.id}
               style={{ margin: 10 }}
               variant="primary"
-              onClick={() => setInterlocutor(conversation.uid)}
+              onClick={() => setInterlocutor(conversation.id)}
             >
               {conversation.name}
             </Button>
           );
         })}
-
-        <Button
-          style={{ margin: 10 }}
-          variant="primary"
-          onClick={() => setInterlocutor("")}
-        >
-          No One
-        </Button>
       </div>
 
       {messages &&
@@ -274,8 +263,7 @@ const Chat = (props) => {
       <form
         className="controls"
         style={{ display: "flex", justifyContent: "flex-end" }}
-        onSubmit={sendMessage}
-      >
+        onSubmit={sendMessage}>
         <input
           placeholder="message"
           type="content"
