@@ -25,17 +25,18 @@ export const getFollowing = createAsyncThunk(
       let docRef = await doc(db, 'users', `${coolDude.id}`)
       let getArtist = await getDoc(docRef)
       let artistInfo = await getArtist.data()
-      artistArr.push(artistInfo)})).then(async () =>
-      await artistArr.map(async (coolDude) => {
-        let artRef = await query(collection(db, 'NFTs'), where('creator', '==', `${coolDude.data.id}`), limit(3))
-        await onSnapshot(artRef, (snap) => {
-          snap.forEach(async (doc) => {
-            let data = await doc.data()
-            coolDude.list = [...coolDude.list, data]
-          })
-            console.log(coolDude)
-        })
-      }))
+      artistArr.push(artistInfo)})).then(() => {return artistArr})
+      // .then(async () =>
+      // await artistArr.map(async (coolDude) => {
+      //   let artRef = await query(collection(db, 'NFTs'), where('creator', '==', `${coolDude.data.id}`), limit(3))
+      //   await onSnapshot(artRef, (snap) => {
+      //     snap.forEach(async (doc) => {
+      //       let data = await doc.data()
+      //       coolDude.list = [...coolDude.list, data]
+      //     })
+      //       console.log(coolDude)
+      //   })
+      // }))
 
       console.log(artistArr)
 

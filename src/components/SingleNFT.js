@@ -55,12 +55,16 @@ const SingleNFT = () => {
   async function getPhoto() {
     let getIt = await getDownloadURL(ref(storage, data.image));
     setPhoto(getIt);
+
+    //checking if user has artist on follow
     if (user.following && user.following.some(item => item.id ===`${data.creatorId}`)) {
       setFollow(true);
     } else {
       setFollow(false);
     }
-    if (user.favorites && user.favorites.includes(data.id)) {
+
+    //checking if the user has the nft as a fav
+    if (user.favorites && user.favorites.some(item => item.id ===`${data.id}`)) {
       setFavor(true);
     } else {
       setFavor(false);
@@ -117,12 +121,16 @@ const SingleNFT = () => {
 
 
   const favorToggle = async () => {
-    if (userProfile.favorites && userProfile.favorites.includes(`${data.id}`)) {
+    if (userProfile.favorites && userProfile.favorites.some(item => item.id ===`${data.id}`)) {
       dispatch(
         updateUser({
           user,
           update: {
-            favorites: arrayRemove(data.id),
+            favorites: arrayRemove({
+                id: data.id,
+                name: data.name,
+                creator: data.creator,
+                image: data.image}),
           },
         }),
       );
@@ -132,7 +140,11 @@ const SingleNFT = () => {
         updateUser({
           user,
           update: {
-            favorites: arrayUnion(data.id),
+            favorites: arrayUnion({
+              id: data.id,
+              name: data.name,
+              creator: data.creator,
+              image: data.image}),
           },
         }),
       );
