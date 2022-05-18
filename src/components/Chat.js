@@ -30,6 +30,24 @@ import { document,
 
 // const dispatch = useDispatch()
 
+// This global variable will be replaced with a converation list
+
+
+const convoList = [
+  {name: 'Person 1',
+  uid: 'HaFb8KmFHZPUXvOyEe9lf2qRrJo2'},
+  {name: 'Person 2',
+  uid: 'YnK59v2GMRcRtFTZ7jlSXIaxu1G3'},
+  {name: 'Person 3',
+  uid: 'JotxkdT73WZxdfVuw00itwp2GWr1'}
+]
+
+
+
+
+
+
+
 
 
 
@@ -43,7 +61,7 @@ const Chat = ({ navigation }) => {
 
   const [myName, setMyName] = useState('')
 
-  const [interlocutor, setInterlocutor] = useState('HaFb8KmFHZPUXvOyEe9lf2qRrJo2')
+  const [interlocutor, setInterlocutor] = useState('')
 
   // console.log("User is", user)
 
@@ -63,7 +81,7 @@ const Chat = ({ navigation }) => {
 
       const unsub = onSnapshot(collection(db, 'messages/queue', myId), (snapshot) => {
 
-        snapshot.docs.map(doc => console.log("From effect.", doc.data()))
+        // snapshot.docs.map(doc => console.log("From effect.", doc.data()))
 
         setMessages(snapshot.docs.map(doc => doc.data()))
 
@@ -71,7 +89,7 @@ const Chat = ({ navigation }) => {
       return unsub
     }
 
-  }, [myId])
+  })
 
 
   // const messageQueue = query(collection(db, 'messages/queue', myId));
@@ -163,8 +181,16 @@ const Chat = ({ navigation }) => {
     <>
     <h1>Chat</h1>
     <div id="conversations">
-      <Button style={{margin: 10}} variant="primary" onClick={() => setInterlocutor('YnK59v2GMRcRtFTZ7jlSXIaxu1G3')}>
-      Person 1
+    {convoList.map(conversation => {
+      return (
+
+      <Button key={conversation.uid} style={{margin: 10}} variant="primary" onClick={() => setInterlocutor(conversation.uid)}>
+      {conversation.name}
+    </Button>)
+    })}
+
+    <Button style={{margin: 10}} variant="primary" onClick={() => setInterlocutor('')}>
+      No One
     </Button>
     </div>
 
@@ -176,11 +202,12 @@ const Chat = ({ navigation }) => {
 
     if (msg.fromId === myId){
       return <div style={{display: 'flex', justifyContent:'flex-end'}} key={msg.id}>{msg.content}</div>
-    } else {
-
+    } else if (msg.fromId === interlocutor) {
       return <div style={{display: 'flex', justifyContent:'flex-start'}} key={msg.id}>{msg.content}</div>
-
-    }})}
+    } else {
+      return <div>Who you want to talk to?</div>
+    }
+    })}
 
     <form className="controls" style={{display: 'flex', justifyContent:'flex-end'}} onSubmit={sendMessage}>
         <input
