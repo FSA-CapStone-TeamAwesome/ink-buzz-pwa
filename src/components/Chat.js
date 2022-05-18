@@ -239,9 +239,9 @@ const Chat = (props) => {
           if (msg.fromId === myId && msg.toId === interlocutor) {
             return (
               <div
-                style={{ display: 'flex', justifyContent: 'flex-end' }}
+                style={{ display: 'flex', justifyContent: 'flex-end'}}
                 key={msg.id}>
-                {msg.content} | {msg.fromName}
+                {msg.content}
               </div>
             );
           } else if (msg.fromId === interlocutor) {
@@ -249,7 +249,7 @@ const Chat = (props) => {
               <div
                 style={{ display: 'flex', justifyContent: 'flex-start' }}
                 key={msg.id}>
-                {msg.fromName} | {msg.content}
+                {msg.fromName}: {msg.content}
               </div>
             );
           } else {
