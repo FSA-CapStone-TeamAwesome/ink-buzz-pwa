@@ -6,6 +6,7 @@ import { doc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import { storageBucket } from '../secrets';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 
 const UploadFile = () => {
   const [imageUpload, setImageUpload] = useState(null);
@@ -16,7 +17,7 @@ const UploadFile = () => {
     description: '',
     tags: [],
   });
-
+  injectStyle();
   const user = useSelector((state) => state.user.user);
 
   // const imagesListRef = ref(storage, "images/");
@@ -28,6 +29,11 @@ const UploadFile = () => {
       toast.error('Every upload needs a name and tags!')
       return
     }
+    if(imageUpload == null){
+      toast.error('Design required for upload')
+      return
+    }
+
     //The user gets a copy to their firebaseFolder
     let change = await doc(db, 'users', `${user.data.id}`);
     await updateDoc(change, {
