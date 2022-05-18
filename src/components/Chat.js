@@ -48,8 +48,6 @@ const Chat = (props) => {
 
   const user = useSelector((state) => state.user.user);
 
-  const [userData, setUserData] = useState();
-
   const [myId, setMyId] = useState("");
 
   const [myName, setMyName] = useState("");
@@ -62,20 +60,9 @@ const Chat = (props) => {
 
   useEffect(() => {
     if (user && user.data) {
-      console.log(user)
+      setMyId(user.data.id)
     }
-
-
   }, [user])
-
-
-  // useEffect(() => {
-  //   if (user) {
-  //     console.log("auth user", user);
-  //     setMyId(user.uid);
-  //     setMyName(user.email);
-  //   }
-  // }, [user]);
 
   useEffect(() => {
     if (myId) {
@@ -220,35 +207,6 @@ const Chat = (props) => {
     }
   };
 
-  const fetchMessages = async () => {
-    let queue;
-    try {
-      queue = query(
-        collection(db, "messages/queue", myId),
-        orderBy("timestamp"),
-        limit(50)
-      );
-
-      let messageHolder = [];
-
-      let querySnapshot = await getDocs(queue);
-
-      querySnapshot.forEach((doc) => {
-        messageHolder.push({
-          id: doc.id,
-          timestamp: doc.data().timestamp,
-          from: doc.data().fromId,
-          content: doc.data().content,
-        });
-        // console.log(doc.data().fromName, " : ", doc.data().content);
-      });
-
-      setMessages(messageHolder);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   return (
     <>
       <h1>Chat</h1>
@@ -274,10 +232,6 @@ const Chat = (props) => {
           No One
         </Button>
       </div>
-
-      <Button variant="primary" onClick={fetchMessages}>
-        Get Messages
-      </Button>
 
       {messages &&
         messages.map((msg) => {
