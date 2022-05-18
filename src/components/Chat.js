@@ -234,13 +234,12 @@ const Chat = (props) => {
           );
         })}
       </div>
-
       {messages &&
         messages.map((msg) => {
           if (msg.fromId === myId && msg.toId === interlocutor) {
             return (
               <div
-                style={{ display: 'flex', justifyContent: 'flex-end' }}
+                style={{ display: 'flex', justifyContent: 'flex-end'}}
                 key={msg.id}>
                 {msg.content}
               </div>
