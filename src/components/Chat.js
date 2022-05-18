@@ -58,6 +58,13 @@ const Chat = (props) => {
 
   const [amount, setAmount] = useState(0);
 
+  const [message, setMessage] = useState({
+    content: "",
+    recipient: interlocutor,
+    photoUrl: "",
+  });
+
+
   useEffect(() => {
     if (user && user.data) {
       setMyId(user.data.id)
@@ -80,11 +87,10 @@ const Chat = (props) => {
     }
   }, [myId, interlocutor]);
 
-  const [message, setMessage] = useState({
-    content: "",
-    recipient: interlocutor,
-    photoUrl: "",
-  });
+
+  useEffect(() => {
+    setMessage({...message, recipient: interlocutor})
+  }, [interlocutor])
 
   const {
     navigation,
@@ -175,12 +181,20 @@ const Chat = (props) => {
 
     let timestamp = Timestamp.fromMillis(Date.now());
 
+    let fromAddress = '';
+
+    if (account) {
+      fromAddress = account;
+    }
+
     try {
+
       await addDoc(collection(db, `messages/queue/${message.recipient}`), {
         artReference: null,
         content: message.content,
         fromName: myName,
         fromId: myId,
+        fromAddress: fromAddress,
         toId: message.recipient,
         photoUrl: null,
         timestamp,
@@ -195,6 +209,7 @@ const Chat = (props) => {
           content: message.content,
           fromName: myName,
           fromId: myId,
+          fromAddress: fromAddress,
           toId: message.recipient,
           photoUrl: null,
           timestamp,
