@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.0",
+    "@chakra-ui/react": "^2.0.2",
+    "@coinbase/wallet-sdk": "^3.1.0",
     "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
@@ -11,6 +14,7 @@
     "assert": "^2.0.0",
     "babel-loader": "^8.2.5",
     "crypto-browserify": "^3.12.0",
+    "dotenv": "^16.0.1",
     "ethers": "^5.6.5",
     "firebase": "^9.8.1",
     "firebase-admin": "^10.2.0",
@@ -30,6 +34,7 @@
     "url": "^0.11.0",
     "web-vitals": "^2.1.4",
     "web3": "^1.7.3",
+    "web3modal": "^1.9.7",
     "workbox-background-sync": "^6.5.3",
     "workbox-broadcast-update": "^6.5.3",
     "workbox-cacheable-response": "^6.5.3",
@@ -68,6 +73,7 @@
     ]
   },
   "devDependencies": {
+    "process": "^0.11.10",
     "react-app-rewired": "^2.2.1"
   }
 }

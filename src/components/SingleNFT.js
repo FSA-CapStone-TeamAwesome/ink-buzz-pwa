@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   collection,
   doc,
@@ -36,6 +36,7 @@ const SingleNFT = () => {
   const user = useSelector((state) => state.user.user);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
   const aFunction = async () => {
@@ -162,37 +163,32 @@ const SingleNFT = () => {
       <Image fluid style={{ height: '400px' }} src={photo} />
       <h5 className="mt-3">${(price / 100).toFixed(2)}</h5>
       <p>{description}</p>
-      <div style={{ display: 'flex' }}>
-        <Button>Message Artist</Button>
-        {favored ? (
-          <Button onClick={favorToggle}>Unfavorite</Button>
-        ) : (
-          <Button onClick={favorToggle}>Favorite It</Button>
-        )}
-        {follows ? (
-          <Button onClick={followToggle}>Unfollow Artist</Button>
-        ) : (
-          <Button onClick={followToggle}>Follow Artist</Button>
-        )}
-      </div>
-      <h5 className="mt-3">Current Bids</h5>
-      {bids ? (
-        <ListGroup className="my-2">
-          {bids
-            .sort((a, b) => b.price - a.price)
-            .map((bid) => {
-              return (
-                <ListGroup.Item key={bid.id} className="text-center">
-                  <div>On {bid.date}</div>
-                  <div>
-                    {bid.name} bid ${bid.price.toFixed(2)}
-                  </div>
-                </ListGroup.Item>
-              );
-            })}
-        </ListGroup>
+      {user && user.data ? (
+        <div className="d-flex">
+          <Button className="me-3">Message Artist</Button>
+          {favored ? (
+            <Button className="me-3" onClick={favorToggle}>
+              Unfavorite
+            </Button>
+          ) : (
+            <Button className="me-3" onClick={favorToggle}>
+              Favorite It
+            </Button>
+          )}
+          {follows ? (
+            <Button className="me-3" onClick={followToggle}>
+              Unfollow Artist
+            </Button>
+          ) : (
+            <Button className="me-3" onClick={followToggle}>
+              Follow Artist
+            </Button>
+          )}
+        </div>
       ) : (
-        <></>
+        <Button className="mt-3" onClick={() => navigate('/SignIn')}>
+          Sign in to message artist
+        </Button>
       )}
     </Container>
   );

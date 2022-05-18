@@ -53,13 +53,13 @@ const Home = () => {
         <h1>Welcome to Ink Buzz!</h1>
         <h5>Check out some tattoo NFTs below</h5>
       </div>
-      <div className="d-flex flex-wrap text-center">
+      <div className="d-flex flex-wrap justify-content-center align-items-start">
         {alphaList.map((nft) => {
           return <Post key={nft.id} data={nft} />;
         })}
       </div>
       <h1 className="text-center">New Designs</h1>
-      <div className="d-flex flex-wrap justify-content-center align-items-center">
+      <div className="d-flex flex-wrap justify-content-evenly align-items-center">
         {newList.map((nft) => {
           return <Post key={'new' + nft.id} data={nft} />;
         })}

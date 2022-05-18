@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react';
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  setPersistence,
-  browserSessionPersistence,
-} from 'firebase/auth';
-import { auth } from '../config/firebase';
-import { Button } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { setLocal } from '../config/Auth';
+import { useSelector } from 'react-redux';
 
 export const SignIn = () => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user.user);
+
   const [value, setValue] = useState({
     email: '',
     password: '',
@@ -40,32 +36,40 @@ export const SignIn = () => {
   }
 
   useEffect(() => {
-    if (auth.currentUser) {
+    if (user && user.data) {
       navigate('/');
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   return (
     <div>
-      <h1>Log In</h1>
       {!!value.error && <div className="error">{value.error}</div>}
-      <form className="controls" onSubmit={signIn}>
-        <input
-          placeholder="Email"
-          type="email"
-          value={value.email}
-          onChange={(evt) => {
-            setValue({ ...value, email: evt.target.value });
-          }}
-        />
-        <input
-          placeholder="Password"
-          value={value.password}
-          type="password"
-          onChange={(evt) => setValue({ ...value, password: evt.target.value })}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
+      <div className="d-flex flex-column justify-content-center align-items-center">
+        <h1 className="mb-5">Log In</h1>
+        <Form className="controls w-50" onSubmit={signIn}>
+          <Form.Group className="mb-3" controlId="email">
+            <Form.Control
+              placeholder="Email"
+              type="email"
+              value={value.email}
+              onChange={(evt) => {
+                setValue({ ...value, email: evt.target.value });
+              }}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="password">
+            <Form.Control
+              placeholder="Password"
+              value={value.password}
+              type="password"
+              onChange={(evt) =>
+                setValue({ ...value, password: evt.target.value })
+              }
+            />
+          </Form.Group>
+          <Button type="submit">Submit</Button>
+        </Form>
+      </div>
     </div>
   );
 };

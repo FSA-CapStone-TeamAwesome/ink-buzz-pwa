@@ -3,12 +3,14 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LinkContainer from 'react-router-bootstrap/LinkContainer';
+import { Badge } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { getFollowing } from '../store/followStore';
-const Header = () => {
+
+const Header = (props) => {
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
+  const { account } = props;
 
   useEffect(() => {
     user && user.data && dispatch(getFollowing(user));
@@ -24,6 +26,17 @@ const Header = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
+              {!!account ? (
+                <Badge
+                  colorScheme="green"
+                  alignItems="center"
+                  justifyContent="center"
+                  alignSelf="center">
+                  Wallet Connected
+                </Badge>
+              ) : (
+                ''
+              )}
               {user && user.data ? (
                 <>
                   <LinkContainer to="/Logout">
@@ -46,11 +59,11 @@ const Header = () => {
                   </LinkContainer>
                 </>
               )}
-              <LinkContainer to="/Chat">
-                <Nav.Link>Chat</Nav.Link>
-              </LinkContainer>
               <LinkContainer to="/crypto">
                 <Nav.Link>Wallet</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/Chat">
+                <Nav.Link>Chat</Nav.Link>
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>
