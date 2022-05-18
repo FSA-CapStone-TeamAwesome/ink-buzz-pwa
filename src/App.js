@@ -1,6 +1,5 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { CryptoTest } from "./components/wallet_stuff/CryptoTest";
 import { useAuthentication } from "./hooks/useAuthentication";
 import Header from "./components/Header";
 import Home from "./components/Home";
@@ -119,28 +118,6 @@ function App() {
         <Route exact path="/" element={<Home />} />
         <Route exact path="upLoad" element={<Upload />} />
         <Route exact path="/SignIn" element={<SignIn />} />
-        <Route
-          exact
-          path="/crypto"
-          element={
-            <CryptoTest
-              provider={provider}
-              setProvider={setProvider}
-              library={library}
-              setLibrary={setLibrary}
-              account={account}
-              setAccount={setAccount}
-              network={network}
-              setNetwork={setNetwork}
-              error={error}
-              setError={setError}
-              chainId={chainId}
-              setChainId={setChainId}
-              connectWallet={connectWallet}
-              web3Modal={web3Modal}
-            />
-          }
-        />
         <Route exact path="/Logout" element={<Logout />} />
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/SignUp" element={<SignUp />} />
