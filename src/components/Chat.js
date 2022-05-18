@@ -234,7 +234,6 @@ const Chat = (props) => {
           );
         })}
       </div>
-
       {messages &&
         messages.map((msg) => {
           if (msg.fromId === myId && msg.toId === interlocutor) {
@@ -242,7 +241,7 @@ const Chat = (props) => {
               <div
                 style={{ display: 'flex', justifyContent: 'flex-end' }}
                 key={msg.id}>
-                {msg.content}
+                {msg.content} | {msg.fromName}
               </div>
             );
           } else if (msg.fromId === interlocutor) {
@@ -250,7 +249,7 @@ const Chat = (props) => {
               <div
                 style={{ display: 'flex', justifyContent: 'flex-start' }}
                 key={msg.id}>
-                {msg.fromName}: {msg.content}
+                {msg.fromName} | {msg.content}
               </div>
             );
           } else {
