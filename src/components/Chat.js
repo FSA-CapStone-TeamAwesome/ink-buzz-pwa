@@ -188,7 +188,6 @@ const Chat = (props) => {
     }
 
     try {
-
       await addDoc(collection(db, `messages/queue/${message.recipient}`), {
         artReference: null,
         content: message.content,
