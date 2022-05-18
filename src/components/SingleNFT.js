@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, ToggleButton } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -117,7 +117,12 @@ const SingleNFT = () => {
     })
     setFollow(true)
   }}
-
+  const messageArtist = async () =>{
+    if(!follows){
+      followToggle()
+    }
+    navigate('/Chat')
+  }
 
 
   const favorToggle = async () => {
@@ -177,7 +182,7 @@ const SingleNFT = () => {
       <p>{description}</p>
       {user && user.data ? (
         <div className="d-flex">
-          <Button className="me-3">Message Artist</Button>
+          <Button className="me-3" onClick={()=> messageArtist()}>Message Artist</Button>
           {favored ? (
             <Button className="me-3" onClick={favorToggle}>
               Unfavorite
