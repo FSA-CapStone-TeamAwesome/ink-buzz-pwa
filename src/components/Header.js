@@ -39,14 +39,20 @@ const Header = (props) => {
               )}
               {user && user.data ? (
                 <>
-                  <LinkContainer to="/Logout">
-                    <Nav.Link>Logout</Nav.Link>
+                  <LinkContainer to="/">
+                    <Nav.Link>Home</Nav.Link>
                   </LinkContainer>
                   <LinkContainer to="/upLoad">
                     <Nav.Link>Upload Image</Nav.Link>
                   </LinkContainer>
                   <LinkContainer to="/profile">
                     <Nav.Link>My Profile</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="/Chat">
+                    <Nav.Link>Chat</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="/Logout">
+                    <Nav.Link>Logout</Nav.Link>
                   </LinkContainer>
                 </>
               ) : (
@@ -59,12 +65,6 @@ const Header = (props) => {
                   </LinkContainer>
                 </>
               )}
-              <LinkContainer to="/crypto">
-                <Nav.Link>Wallet</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/Chat">
-                <Nav.Link>Chat</Nav.Link>
-              </LinkContainer>
             </Nav>
           </Navbar.Collapse>
         </Container>
@@ -73,11 +73,4 @@ const Header = (props) => {
   );
 };
 
-// function mapDispatchToProps (dispatch) {
-//   return {
-//     fetchUser: () => dispatch(fetchUserThunk())
-//   }
-// }
-
-// export default connect(null, mapDispatchToProps)(Header)
 export default Header;
