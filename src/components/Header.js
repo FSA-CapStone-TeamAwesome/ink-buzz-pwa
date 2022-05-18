@@ -24,7 +24,7 @@ const Header = (props) => {
             <Navbar.Brand>
               <img
                 alt=""
-                src="./images/logo2.jpg"
+                src="./images/inkbuzz-transparent-bg.png"
                 width="50"
                 height="50"
                 className="d-inline-block align-center"
