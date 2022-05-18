@@ -33,7 +33,10 @@ const UploadFile = () => {
       toast.error('Design required for upload')
       return
     }
-
+    if(user.name == '' || user.name == null){
+      toast.error('Set a username in profile to upload designs.')
+      return
+    }
     //The user gets a copy to their firebaseFolder
     let change = await doc(db, 'users', `${user.data.id}`);
     await updateDoc(change, {
