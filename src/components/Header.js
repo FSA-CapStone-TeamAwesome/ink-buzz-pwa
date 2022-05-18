@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import LinkContainer from "react-router-bootstrap/LinkContainer";
-import { Badge } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
-import { getFollowing } from "../store/followStore";
+import React, { useState, useEffect } from 'react';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import LinkContainer from 'react-router-bootstrap/LinkContainer';
+import { Badge } from '@chakra-ui/react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFollowing } from '../store/followStore';
 
 const Header = (props) => {
   const user = useSelector((state) => state.user.user);
@@ -31,11 +31,11 @@ const Header = (props) => {
                   colorScheme="green"
                   alignItems="center"
                   justifyContent="center"
-                >
+                  alignSelf="center">
                   Wallet Connected
                 </Badge>
               ) : (
-                ""
+                ''
               )}
               {user && user.data ? (
                 <>
