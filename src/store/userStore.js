@@ -16,6 +16,7 @@ export const getUser = createAsyncThunk(
 export const updateUser = createAsyncThunk(
   'user/updateUserStatus',
   async (userData, thunkAPI) => {
+    try {
     const { user, update } = userData;
     console.log(user);
     console.log(update);
@@ -27,6 +28,8 @@ export const updateUser = createAsyncThunk(
     let userInfo = await getUser.data();
 
     return userInfo;
+    }
+    catch(err ){console.log(err)}
   },
 );
 export const userSlice = createSlice({

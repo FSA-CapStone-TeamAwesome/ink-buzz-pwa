@@ -13,6 +13,7 @@ import {
   updateDoc,
   arrayUnion,
   getDoc,
+  setDoc,
   getDocs,
   arrayRemove,
 } from 'firebase/firestore';
@@ -21,12 +22,16 @@ import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { updateUser } from '../store/userStore';
+// import {admin} from 'firebase-admin'
+
+
 const SingleNFT = () => {
   const [data, setData] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [follows, setFollow] = useState(false);
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
+  const [searchObj, setSearchObj] = useState(null)
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
 
@@ -50,7 +55,7 @@ const SingleNFT = () => {
   async function getPhoto() {
     let getIt = await getDownloadURL(ref(storage, data.image));
     setPhoto(getIt);
-    if (user.following && user.following.includes(`${data.creator}`)) {
+    if (user.following && user.following.some(item => item.id ===`${data.creatorId}`)) {
       setFollow(true);
     } else {
       setFollow(false);
@@ -64,29 +69,52 @@ const SingleNFT = () => {
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
-    if (
-      userProfile.following &&
-      userProfile.following.includes(`${data.creator}`)
-    ) {
-      dispatch(
-        updateUser({
-          user,
-          update: { following: arrayRemove(data.creator) },
-        }),
-      );
-      setFollow(false);
-    } else {
-      dispatch(
-        updateUser({
-          user,
-          update: {
-            following: arrayUnion(data.creator),
-          },
-        }),
-      );
-      setFollow(true);
-    }
-  };
+    const followRef = doc(db,'users', `${data.creatorId}`)
+
+
+    if(userProfile.following && user.following.some(item => item.id ===`${data.creatorId}`)){
+      dispatch(updateUser({
+        user,
+        update: {
+          following: arrayRemove({
+          id: data.creatorId,
+          name: data.creator
+        })
+      }
+      })
+      )
+
+
+      await updateDoc((followRef), {
+        followers: arrayRemove({
+          name: userProfile.name,
+          id: userProfile.data.id,
+          profilePic: userProfile.profilePic
+        })
+      })
+      setFollow(false)
+  }
+   else {
+    dispatch(updateUser({
+      user,
+      update: {
+        following: arrayUnion({
+          id: data.creatorId,
+          name: data.creator
+      })
+      }
+    }))
+    await updateDoc((followRef), {
+      followers: arrayUnion({
+        name: userProfile.name,
+        id: userProfile.data.id,
+        profilePic: userProfile.profilePic
+      })
+    })
+    setFollow(true)
+  }}
+
+
 
   const favorToggle = async () => {
     if (userProfile.favorites && userProfile.favorites.includes(`${data.id}`)) {
@@ -117,7 +145,11 @@ const SingleNFT = () => {
   }, []);
 
   useEffect(() => {
-    data && getPhoto();
+    data && getPhoto() &&
+    setSearchObj({
+      id: data.creatorId,
+      name: data.creator
+    })
   }, [data]);
 
   useEffect(() => setUser(user), [user]);

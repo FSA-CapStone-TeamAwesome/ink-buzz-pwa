@@ -5,6 +5,8 @@ import { db, storage } from '../config/firebase';
 import { doc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import { storageBucket } from '../secrets';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 
 const UploadFile = () => {
   const [imageUpload, setImageUpload] = useState(null);
@@ -15,24 +17,26 @@ const UploadFile = () => {
     description: '',
     tags: [],
   });
-
+  injectStyle();
   const user = useSelector((state) => state.user.user);
 
   // const imagesListRef = ref(storage, "images/");
 
   const uploadFile = async (evt) => {
     evt.preventDefault();
-    let date = Date.now();
-    if (imageUpload == null) return;
-    //quits if nothing uploaded
-
-    //We're uploading a photo to the storage, its path is the user's folder, and the filename is the user decided filename with the date
-    const imageRef = ref(
-      storage,
-      `images/universal/${user.data.id}/${value.name + date}`,
-    );
-    await uploadBytes(imageRef, imageUpload);
-
+    let date = Date.now()
+    if(value.name === '' || value.tags === [] ){
+      toast.error('Every upload needs a name and tags!')
+      return
+    }
+    if(imageUpload == null){
+      toast.error('Design required for upload')
+      return
+    }
+    if(user.name == '' || user.name == null){
+      toast.error('Set a username in profile to upload designs.')
+      return
+    }
     //The user gets a copy to their firebaseFolder
     let change = await doc(db, 'users', `${user.data.id}`);
     await updateDoc(change, {
