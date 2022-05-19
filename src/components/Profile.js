@@ -145,7 +145,7 @@ const Profile = () => {
       <Heading>My Profile</Heading>
       {user && user.data ? (
         <div>
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center mobile-profile">
             <div className="d-flex flex-column align-items-center">
               {imageUrl ? (
                 <img src={imageUrl} alt="profile" className="profile-picture" />
@@ -157,7 +157,7 @@ const Profile = () => {
                 />
               )}
             </div>
-            <div className="ms-3">
+            <div className="ms-3 my-3">
               <Heading size="md">Name: {formName}</Heading>
               <Heading size="md">Email: {formEmail}</Heading>
             </div>
@@ -266,13 +266,16 @@ const Profile = () => {
               <Col sm={9}>
                 <Tab.Content>
                   <Tab.Pane eventKey="feed">
-                    <Heading size="xl">Here's your feed</Heading>
+                    <Heading className="text-center mb-2" size="xl">
+                      Here's your feed
+                    </Heading>
                     <FollowedArtists />
                   </Tab.Pane>
                   <Tab.Pane eventKey="designs">
-                    <h3>Here's your designs</h3>
-                    <h3>You have {user.images.length || 0} Designs!</h3>
-                    <div className="d-flex flex-wrap justify-content-start align-items-center">
+                    <Heading className="text-center mb-2" size="xl">
+                      Here are your {user.images.length || 0} designs!
+                    </Heading>
+                    <div className="d-flex flex-wrap align-items-center feedPostContainer">
                       {user.images.map((link, index) => {
                         return (
                           <PreviewPost
@@ -285,7 +288,10 @@ const Profile = () => {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
-                    <h3>You have {user.followers.length || 0} followers:</h3>
+                    <Heading className="text-center mb-2" size="xl">
+                      You have {user.followers.length || 0} followers:
+                    </Heading>
+
                     <div className="d-flex flex-column">
                       {user.followers.map((user, idx) => {
                         return (
