@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
+import 'animate.css';
 import Post from './Post';
 import { db, storage } from '../config/firebase';
 import {
@@ -11,7 +12,8 @@ import {
 } from 'firebase/firestore';
 import Search from './SearchBar';
 import Favorites from './Favorites';
-import FollowedArtists from './FollowedArtists';
+
+import { Heading } from '@chakra-ui/react';
 
 const Home = () => {
   const [alphaList, setList] = useState([]);
@@ -33,7 +35,7 @@ const Home = () => {
     let newDocs = await query(
       enterTheCollector,
       orderBy('created', 'desc'),
-      limit(5),
+      limit(18),
     );
 
     await onSnapshot(newDocs, (querySnapshot) => {
@@ -48,24 +50,26 @@ const Home = () => {
   }, []);
 
   return (
-    <Container className="d-flex flex-column align-items-center my-3">
+    <Container className="d-flex flex-column justify-content-center align-items-center my-3">
       <div className="text-center">
-        <h1>Welcome to Ink Buzz!</h1>
-        <h5>Check out some tattoo NFTs below</h5>
+        <Heading size="2xl">
+          <h1 class="animate__animated animate__zoomIn">
+            Welcome to Ink Buzz!
+          </h1>
+        </Heading>
+        <Heading size="lg">Check out some tattoo designs below</Heading>
+        <Search></Search>
       </div>
-      <div className="d-flex flex-wrap justify-content-center align-items-start">
+      {/* <div className="d-flex flex-wrap justify-content-start align-items-start">
         {alphaList.map((nft) => {
           return <Post key={nft.id} data={nft} />;
         })}
-      </div>
-      <h1 className="text-center">New Designs</h1>
-      <div className="d-flex flex-wrap justify-content-evenly align-items-center">
+      </div> */}
+      <div className="d-flex flex-wrap justify-content-center align-items-center">
         {newList.map((nft) => {
           return <Post key={'new' + nft.id} data={nft} />;
         })}
       </div>
-      <FollowedArtists />
-      <Search></Search>
     </Container>
   );
 };

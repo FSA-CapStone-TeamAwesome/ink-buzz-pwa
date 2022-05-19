@@ -52,7 +52,7 @@ const Header = (props) => {
                     <Nav.Link>Home</Nav.Link>
                   </LinkContainer>
                   <LinkContainer to="/upLoad">
-                    <Nav.Link>Upload Image</Nav.Link>
+                    <Nav.Link>Upload Design</Nav.Link>
                   </LinkContainer>
                   <LinkContainer to="/profile">
                     <Nav.Link>My Profile</Nav.Link>

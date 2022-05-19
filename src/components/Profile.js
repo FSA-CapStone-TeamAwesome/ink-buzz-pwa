@@ -15,7 +15,10 @@ import {
 } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import PreviewPost from './previewPost';
+import FollowedArtists from './FollowedArtists';
+import { Heading } from '@chakra-ui/react';
 
 const Profile = () => {
   injectStyle();
@@ -139,7 +142,7 @@ const Profile = () => {
 
   return (
     <Container className="mt-3">
-      <h1>My Profile</h1>
+      <Heading>My Profile</Heading>
       {user && user.data ? (
         <div>
           <div className="d-flex align-items-center">
@@ -155,8 +158,8 @@ const Profile = () => {
               )}
             </div>
             <div className="ms-3">
-              <h3>Name: {formName}</h3>
-              <h3>Email: {formEmail}</h3>
+              <Heading size="md">Name: {formName}</Heading>
+              <Heading size="md">Email: {formEmail}</Heading>
             </div>
           </div>
           <div className="mt-1 mx-auto">
@@ -241,6 +244,9 @@ const Profile = () => {
                     <Nav.Link eventKey="feed">Main Feed</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
+                    <Nav.Link eventKey="designs">My Designs</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
                     <Nav.Link eventKey="followers">
                       {(user.followers && user.followers.length) || 0} Followers
                     </Nav.Link>
@@ -260,7 +266,23 @@ const Profile = () => {
               <Col sm={9}>
                 <Tab.Content>
                   <Tab.Pane eventKey="feed">
-                    <h3>Here's your feed</h3>
+                    <Heading size="xl">Here's your feed</Heading>
+                    <FollowedArtists />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="designs">
+                    <h3>Here's your designs</h3>
+                    <h3>You have {user.images.length || 0} Designs!</h3>
+                    <div className="d-flex flex-wrap justify-content-start align-items-center">
+                      {user.images.map((link, index) => {
+                        return (
+                          <PreviewPost
+                            key={index}
+                            data={link}
+                            creator={user.name}
+                          />
+                        );
+                      })}
+                    </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
                     <h3>You have {user.followers.length || 0} followers:</h3>
@@ -268,7 +290,9 @@ const Profile = () => {
                       {user.followers.map((user, idx) => {
                         return (
                           <div className="w-50" key={'user' + idx}>
-                            <Button className="mt-3">{user.name}</Button>
+                            <Link to={`/profiles/${user.id}`} className="mt-3">
+                              {user.name}
+                            </Link>
                           </div>
                         );
                       })}
@@ -282,7 +306,11 @@ const Profile = () => {
                       {user.following.map((artist, idx) => {
                         return (
                           <div className="w-50" key={'artist' + idx}>
-                            <Button className="mt-3">{artist.name}</Button>
+                            <Link
+                              to={`/profiles/${artist.id}`}
+                              className="mt-3">
+                              {artist.name}
+                            </Link>
                           </div>
                         );
                       })}
