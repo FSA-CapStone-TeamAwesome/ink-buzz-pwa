@@ -14,9 +14,10 @@ import {
   EmailAuthProvider,
 } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link as DOMLink} from 'react-router-dom';
 import PreviewPost from './previewPost';
 import { getProfile } from '../store/profileStore';
+import { Heading, Link } from '@chakra-ui/react';
 
 const ArtistProfile = () => {
   injectStyle()
@@ -28,17 +29,17 @@ const ArtistProfile = () => {
   const { profileId } = useParams();
 
   const [show, setShow] = useState(false)
-  const [artistProfiile, setArtistProfile] = useState(null)
+  const [artistProfile, setArtistProfile] = useState(null)
   const [follows, setFollow] = useState(false);
   const [photo, setPhoto] = useState(null);
-
+  const [refresh, setRefresh] = useState(false)
 
 
 
 
   //function will follow/unfollow user
   const followToggle = async () => {
-    const followRef = doc(db,'users', `${artistProfiile.id}`)
+    const followRef = doc(db,'users', `${artistProfile.id}`)
 
     //for removing from followers/following
     if(user.following && user.following.some(item => item.id ===`${user.id}`)){
@@ -46,8 +47,8 @@ const ArtistProfile = () => {
         user,
         update: {
           following: arrayRemove({
-          id: artistProfiile.id,
-          name: artistProfiile.name
+          id: artistProfile.id,
+          name: artistProfile.name
         })
       }
       })
@@ -69,8 +70,8 @@ const ArtistProfile = () => {
       user,
       update: {
         following: arrayUnion({
-          id: artistProfiile.id,
-          name: artistProfiile.name
+          id: artistProfile.id,
+          name: artistProfile.name
       })
       }
     }))
@@ -93,12 +94,12 @@ const ArtistProfile = () => {
   }
 
   async function getPhoto() {
-    console.log(artistProfiile)
-    let getIt = await getDownloadURL(ref(storage, artistProfiile.image));
-    setPhoto(getIt);
+    if(artistProfile.profilePic === '') {setPhoto()}
+    await getDownloadURL(ref(storage, artistProfile.profilePic)).then((url) => {
+    setPhoto(url)})
 
     //checking if user has artist on follow
-    if (user.following && user.following.some(item => item.id ===`${artistProfiile.data.id}`)) {
+    if (user.following && user.following.some(item => item.id ===`${artistProfile.data.id}`)) {
       setFollow(true);
     } else {
       setFollow(false);
@@ -108,21 +109,22 @@ const ArtistProfile = () => {
 
 
 
-  useEffect(() => setArtistProfile(artist), [artist]);
-
-
+  useEffect(() => {
+    setArtistProfile(artist)
+    getPhoto()
+  }
+  , [artist, refresh]);
 
   useEffect(() => {
     dispatch(getProfile(profileId))
     getPhoto()
-  }, []);
+  }, [profileId]);
 
 
-  console.log(artist)
   return (
     <Container className="mt-3">
 
-      {artist && artist.data ? (
+      {artistProfile && artist.data ? (
         <div>
           <div className="d-flex align-items-center">
             <div className="d-flex flex-column align-items-center">
@@ -137,7 +139,7 @@ const ArtistProfile = () => {
               )}
             </div>
             <div className="ms-3">
-
+            <Heading size='lg'>{artistProfile.name}</Heading>
             </div>
           </div>
           <div className="d-flex">
@@ -161,7 +163,7 @@ const ArtistProfile = () => {
 
 
       <div className="mt-3">
-        {artist && artist.data ? (
+        {artistProfile && artist.data ? (
           <Tab.Container id="left-tabs-example" defaultActiveKey="feed">
             <Row>
               <Col sm={3} className="mb-3">
@@ -208,7 +210,7 @@ const ArtistProfile = () => {
                         }
                         return (
                           <div className="w-50" key={'artist' + idx}>
-                            <Button onClick={()=> navigate(`/profiles/${artist.id}`)} className="mt-3">{artist.name}</Button>
+                            <Link as={DOMLink} onClick={() => setRefresh(!refresh)}to={`/profiles/${artist.id}`} className="mt-3">{artist.name}</Link>
                           </div>
                         );
                       })}
@@ -220,10 +222,16 @@ const ArtistProfile = () => {
                     </h3>
                     <div className="d-flex flex-column">
                       {artist.following.map((artist, idx) => {
+                        if(artist.id === user.data.id){
+                          return <div className="w-50" key={'artist' + idx}>
+                           <Link as={DOMLink} to={`/profile/`} className="mt-3">{artist.name}</Link>
+                         </div>
+                         }
+
                         return (
                           <div className="w-50" key={'artist' + idx}>
-                            <Button onClick={()=> navigate(`/profiles/${artist.id}`)} className="mt-3">{artist.name}</Button>
-                          </div>
+                            <Link as={DOMLink} onClick={() => setRefresh(!refresh)}to={`/profiles/${artist.id}`} className="mt-3">{artist.name}</Link>
+                         </div>
                         );
                       })}
                     </div>

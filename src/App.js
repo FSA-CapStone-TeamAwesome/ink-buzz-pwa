@@ -146,7 +146,7 @@ function App() {
         />
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
-        <Route path='/profiles/:profileId' element={<ArtistProfile />} />
+        <Route exact path='/profiles/:profileId' element={<ArtistProfile />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={2000} />
     </div>

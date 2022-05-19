@@ -3,7 +3,7 @@ import { Button, ToggleButton } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   collection,
   doc,
@@ -22,6 +22,10 @@ import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { updateUser } from '../store/userStore';
+import { Heading,  } from '@chakra-ui/react';
+
+
+
 // import {admin} from 'firebase-admin'
 
 
@@ -172,11 +176,11 @@ const SingleNFT = () => {
   useEffect(() => setUser(user), [user]);
 
   if (!data) return <h2>Loading</h2>;
-  const { id, name, creator, price, description, bids } = data;
+  const { id, name, creator, price, description, creatorId, bids } = data;
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center">
-      <h1>{name}</h1>
-      <h4>Created by {creator}</h4>
+      <Heading>{name}</Heading>
+      <Heading  size='lg'>Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link> </Heading>
       <Image fluid style={{ height: '400px' }} src={photo} />
       <h5 className="mt-3">${(price / 100).toFixed(2)}</h5>
       <p>{description}</p>
