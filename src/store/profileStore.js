@@ -6,11 +6,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const getProfile = createAsyncThunk(
   'profile/getProfileStatus',
-  async (profile, thunkAPI) => {
-    let userRef = await doc(db, 'users', profile.id);
+  async (profileId, thunkAPI) => {
+    let userRef = await doc(db, 'users', profileId);
     let getProfile = await getDoc(userRef);
     let profileInfo = await getProfile.data();
-    query()
+    console.log(profileInfo)
+    return profileInfo
 
   },
 )

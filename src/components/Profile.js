@@ -15,7 +15,7 @@ import {
 } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import PreviewPost from './previewPost';
 
 const Profile = () => {
@@ -277,7 +277,7 @@ const Profile = () => {
                       {user.followers.map((user, idx) => {
                         return (
                           <div className="w-50" key={'user' + idx}>
-                            <Button className="mt-3">{user.name}</Button>
+                            <Link to={`/profiles/${user.id}`} className="mt-3">{user.name}</Link>
                           </div>
                         );
                       })}
@@ -291,7 +291,7 @@ const Profile = () => {
                       {user.following.map((artist, idx) => {
                         return (
                           <div className="w-50" key={'artist' + idx}>
-                            <Button className="mt-3">{artist.name}</Button>
+                            <Link to={`/profiles/${artist.id}`} className="mt-3">{artist.name}</Link>
                           </div>
                         );
                       })}

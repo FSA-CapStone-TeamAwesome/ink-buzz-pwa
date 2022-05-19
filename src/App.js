@@ -20,6 +20,7 @@ import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import WalletConnect from "@walletconnect/web3-provider";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
+import ArtistProfile from "./components/artistProfle";
 
 function App() {
   const { user } = useAuthentication();
@@ -145,6 +146,7 @@ function App() {
         />
         <Route path="/nft/:nftId" element={<SingleNFT />} />
         <Route path="*" element={<ErrorPage />} />
+        <Route path='/profiles/:profileId' element={<ArtistProfile />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={2000} />
     </div>
