@@ -201,6 +201,11 @@ const ArtistProfile = () => {
                     <h3>{artist.name} has {artist.followers.length || 0} followers:</h3>
                     <div className="d-flex flex-column">
                       {artist.followers.map((artist, idx) => {
+                        if(artist.id === user.data.id){
+                         return <div className="w-50" key={'artist' + idx}>
+                          <Button onClick={()=> navigate(`/profile`)} className="mt-3">{artist.name}</Button>
+                        </div>
+                        }
                         return (
                           <div className="w-50" key={'artist' + idx}>
                             <Button onClick={()=> navigate(`/profiles/${artist.id}`)} className="mt-3">{artist.name}</Button>
