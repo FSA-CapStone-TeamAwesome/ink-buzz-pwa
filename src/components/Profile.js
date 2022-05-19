@@ -288,7 +288,10 @@ const Profile = () => {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
-                    <h3>You have {user.followers.length || 0} followers:</h3>
+                    <Heading className="text-center mb-2" size="xl">
+                      You have {user.followers.length || 0} followers:
+                    </Heading>
+
                     <div className="d-flex flex-column">
                       {user.followers.map((user, idx) => {
                         return (
