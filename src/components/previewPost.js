@@ -28,7 +28,7 @@ const PreviewPost = ({ data, creator }) => {
           <Card.Subtitle className="mb-2 text-muted">
           </Card.Subtitle>
 
-          <Link to={`nft/${id}`}>
+          <Link to={`/nft/${id}`}>
             <Button variant="primary">Get Details</Button>
           </Link>
         </Card.Body>
