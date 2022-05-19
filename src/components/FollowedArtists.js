@@ -11,6 +11,7 @@ import {
 import { db, storage } from '../config/firebase';
 import PreviewPost from './previewPost';
 import { useSelector } from 'react-redux';
+import { Heading } from '@chakra-ui/react';
 
 const FollowedArtists = () => {
   const [following, setFollow] = useState([]);
@@ -43,15 +44,22 @@ const FollowedArtists = () => {
       {following.map((coolDude) => {
         return (
           <div>
-            <h2>{coolDude.name}</h2><br />
+            <Heading size="lg">{coolDude.name}</Heading>
+            <br />
 
             {coolDude.images ? (
-               <div className="d-flex flex-wrap justify-content-evenly align-items-center">{
-              coolDude.images.map((link, index) => {
-                if(index >= coolDude.images.length-5){
-                return <PreviewPost key={index} data={link} creator={coolDude.name} />;
-                }
-              })}
+              <div className="d-flex flex-wrap justify-content-start align-items-start">
+                {coolDude.images.map((link, index) => {
+                  if (index >= coolDude.images.length - 5) {
+                    return (
+                      <PreviewPost
+                        key={index}
+                        data={link}
+                        creator={coolDude.name}
+                      />
+                    );
+                  }
+                })}
               </div>
             ) : (
               <></>

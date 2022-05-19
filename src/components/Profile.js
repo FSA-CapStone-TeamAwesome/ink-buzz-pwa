@@ -18,6 +18,7 @@ import { storage } from '../config/firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import PreviewPost from './previewPost';
 import FollowedArtists from './FollowedArtists';
+import { Heading } from '@chakra-ui/react';
 
 const Profile = () => {
   injectStyle();
@@ -141,7 +142,7 @@ const Profile = () => {
 
   return (
     <Container className="mt-3">
-      <h1>My Profile</h1>
+      <Heading>My Profile</Heading>
       {user && user.data ? (
         <div>
           <div className="d-flex align-items-center">
@@ -157,8 +158,8 @@ const Profile = () => {
               )}
             </div>
             <div className="ms-3">
-              <h3>Name: {formName}</h3>
-              <h3>Email: {formEmail}</h3>
+              <Heading size="md">Name: {formName}</Heading>
+              <Heading size="md">Email: {formEmail}</Heading>
             </div>
           </div>
           <div className="mt-1 mx-auto">
@@ -265,7 +266,7 @@ const Profile = () => {
               <Col sm={9}>
                 <Tab.Content>
                   <Tab.Pane eventKey="feed">
-                    <h3>Here's your feed</h3>
+                    <Heading size="xl">Here's your feed</Heading>
                     <FollowedArtists />
                   </Tab.Pane>
                   <Tab.Pane eventKey="designs">

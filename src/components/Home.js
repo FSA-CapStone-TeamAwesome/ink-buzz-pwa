@@ -34,7 +34,7 @@ const Home = () => {
     let newDocs = await query(
       enterTheCollector,
       orderBy('created', 'desc'),
-      limit(9),
+      limit(18),
     );
 
     await onSnapshot(newDocs, (querySnapshot) => {
@@ -52,22 +52,19 @@ const Home = () => {
     <Container className="d-flex flex-column justify-content-center align-items-center my-3">
       <div className="text-center">
         <Heading>Welcome to Ink Buzz!</Heading>
-        <h5>Check out some tattoo designs below</h5>
-        <h5>Upload as an artist and sell your designs!</h5>
+        <Heading size="lg">Check out some tattoo designs below</Heading>
+        <Search></Search>
       </div>
       {/* <div className="d-flex flex-wrap justify-content-start align-items-start">
         {alphaList.map((nft) => {
           return <Post key={nft.id} data={nft} />;
         })}
       </div> */}
-      <h1 className="text-center">New Designs</h1>
       <div className="d-flex flex-wrap justify-content-center align-items-center">
         {newList.map((nft) => {
           return <Post key={'new' + nft.id} data={nft} />;
         })}
       </div>
-
-      <Search></Search>
     </Container>
   );
 };
