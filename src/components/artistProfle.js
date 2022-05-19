@@ -25,6 +25,7 @@ import { useNavigate, useParams, Link as DOMLink } from "react-router-dom";
 import PreviewPost from "./previewPost";
 import { getProfile, clearProfile } from "../store/profileStore";
 import { Heading, Link } from "@chakra-ui/react";
+import { updateProfile } from "../store/profileStore";
 
 const ArtistProfile = () => {
   injectStyle();
@@ -43,9 +44,7 @@ const ArtistProfile = () => {
 
   //function will follow/unfollow user
   const followToggle = async () => {
-    console.log(user);
-    console.log(artistProfile);
-    const followRef = doc(db, "users", `${artistProfile.data.id}`);
+
     //for removing from followers/following
     if (
       user.following &&
@@ -63,13 +62,16 @@ const ArtistProfile = () => {
         })
       );
 
-      await updateDoc(followRef, {
+      dispatch(
+          updateProfile({
+        artistProfile,
+        update: {
         followers: arrayRemove({
           name: user.name,
           id: user.data.id,
           profilePic: user.profilePic,
-        }),
-      });
+        })},
+      }))
       setFollow(false);
     }
     //for adding to followers/following
@@ -85,13 +87,16 @@ const ArtistProfile = () => {
           },
         })
       );
-      await updateDoc(followRef, {
-        followers: arrayUnion({
-          name: user.name,
-          id: user.data.id,
-          profilePic: user.profilePic,
-        }),
-      });
+      dispatch(
+      updateProfile({
+      artistProfile,
+      update: {
+      followers: arrayUnion({
+        name: user.name,
+        id: user.data.id,
+        profilePic: user.profilePic,
+      })},
+    }))
       setFollow(true);
     }
   };
@@ -104,12 +109,12 @@ const ArtistProfile = () => {
   };
 
   async function getPhoto() {
-    if (artistProfile && artistProfile.profilePic) {
-      setPhoto();
-      await getDownloadURL(ref(storage, artistProfile.profilePic))
+    if (artist && artist.profilePic) {
+
+      await getDownloadURL(ref(storage, artist.profilePic))
         .then((url) => {
           setPhoto(url);
-          console.log("when did this happen");
+
         })
         .catch((err) => {
           console.log(err);
@@ -118,9 +123,9 @@ const ArtistProfile = () => {
 
     //checking if user has artist on follow
     if (
-      artistProfile.data &&
+      artist.data &&
       user.following &&
-      user.following.some((item) => item.id === `${artistProfile.data.id}`)
+      user.following.some((item) => item.id === `${artist.data.id}`)
     ) {
       setFollow(true);
     } else {
@@ -129,22 +134,22 @@ const ArtistProfile = () => {
   }
 
   async function onPageLoad() {
-    setPhoto(null)
     await dispatch(getProfile(profileId));
-
+    await getPhoto()
   }
 
-  useEffect(() => {
-    getPhoto();
-  }, [artistProfile]);
+  // useEffect(() => {
+  //   getPhoto();
+  // }, [artistProfile]);
 
   useEffect(() => {
     setArtistProfile(artist);
-  }, [artist,]);
+    getPhoto()
+  }, [artist]);
 
   useEffect(() => {
     onPageLoad();
-  }, [profileId, follows]);
+  }, [profileId]);
 
   return (
     <Container className="mt-3">
@@ -154,13 +159,8 @@ const ArtistProfile = () => {
             <div className="d-flex flex-column align-items-center">
               {photo ? (
                 <img src={photo} alt="profile" className="profile-picture" />
-              ) : (
-                <img
-                  src={assets.profilePic}
-                  alt="profile"
-                  className="profile-picture"
-                />
-              )}
+              ) : <></>
+              }
             </div>
             <div className="ms-3">
               <Heading size="lg">{artistProfile.name}</Heading>
