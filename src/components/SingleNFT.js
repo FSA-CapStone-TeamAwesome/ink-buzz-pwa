@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Button, ToggleButton } from 'react-bootstrap';
-import Container from 'react-bootstrap/Container';
-import Image from 'react-bootstrap/Image';
-import ListGroup from 'react-bootstrap/ListGroup';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Button, ToggleButton } from "react-bootstrap";
+import Container from "react-bootstrap/Container";
+import Image from "react-bootstrap/Image";
+import ListGroup from "react-bootstrap/ListGroup";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   collection,
   doc,
@@ -16,18 +16,15 @@ import {
   setDoc,
   getDocs,
   arrayRemove,
-} from 'firebase/firestore';
-import { useDispatch, useSelector } from 'react-redux';
-import { db, storage } from '../config/firebase';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { useAuthentication } from '../hooks/useAuthentication';
-import { updateUser } from '../store/userStore';
-import { Heading,  } from '@chakra-ui/react';
-
-
+} from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
+import { db, storage } from "../config/firebase";
+import { getDownloadURL, ref } from "firebase/storage";
+import { useAuthentication } from "../hooks/useAuthentication";
+import { updateUser } from "../store/userStore";
+import { Heading } from "@chakra-ui/react";
 
 // import {admin} from 'firebase-admin'
-
 
 const SingleNFT = () => {
   const [data, setData] = useState(null);
@@ -35,7 +32,7 @@ const SingleNFT = () => {
   const [follows, setFollow] = useState(false);
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
-  const [searchObj, setSearchObj] = useState(null)
+  const [searchObj, setSearchObj] = useState(null);
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
 
@@ -45,8 +42,8 @@ const SingleNFT = () => {
   //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
   const aFunction = async () => {
     let docData = await query(
-      collection(db, 'NFTs'),
-      where('id', '==', `${nftId}`),
+      collection(db, "NFTs"),
+      where("id", "==", `${nftId}`)
     );
     await onSnapshot(docData, (query) => {
       query.forEach((doc) => {
@@ -61,14 +58,20 @@ const SingleNFT = () => {
     setPhoto(getIt);
 
     //checking if user has artist on follow
-    if (user.following && user.following.some(item => item.id ===`${data.creatorId}`)) {
+    if (
+      user.following &&
+      user.following.some((item) => item.id === `${data.creatorId}`)
+    ) {
       setFollow(true);
     } else {
       setFollow(false);
     }
 
     //checking if the user has the nft as a fav
-    if (user.favorites && user.favorites.some(item => item.id ===`${data.id}`)) {
+    if (
+      user.favorites &&
+      user.favorites.some((item) => item.id === `${data.id}`)
+    ) {
       setFavor(true);
     } else {
       setFavor(false);
@@ -77,71 +80,78 @@ const SingleNFT = () => {
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
-    const followRef = doc(db,'users', `${data.creatorId}`)
+    const followRef = doc(db, "users", `${data.creatorId}`);
 
-
-    if(userProfile.following && user.following.some(item => item.id ===`${data.creatorId}`)){
-      dispatch(updateUser({
-        user,
-        update: {
-          following: arrayRemove({
-          id: data.creatorId,
-          name: data.creator
+    if (
+      userProfile.following &&
+      user.following.some((item) => item.id === `${data.creatorId}`)
+    ) {
+      dispatch(
+        updateUser({
+          user,
+          update: {
+            following: arrayRemove({
+              id: data.creatorId,
+              name: data.creator,
+            }),
+          },
         })
-      }
-      })
-      )
+      );
 
-
-      await updateDoc((followRef), {
+      await updateDoc(followRef, {
         followers: arrayRemove({
           name: userProfile.name,
           id: userProfile.data.id,
-          profilePic: userProfile.profilePic
+          profilePic: userProfile.profilePic,
+        }),
+      });
+      setFollow(false);
+    } else {
+      dispatch(
+        updateUser({
+          user,
+          update: {
+            following: arrayUnion({
+              id: data.creatorId,
+              name: data.creator,
+            }),
+          },
         })
-      })
-      setFollow(false)
-  }
-   else {
-    dispatch(updateUser({
-      user,
-      update: {
-        following: arrayUnion({
-          id: data.creatorId,
-          name: data.creator
-      })
-      }
-    }))
-    await updateDoc((followRef), {
-      followers: arrayUnion({
-        name: userProfile.name,
-        id: userProfile.data.id,
-        profilePic: userProfile.profilePic
-      })
-    })
-    setFollow(true)
-  }}
-  const messageArtist = async () =>{
-    if(!follows){
-      followToggle()
+      );
+      await updateDoc(followRef, {
+        followers: arrayUnion({
+          name: userProfile.name,
+          id: userProfile.data.id,
+          profilePic: userProfile.profilePic,
+        }),
+      });
+      setFollow(true);
     }
-    navigate('/Chat')
-  }
-
+  };
+  const messageArtist = async () => {
+    if (!follows) {
+      followToggle();
+    }
+    navigate("/Chat");
+  };
 
   const favorToggle = async () => {
-    if (userProfile.favorites && userProfile.favorites.some(item => item.id ===`${data.id}`)) {
+    if (
+      userProfile.favorites &&
+      userProfile.favorites.some((item) => item.id === `${data.id}`)
+    ) {
       dispatch(
         updateUser({
           user,
           update: {
             favorites: arrayRemove({
-                id: data.id,
-                name: data.name,
-                creator: data.creator,
-                image: data.image}),
+              id: data.id,
+              name: data.name,
+              creator: data.creator,
+              image: data.image,
+            }),
           },
-        }),
+        })
       );
       setFavor(false);
     } else {
@@ -153,9 +163,10 @@ const SingleNFT = () => {
               id: data.id,
               name: data.name,
               creator: data.creator,
-              image: data.image}),
+              image: data.image,
+            }),
           },
-        }),
+        })
       );
       setFavor(true);
     }
@@ -166,11 +177,12 @@ const SingleNFT = () => {
   }, []);
 
   useEffect(() => {
-    data && getPhoto() &&
-    setSearchObj({
-      id: data.creatorId,
-      name: data.creator
-    })
+    data &&
+      getPhoto() &&
+      setSearchObj({
+        id: data.creatorId,
+        name: data.creator,
+      });
   }, [data]);
 
   useEffect(() => setUser(user), [user]);
@@ -180,13 +192,17 @@ const SingleNFT = () => {
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center">
       <Heading>{name}</Heading>
-      <Heading  size='lg'>Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link> </Heading>
-      <Image fluid style={{ height: '400px' }} src={photo} />
+      <Heading size="lg">
+        Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{" "}
+      </Heading>
+      <Image fluid style={{ height: "400px" }} src={photo} />
       <h5 className="mt-3">${(price / 100).toFixed(2)}</h5>
       <p>{description}</p>
       {user && user.data ? (
         <div className="d-flex">
-          <Button className="me-3" onClick={()=> messageArtist()}>Message Artist</Button>
+          <Button className="me-3" onClick={() => messageArtist()}>
+            Message Artist
+          </Button>
           {favored ? (
             <Button className="me-3" onClick={favorToggle}>
               Unfavorite
@@ -207,7 +223,7 @@ const SingleNFT = () => {
           )}
         </div>
       ) : (
-        <Button className="mt-3" onClick={() => navigate('/SignIn')}>
+        <Button className="mt-3" onClick={() => navigate("/SignIn")}>
           Sign in to message artist
         </Button>
       )}

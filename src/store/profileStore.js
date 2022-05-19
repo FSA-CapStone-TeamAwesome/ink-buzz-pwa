@@ -4,6 +4,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 
 
+
 export const getProfile = createAsyncThunk(
   'profile/getProfileStatus',
   async (profileId, thunkAPI) => {
@@ -25,7 +26,9 @@ export const profileSlice = createSlice({
     error: null,
   },
   reducers: {
-
+    clearProfile: (state) => {
+      state.profile ={}
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -50,6 +53,7 @@ export const profileSlice = createSlice({
 
     }})
 
+    export const {clearProfile} = profileSlice.actions
 
 export default profileSlice.reducer
 
