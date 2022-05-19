@@ -51,6 +51,8 @@ const Chat = (props) => {
 
   const [interlocutor, setInterlocutor] = useState('');
 
+  const [sendToAddress, setSendToAddress] = useState('');
+
   const [messages, setMessages] = useState([]);
 
   const [amount, setAmount] = useState(0);
@@ -89,6 +91,20 @@ const Chat = (props) => {
     setMessage({ ...message, recipient: interlocutor });
   }, [interlocutor]);
 
+  useEffect(() => {
+
+    let filteredMessages = messages.filter(msg => msg.fromId === interlocutor)
+
+    if (filteredMessages.length) {
+      let sendAddressHolder = filteredMessages[filteredMessages.length - 1].fromAddress
+      setSendToAddress(sendAddressHolder)
+    } else {
+      setSendToAddress('')
+    }
+
+
+  }, [messages])
+
   const {
     navigation,
     account,
@@ -124,7 +140,7 @@ const Chat = (props) => {
         params: [
           {
             from: account,
-            to: '0xbB398f050223c11ae1e516371B73e7856Bfae077',
+            to: sendToAddress,
             value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
           },
         ],
