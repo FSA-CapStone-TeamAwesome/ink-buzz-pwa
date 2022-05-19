@@ -128,12 +128,33 @@ const SingleNFT = () => {
       setFollow(true);
     }
   };
+
   const messageArtist = async () => {
+    chatsWithAdd();
     if (!follows) {
       followToggle();
     }
     navigate("/Chat");
   };
+
+  const chatsWithAdd = async  () => {
+
+    const chatsRef = doc(db, "users", `${user.data.id}`);
+
+
+    await updateDoc(chatsRef, {
+      chatsWith: arrayUnion({
+        // name: userProfile.name,
+        id: data.creatorId,
+        // profilePic: userProfile.profilePic,
+      }),
+    });
+  }
+
+
+
+
+
 
   const favorToggle = async () => {
     if (
