@@ -18,8 +18,6 @@ const Post = ({ data }) => {
     getPhoto();
   }, []);
 
-  if (data.tags.includes('')) return;
-
   return (
     <div className="mb-3 me-5">
       <Card style={{ width: '300px' }}>

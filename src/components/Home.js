@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
+import 'animate.css';
 import Post from './Post';
 import { db, storage } from '../config/firebase';
 import {
@@ -51,7 +52,11 @@ const Home = () => {
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center my-3">
       <div className="text-center">
-        <Heading>Welcome to Ink Buzz!</Heading>
+        <Heading size="2xl">
+          <h1 class="animate__animated animate__zoomIn">
+            Welcome to Ink Buzz!
+          </h1>
+        </Heading>
         <Heading size="lg">Check out some tattoo designs below</Heading>
         <Search></Search>
       </div>
