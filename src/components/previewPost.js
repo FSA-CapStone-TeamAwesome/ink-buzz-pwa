@@ -19,7 +19,7 @@ const PreviewPost = ({ data, creator }) => {
   }, []);
 
   return (
-    <div className="mb-3 me-5">
+    <div className="mb-2 mobilePost">
       <Card style={{ width: '300px' }}>
         <Card.Img variant="top" src={photo} className="NFTimage" />
         <Card.Body className="text-center">
