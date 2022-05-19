@@ -20,3 +20,29 @@ html {
 h1 {
   font-size: xx-large;
 }
+
+.mobilePost {
+  margin-right: 2rem;
+}
+
+.feedPostContainer {
+  justify-content: space-between;
+  margin-bottom: 50px;
+  margin-top: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .mobile-profile {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+  }
+
+  .feedPostContainer {
+    justify-content: center;
+  }
+
+  .mobilePost {
+    margin-right: 0;
+  }
+}

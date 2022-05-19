@@ -44,11 +44,13 @@ const FollowedArtists = () => {
       {following.map((coolDude) => {
         return (
           <div>
-            <Heading size="lg">{coolDude.name}</Heading>
-            <br />
+            <Heading className="text-center mb-2" size="xl">
+              {coolDude.name}
+            </Heading>
+            <hr />
 
             {coolDude.images ? (
-              <div className="d-flex flex-wrap justify-content-start align-items-start">
+              <div className="d-flex flex-wrap align-items-start feedPostContainer">
                 {coolDude.images.map((link, index) => {
                   if (index >= coolDude.images.length - 5) {
                     return (
