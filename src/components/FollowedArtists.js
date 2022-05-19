@@ -40,8 +40,6 @@ const FollowedArtists = () => {
 
   return (
     <div>
-      <h1>Here's the latest from your favorites.</h1>
-      <h2>A Quick Five from your Faves</h2> <br />
       {following.map((coolDude) => {
         return (
           <div>

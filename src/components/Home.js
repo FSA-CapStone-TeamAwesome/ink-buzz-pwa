@@ -11,7 +11,8 @@ import {
 } from 'firebase/firestore';
 import Search from './SearchBar';
 import Favorites from './Favorites';
-import FollowedArtists from './FollowedArtists';
+
+import { Heading } from '@chakra-ui/react';
 
 const Home = () => {
   const [alphaList, setList] = useState([]);
@@ -33,7 +34,7 @@ const Home = () => {
     let newDocs = await query(
       enterTheCollector,
       orderBy('created', 'desc'),
-      limit(5),
+      limit(9),
     );
 
     await onSnapshot(newDocs, (querySnapshot) => {
@@ -48,24 +49,24 @@ const Home = () => {
   }, []);
 
   return (
-    <Container className="d-flex flex-column align-items-center my-3">
+    <Container className="d-flex flex-column justify-content-center align-items-center my-3">
       <div className="text-center">
-        <h1>Welcome to Ink Buzz!</h1>
+        <Heading>Welcome to Ink Buzz!</Heading>
         <h5>Check out some tattoo designs below</h5>
         <h5>Upload as an artist and sell your designs!</h5>
       </div>
-      <div className="d-flex flex-wrap justify-content-center align-items-start">
+      {/* <div className="d-flex flex-wrap justify-content-start align-items-start">
         {alphaList.map((nft) => {
           return <Post key={nft.id} data={nft} />;
         })}
-      </div>
+      </div> */}
       <h1 className="text-center">New Designs</h1>
-      <div className="d-flex flex-wrap justify-content-evenly align-items-center">
+      <div className="d-flex flex-wrap justify-content-center align-items-center">
         {newList.map((nft) => {
           return <Post key={'new' + nft.id} data={nft} />;
         })}
       </div>
-      <FollowedArtists />
+
       <Search></Search>
     </Container>
   );

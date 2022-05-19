@@ -17,6 +17,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import PreviewPost from './previewPost';
+import FollowedArtists from './FollowedArtists';
 
 const Profile = () => {
   injectStyle();
@@ -80,7 +81,6 @@ const Profile = () => {
 
       //Start Image Upload Code Here
       if (imageUpload) {
-
         //We're uploading a photo to the storage, its path is the user's folder, and the filename is profile-picture
         const imageRef = ref(
           storage,
@@ -243,6 +243,9 @@ const Profile = () => {
                     <Nav.Link eventKey="feed">Main Feed</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
+                    <Nav.Link eventKey="designs">My Designs</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
                     <Nav.Link eventKey="followers">
                       {(user.followers && user.followers.length) || 0} Followers
                     </Nav.Link>
@@ -263,12 +266,21 @@ const Profile = () => {
                 <Tab.Content>
                   <Tab.Pane eventKey="feed">
                     <h3>Here's your feed</h3>
+                    <FollowedArtists />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="designs">
+                    <h3>Here's your designs</h3>
                     <h3>You have {user.images.length || 0} Designs!</h3>
-                    <div className="d-flex flex-wrap justify-content-evenly align-items-center">
-                    {user.images.map((link, index) => {
-
-                      return <PreviewPost key={index} data={link} creator={user.name} />;
-                    })}
+                    <div className="d-flex flex-wrap justify-content-start align-items-center">
+                      {user.images.map((link, index) => {
+                        return (
+                          <PreviewPost
+                            key={index}
+                            data={link}
+                            creator={user.name}
+                          />
+                        );
+                      })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
@@ -277,7 +289,9 @@ const Profile = () => {
                       {user.followers.map((user, idx) => {
                         return (
                           <div className="w-50" key={'user' + idx}>
-                            <Link to={`/profiles/${user.id}`} className="mt-3">{user.name}</Link>
+                            <Link to={`/profiles/${user.id}`} className="mt-3">
+                              {user.name}
+                            </Link>
                           </div>
                         );
                       })}
@@ -291,7 +305,11 @@ const Profile = () => {
                       {user.following.map((artist, idx) => {
                         return (
                           <div className="w-50" key={'artist' + idx}>
-                            <Link to={`/profiles/${artist.id}`} className="mt-3">{artist.name}</Link>
+                            <Link
+                              to={`/profiles/${artist.id}`}
+                              className="mt-3">
+                              {artist.name}
+                            </Link>
                           </div>
                         );
                       })}
