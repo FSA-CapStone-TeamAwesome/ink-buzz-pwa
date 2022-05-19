@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import { Container, Button } from 'react-bootstrap';
+import { Container } from "react-bootstrap";
 
-import { auth, db, app } from '../config/firebase';
+import { auth, db, app } from "../config/firebase";
 
-import { useAuthentication } from '../hooks/useAuthentication';
+import { useAuthentication } from "../hooks/useAuthentication";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+
+import Messages from "./Messages";
+import MessageFooter from "./MessageFooter";
+
+import { Flex, Button } from "@chakra-ui/react";
 
 import {
   document,
@@ -19,48 +24,38 @@ import {
   where,
   orderBy,
   limit,
-} from 'firebase/firestore';
+} from "firebase/firestore";
 
-import { VStack, Text, HStack, Select, Input, Box } from '@chakra-ui/react';
-import { CheckCircleIcon, WarningIcon } from '@chakra-ui/icons';
-import { Tooltip } from '@chakra-ui/react';
-import { networkParams } from './wallet_stuff/networks';
-import { toHex, truncateAddress } from './wallet_stuff/utils';
-import { ethers } from 'ethers';
-
-// chat2@chat.com
-// YnK59v2GMRcRtFTZ7jlSXIaxu1G3
-// 0xb936376169B6E0593922611F64A6B46b847cb262
-
-// chat1@chat.com
-// JotxkdT73WZxdfVuw00itwp2GWr1
-// 0xd18ac37aAbA82aAdBfC8BFD6fEF8A42DF1c28352
+import { VStack, Text, HStack, Select, Input, Box } from "@chakra-ui/react";
+import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
+import { Tooltip } from "@chakra-ui/react";
+import { networkParams } from "./wallet_stuff/networks";
+import { toHex, truncateAddress } from "./wallet_stuff/utils";
+import { ethers } from "ethers";
 
 // This global variable will be replaced with a converation list
 
 const Chat = (props) => {
-  // const { user } = useAuthentication();
-
   const user = useSelector((state) => state.user.user);
 
   const [convoList, setConvoList] = useState([]);
 
-  const [myId, setMyId] = useState('');
+  const [myId, setMyId] = useState("");
 
-  const [myName, setMyName] = useState('');
+  const [myName, setMyName] = useState("");
 
-  const [interlocutor, setInterlocutor] = useState('');
+  const [interlocutor, setInterlocutor] = useState("");
 
-  const [sendToAddress, setSendToAddress] = useState('');
+  const [sendToAddress, setSendToAddress] = useState("");
 
   const [messages, setMessages] = useState([]);
 
   const [amount, setAmount] = useState(0);
 
   const [message, setMessage] = useState({
-    content: '',
+    content: "",
     recipient: interlocutor,
-    photoUrl: '',
+    photoUrl: "",
   });
 
   useEffect(() => {
@@ -74,9 +69,9 @@ const Chat = (props) => {
   useEffect(() => {
     if (myId) {
       let q = query(
-        collection(db, 'messages/queue', myId),
-        orderBy('timestamp'),
-        limit(100),
+        collection(db, "messages/queue", myId),
+        orderBy("timestamp"),
+        limit(100)
       );
 
       const unsub = onSnapshot(q, (snapshot) => {
@@ -92,18 +87,18 @@ const Chat = (props) => {
   }, [interlocutor]);
 
   useEffect(() => {
-
-    let filteredMessages = messages.filter(msg => msg.fromId === interlocutor)
+    let filteredMessages = messages.filter(
+      (msg) => msg.fromId === interlocutor
+    );
 
     if (filteredMessages.length) {
-      let sendAddressHolder = filteredMessages[filteredMessages.length - 1].fromAddress
-      setSendToAddress(sendAddressHolder)
+      let sendAddressHolder =
+        filteredMessages[filteredMessages.length - 1].fromAddress;
+      setSendToAddress(sendAddressHolder);
     } else {
-      setSendToAddress('')
+      setSendToAddress("");
     }
-
-
-  }, [messages])
+  }, [messages]);
 
   const {
     navigation,
@@ -136,32 +131,32 @@ const Chat = (props) => {
   const sendTransaction = async () => {
     try {
       const tx = await library.provider.request({
-        method: 'eth_sendTransaction',
+        method: "eth_sendTransaction",
         params: [
           {
             from: account,
             to: sendToAddress,
-            value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
+            value: ethers.utils.parseUnits(amount, "ether").toHexString(),
           },
         ],
       });
-      console.log('tx is ', tx);
+      console.log("tx is ", tx);
     } catch (txError) {
-      console.log('txError was ', txError);
+      console.log("txError was ", txError);
     }
   };
 
   const switchNetwork = async () => {
     try {
       await library.provider.request({
-        method: 'wallet_switchEthereumChain',
+        method: "wallet_switchEthereumChain",
         params: [{ chainId: toHex(network) }],
       });
     } catch (switchError) {
       if (switchError.code === 4902) {
         try {
           await library.provider.request({
-            method: 'wallet_addEthereumChain',
+            method: "wallet_addEthereumChain",
             params: [networkParams[toHex(network)]],
           });
         } catch (error) {
@@ -174,7 +169,7 @@ const Chat = (props) => {
   const refreshState = () => {
     setAccount();
     setChainId();
-    setNetwork('');
+    setNetwork("");
   };
 
   const disconnect = async () => {
@@ -189,12 +184,10 @@ const Chat = (props) => {
   }, []);
 
   // Sending a message should place it in your queue folder as well
-  const sendMessage = async (evt) => {
-    evt.preventDefault();
-
+  const sendMessage = async () => {
     let timestamp = Timestamp.fromMillis(Date.now());
 
-    let fromAddress = '';
+    let fromAddress = "";
 
     if (account) {
       fromAddress = account;
@@ -212,7 +205,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log('ERROR!');
+      console.log("ERROR!");
       console.log(err);
     } finally {
       try {
@@ -230,64 +223,56 @@ const Chat = (props) => {
         console.log(err);
       }
     }
-    setMessage({ ...message, content: '' });
+    setMessage({ ...message, content: "" });
   };
 
   return (
-    <Container>
-      <h1 className="text-center h1">Chat</h1>
-      <div id="conversations">
-        <h3 style={{ fontSize: 'large' }}>Conversations:</h3>
-        {convoList.map((conversation, idx) => {
-          return (
-            <Button
-              key={idx + conversation.id}
-              style={{ margin: 10 }}
-              variant="primary"
-              onClick={() => setInterlocutor(conversation.id)}>
-              {conversation.name}
-            </Button>
-          );
-        })}
-      </div>
-      {messages &&
-        messages.map((msg, idx) => {
-          if (msg.fromId === myId && msg.toId === interlocutor) {
+    <Flex w="100%" h="100vh" justify="center" align="center">
+      <Flex w="100%" h="90%" flexDir="column">
+        <div id="conversations">
+          {convoList.map((conversation, idx) => {
+            if (interlocutor && interlocutor === conversation.id) {
+              return (
+                <Button
+                  key={idx + conversation.id}
+                  style={{ margin: 10 }}
+                  bg="lightgrey"
+                  border="2px solid black"
+                  onClick={() => setInterlocutor(conversation.id)}
+                >
+                  {conversation.name}
+                </Button>
+              );
+            }
             return (
-              <div
-                style={{ display: 'flex', justifyContent: 'flex-end'}}
-                key={idx}>
-                  {msg.id}
-                {msg.content}
-              </div>
+              <Button
+                key={idx + conversation.id}
+                style={{ margin: 10 }}
+                bg="lightgrey"
+                onClick={() => setInterlocutor(conversation.id)}
+              >
+                {conversation.name}
+              </Button>
             );
-          } else if (msg.fromId === interlocutor) {
-            return (
-              <div
-                style={{ display: 'flex', justifyContent: 'flex-start' }}
-                key={idx}>
-                {msg.fromName}: {msg.content}
-              </div>
-            );
-          } else {
-          }
-        })}
-
-      <form
-        className="controls"
-        style={{ display: 'flex', justifyContent: 'flex-end' }}
-        onSubmit={sendMessage}>
-        <input
-          placeholder="message"
-          type="content"
-          value={message.content}
-          onChange={(evt) => {
-            setMessage({ ...message, content: evt.target.value });
-          }}
+          })}
+        </div>
+        {messages && (
+          <Messages
+            messages={messages.filter(
+              (msg) =>
+                (msg.fromId === myId && msg.toId === interlocutor) ||
+                msg.fromId === interlocutor
+            )}
+            myId={myId}
+            interlocutor={interlocutor}
+          />
+        )}
+        <MessageFooter
+          message={message}
+          setMessage={setMessage}
+          sendMessage={sendMessage}
         />
-        <Button type="submit">Send</Button>
-      </form>
-      <VStack justifyContent="center" alignItems="center" h="100vh">
+        {/* <VStack justifyContent="center" alignItems="center" h="100vh">
         <HStack>
           {!account ? (
             <Button onClick={connectWallet}>Connect Wallet</Button>
@@ -308,7 +293,7 @@ const Chat = (props) => {
           <Tooltip label={account} placement="right">
             <Text>{`Account: ${truncateAddress(account)}`}</Text>
           </Tooltip>
-          <Text>{`Network ID: ${chainId ? chainId : 'No Network'}`}</Text>
+          <Text>{`Network ID: ${chainId ? chainId : "No Network"}`}</Text>
         </VStack>
         {account && (
           <HStack justifyContent="flex-start" alignItems="flex-start">
@@ -317,7 +302,8 @@ const Chat = (props) => {
               borderWidth="1px"
               borderRadius="lg"
               overflow="hidden"
-              padding="10px">
+              padding="10px"
+            >
               <VStack>
                 <Button onClick={switchNetwork}>Switch Network</Button>
                 <Select placeholder="Select network" onChange={handleNetwork}>
@@ -334,7 +320,8 @@ const Chat = (props) => {
               borderWidth="1px"
               borderRadius="lg"
               overflow="hidden"
-              padding="10px">
+              padding="10px"
+            >
               <VStack>
                 <Button onClick={sendTransaction}>Send Ether</Button>
                 <Input
@@ -348,8 +335,9 @@ const Chat = (props) => {
           </HStack>
         )}
         <Text>{error ? error.message : null}</Text>
-      </VStack>
-    </Container>
+      </VStack> */}
+      </Flex>
+    </Flex>
   );
 };
 
