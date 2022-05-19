@@ -11,7 +11,7 @@ const Messages = (props) => {
       const storage = getStorage();
       const pathReference = ref(
         storage,
-        `images/profilePics/${interlocutor}/profile.jpg`
+        `images/universal/${interlocutor}/profile-picture`
       );
       getBlob(pathReference).then((blob) => {
         const useUrl = URL.createObjectURL(blob);
