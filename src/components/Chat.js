@@ -61,7 +61,7 @@ const Chat = (props) => {
   useEffect(() => {
     if (user && user.data) {
       setMyId(user.data.id);
-      setConvoList([...user.followers, ...user.following]);
+      setConvoList([...user.chatsWith]);
       setMyName(user.name);
     }
   }, [user]);
