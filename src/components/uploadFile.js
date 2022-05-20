@@ -58,6 +58,7 @@ const UploadFile = () => {
 
     new Compressor(imageUpload, {
       quality: 0.5, // 0.6 can also be used, but its not recommended to go below.
+      width: 350,
       success: async (smallImage) => {
         await uploadBytes(imageRefSmall, smallImage);
       },
