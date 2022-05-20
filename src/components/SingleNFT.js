@@ -20,7 +20,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../config/firebase";
 import { getDownloadURL, ref } from "firebase/storage";
-import { useAuthentication } from "../hooks/useAuthentication";
+
 import { updateUser } from "../store/userStore";
 import { Heading } from "@chakra-ui/react";
 

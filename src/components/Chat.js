@@ -4,8 +4,6 @@ import { Container } from "react-bootstrap";
 
 import { db } from "../config/firebase";
 
-import { useAuthentication } from "../hooks/useAuthentication";
-
 import { useSelector } from "react-redux";
 
 import Messages from "./Messages";
@@ -22,6 +20,7 @@ import {
   orderBy,
   limit,
   doc,
+  getDoc,
   updateDoc,
   arrayUnion
 } from "firebase/firestore";
@@ -88,29 +87,17 @@ const Chat = (props) => {
 
   useEffect(() => {
 
-    console.log("The convoList is,", convoList)
+    let convoIds = convoList.map((convo) => convo.id)
 
+    let allInterlocutorIds = [...new Set([
+      ...messages.map((msg) => msg.fromId),
+      ...messages.map((msg) => msg.toId)])].filter((id) => (id !== myId))
 
-    let allInterlocutors = [...new Set([...messages.map((msg) => msg.fromId), ...messages.map((msg) => msg.toId)])]
-
-    console.log(allInterlocutors)
-    // messages.forEach((msg) => {
-
-
-    //   convoList.forEach((convo) => {
-    //     if (convo.id !== msg.fromId){
-    //       console.log("Id not in!", convo.id, convo.name)
-    //       // chatsWith(convo.id, convo.name)
-    //     }
-    //   })
-    // })
-
-
-    // console.log("Messages from.", msg.fromId)
-
-
-
-
+      allInterlocutorIds.forEach((id) => {
+        if (id && !convoIds.includes(id)) {
+          chatsWithAdd(id)
+        }
+      } )
 
     let filteredMessages = messages.filter(
       (msg) => msg.fromId === interlocutor
@@ -125,19 +112,19 @@ const Chat = (props) => {
     }
   }, [messages]);
 
+  const chatsWithAdd = async  (id) => {
 
-  const chatsWithAdd = async  (id, name) => {
+    const nameRef = doc(db, 'users', id);
+    const nameDoc = await getDoc(nameRef)
 
     const chatsRef = doc(db, "users", `${user.data.id}`);
-
-    await updateDoc(chatsRef, {
-      chatsWith: arrayUnion({
-        name,
-        id
-      }),
-    });
+        await updateDoc(chatsRef, {
+          chatsWith: arrayUnion({
+            name: nameDoc.data().name,
+            id
+          }),
+        });
   }
-
 
   const {
     navigation,
