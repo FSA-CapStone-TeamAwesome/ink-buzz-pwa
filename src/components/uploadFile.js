@@ -53,11 +53,11 @@ const UploadFile = () => {
 
     const imageRefSmall = ref(
       storage,
-      `images/universal/${user.data.id}/small/${value.name + date}`,
+      `images/universal/${user.data.id}/small/${value.name + date}.jpg`,
       );
 
     new Compressor(imageUpload, {
-      quality: 0.1, // 0.6 can also be used, but its not recommended to go below.
+      quality: 0.5, // 0.6 can also be used, but its not recommended to go below.
       success: async (smallImage) => {
         await uploadBytes(imageRefSmall, smallImage);
       },
