@@ -312,7 +312,7 @@ const Chat = (props) => {
                         <VStack>
                           <Button
                             onClick={sendTransaction}
-                            isDisabled={sendToAddress.length}
+                            isDisabled={!sendToAddress.length}
                           >
                             Send Ether
                           </Button>
