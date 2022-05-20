@@ -17,6 +17,7 @@ import {
   Input,
   Box,
   useDisclosure,
+  Text,
   Modal,
   ModalHeader,
   ModalBody,
@@ -56,6 +57,8 @@ const Chat = (props) => {
   const [messages, setMessages] = useState([]);
 
   const [amount, setAmount] = useState(0);
+
+  // const [interlocutorName, setInterlocutorName] = useState("");
 
   const [message, setMessage] = useState({
     content: "",
@@ -146,7 +149,7 @@ const Chat = (props) => {
           },
         ],
       });
-      console.log("tx is ", tx);
+      return tx;
     } catch (txError) {
       console.log("txError was ", txError.code);
     }
@@ -198,6 +201,8 @@ const Chat = (props) => {
         fromId: myId,
         fromAddress: fromAddress,
         toId: message.recipient,
+        isTx: false,
+        chainId: null,
         photoUrl: null,
         timestamp,
       });
@@ -213,6 +218,54 @@ const Chat = (props) => {
           fromId: myId,
           fromAddress: fromAddress,
           toId: message.recipient,
+          isTx: false,
+          chainId: null,
+          photoUrl: null,
+          timestamp,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    setMessage({ ...message, content: "" });
+  };
+
+  const sendTxMessage = async (txHash, chainId) => {
+    let timestamp = Timestamp.fromMillis(Date.now());
+
+    let fromAddress = "";
+
+    if (account) {
+      fromAddress = account;
+    }
+
+    try {
+      await addDoc(collection(db, `messages/queue/${message.recipient}`), {
+        artReference: null,
+        content: txHash,
+        fromName: myName,
+        fromId: myId,
+        fromAddress: fromAddress,
+        toId: message.recipient,
+        isTx: true,
+        chainId: network,
+        photoUrl: null,
+        timestamp,
+      });
+    } catch (err) {
+      console.log("ERROR!");
+      console.log(err);
+    } finally {
+      try {
+        await addDoc(collection(db, `messages/queue/${myId}`), {
+          artReference: null,
+          content: txHash,
+          fromName: myName,
+          fromId: myId,
+          fromAddress: fromAddress,
+          toId: message.recipient,
+          isTx: true,
+          chainId: network,
           photoUrl: null,
           timestamp,
         });
@@ -235,6 +288,7 @@ const Chat = (props) => {
         <div id="conversations">
           {convoList.map((conversation, idx) => {
             if (interlocutor && interlocutor === conversation.id) {
+              // setInterlocutorName(conversation.name);
               return (
                 <Button
                   key={idx + conversation.id}
@@ -281,6 +335,16 @@ const Chat = (props) => {
                   </ModalHeader>
                   <ModalCloseButton />
                   <ModalBody>
+                    {sendToAddress.length ? (
+                      <Text>
+                        {/* Sending to {interlocutorName} at:{" "} */}
+                        Sending to: {truncateAddress(sendToAddress)}
+                      </Text>
+                    ) : (
+                      <Text>
+                        Uh oh! Target does not have a wallet connected!
+                      </Text>
+                    )}
                     <HStack justify="center">
                       <Box
                         maxW="sm"
@@ -290,8 +354,11 @@ const Chat = (props) => {
                         padding="10px"
                       >
                         <VStack>
-                          <Button onClick={switchNetwork}>
-                            Switch Network
+                          <Button
+                            onClick={switchNetwork}
+                            isDisabled={!network > 0}
+                          >
+                            Choose Network
                           </Button>
                           <Select
                             placeholder="Select network"
@@ -311,13 +378,21 @@ const Chat = (props) => {
                       >
                         <VStack>
                           <Button
-                            onClick={sendTransaction}
+                            // onClick={sendTransaction}
+                            onClick={async () => {
+                              try {
+                                const txHash = await sendTransaction();
+                                sendTxMessage(txHash, chainId);
+                              } catch (e) {
+                                console.log(e);
+                              }
+                            }}
                             isDisabled={!sendToAddress.length}
                           >
                             Send Ether
                           </Button>
                           <Input
-                            placeholder={sendToAddress}
+                            placeholder="Set Amount"
                             maxLength={20}
                             onChange={handleInput}
                             w="140px"
