@@ -295,7 +295,9 @@ const Profile = () => {
                     <div className="d-flex flex-column">
                       {user.followers.map((user, idx) => {
                         return (
-                          <div className="w-50" key={'user' + idx}>
+                          <div
+                            className="d-flex flex-column justify-content-center align-items-center"
+                            key={'user' + idx}>
                             <Link to={`/profiles/${user.id}`} className="mt-3">
                               {user.name}
                             </Link>
