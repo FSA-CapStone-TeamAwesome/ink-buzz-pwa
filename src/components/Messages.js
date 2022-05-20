@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Avatar, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Flex, Text, Link } from "@chakra-ui/react";
 import { getStorage, ref, getBlob } from "firebase/storage";
 
 const Messages = (props) => {
   const { messages, myId, interlocutor } = props;
-  console.log("interlocutor is ", interlocutor);
   const [pp, setPp] = useState();
   useEffect(() => {
     if (interlocutor) {
@@ -29,7 +28,54 @@ const Messages = (props) => {
   return (
     <Flex w="100%" h="80%" overflowY="scroll" flexDirection="column" p="3">
       {messages.map((msg, index) => {
-        if (msg.fromId === myId) {
+        if (msg.isTx) {
+          let net = "";
+          if (msg.chainId && msg.chainId === 3) {
+            net = "ropsten";
+          } else {
+            net = "rinkeby";
+          }
+          return (
+            <Flex key={index} w="100%" justify="center">
+              <Flex
+                bg="blue.100"
+                color="black"
+                minW="100px"
+                maxW="60%"
+                my="1"
+                p="3"
+                borderRadius="3"
+                flexDirection="column"
+              >
+                <Text>{msg.fromName} sent a payment.</Text>
+                <Link
+                  href={`http://${net}.etherscan.io/tx/${msg.content}`}
+                  isExternal
+                  color="purple.500"
+                >
+                  Click here to view it!
+                </Link>
+              </Flex>
+            </Flex>
+          );
+        } else if (msg.isStart) {
+         return(
+         <Flex key={index} w="100%" justify="center">
+            <Flex
+               bg="orange"
+               color="black"
+               minW="100px"
+               maxW="60%"
+               my="1"
+               p="3"
+               borderRadius="3"
+               flexDirection="column"
+            >
+              <Text>{msg.content}</Text>
+            </Flex>
+          </Flex>
+          )
+        } else if (msg.fromId === myId) {
           return (
             <Flex key={index} w="100%" justify="flex-end">
               <Flex
