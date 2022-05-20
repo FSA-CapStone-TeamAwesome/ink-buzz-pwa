@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { Container } from "react-bootstrap";
 
-import { auth, db, app } from "../config/firebase";
+import { db } from "../config/firebase";
 
 import { useAuthentication } from "../hooks/useAuthentication";
 
@@ -14,16 +14,16 @@ import MessageFooter from "./MessageFooter";
 import { Flex, Button } from "@chakra-ui/react";
 
 import {
-  document,
-  getDocs,
   collection,
   addDoc,
   Timestamp,
   onSnapshot,
   query,
-  where,
   orderBy,
   limit,
+  doc,
+  updateDoc,
+  arrayUnion
 } from "firebase/firestore";
 
 import { VStack, Text, HStack, Select, Input, Box } from "@chakra-ui/react";
@@ -87,6 +87,31 @@ const Chat = (props) => {
   }, [interlocutor]);
 
   useEffect(() => {
+
+    console.log("The convoList is,", convoList)
+
+
+    let allInterlocutors = [...new Set([...messages.map((msg) => msg.fromId), ...messages.map((msg) => msg.toId)])]
+
+    console.log(allInterlocutors)
+    // messages.forEach((msg) => {
+
+
+    //   convoList.forEach((convo) => {
+    //     if (convo.id !== msg.fromId){
+    //       console.log("Id not in!", convo.id, convo.name)
+    //       // chatsWith(convo.id, convo.name)
+    //     }
+    //   })
+    // })
+
+
+    // console.log("Messages from.", msg.fromId)
+
+
+
+
+
     let filteredMessages = messages.filter(
       (msg) => msg.fromId === interlocutor
     );
@@ -99,6 +124,20 @@ const Chat = (props) => {
       setSendToAddress("");
     }
   }, [messages]);
+
+
+  const chatsWithAdd = async  (id, name) => {
+
+    const chatsRef = doc(db, "users", `${user.data.id}`);
+
+    await updateDoc(chatsRef, {
+      chatsWith: arrayUnion({
+        name,
+        id
+      }),
+    });
+  }
+
 
   const {
     navigation,

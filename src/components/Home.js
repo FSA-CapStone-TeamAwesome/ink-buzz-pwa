@@ -53,9 +53,9 @@ const Home = () => {
     <Container className="d-flex flex-column justify-content-center align-items-center my-3">
       <div className="text-center">
         <Heading size="2xl">
-          <h1 class="animate__animated animate__zoomIn">
+          <p className="animate__animated animate__zoomIn">
             Welcome to Ink Buzz!
-          </h1>
+          </p>
         </Heading>
         <Heading size="lg">Check out some tattoo designs below</Heading>
         <Search></Search>
