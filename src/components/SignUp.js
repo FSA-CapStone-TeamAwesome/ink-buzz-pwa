@@ -43,6 +43,7 @@ const SignUp = () => {
           id: auth.currentUser.uid,
         },
         images: [],
+        chatsWith: [],
         followers: [],
         following: [],
         accounts: {},
