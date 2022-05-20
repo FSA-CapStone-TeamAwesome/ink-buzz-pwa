@@ -7,14 +7,12 @@ import { Form, Button } from 'react-bootstrap';
 import { setLocal } from '../config/Auth';
 import { useSelector } from 'react-redux';
 import { Heading } from '@chakra-ui/react';
-import { ref, getDownloadURL, uploadString } from 'firebase/storage';
+import { ref, uploadString } from 'firebase/storage';
 import defaultImg from '../assets/images/default-profile.jpeg';
 
 const SignUp = () => {
-  console.log(defaultImg);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
-  const [image, setImage] = useState(null);
 
   const [value, setValue] = useState({
     email: '',
