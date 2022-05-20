@@ -134,11 +134,11 @@ const SingleNFT = () => {
     if (!follows) {
       followToggle();
     }
-    navigate('/Chat');
+    navigate("/Chat", { state: { chosenInterlocutor: data.creatorId } });
   };
 
   const chatsWithAdd = async () => {
-    const chatsRef = doc(db, 'users', `${user.data.id}`);
+    const chatsRef = doc(db, "users", `${user.data.id}`);
 
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
