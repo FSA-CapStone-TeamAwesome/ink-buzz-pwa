@@ -8,9 +8,7 @@ import { injectStyle } from 'react-toastify/dist/inject-style';
 import { Container, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { Heading } from '@chakra-ui/react';
-import  Compressor from 'compressorjs';
-
-
+import Compressor from 'compressorjs';
 
 const UploadFile = () => {
   const [imageUpload, setImageUpload] = useState(null);
@@ -30,8 +28,6 @@ const UploadFile = () => {
 
   const uploadFile = async (evt) => {
     evt.preventDefault();
-
-
 
     if (value.name === '' || value.tags === []) {
       toast.error('Every upload needs a name and tags!');
@@ -54,7 +50,7 @@ const UploadFile = () => {
     const imageRefSmall = ref(
       storage,
       `images/universal/${user.data.id}/small/${value.name + date}.jpg`,
-      );
+    );
 
     new Compressor(imageUpload, {
       quality: 0.5, // 0.6 can also be used, but its not recommended to go below.
@@ -62,18 +58,14 @@ const UploadFile = () => {
       success: async (smallImage) => {
         await uploadBytes(imageRefSmall, smallImage);
       },
-    })
-
-
-
+    });
 
     const imageRef = ref(
       storage,
       `images/universal/${user.data.id}/${value.name + date}`,
-      );
+    );
 
-
-      await uploadBytes(imageRef, imageUpload);
+    await uploadBytes(imageRef, imageUpload);
 
     //The user gets a copy to their firebaseFolder
     let change = await doc(db, 'users', `${user.data.id}`);
@@ -110,7 +102,6 @@ const UploadFile = () => {
     toast.success('Image Upload Successfully!');
     navigate('/');
   };
-
 
   return (
     <Container
@@ -154,19 +145,6 @@ const UploadFile = () => {
             type="file"
             onChange={(event) => {
               setImageUpload(event.target.files[0]);
-              console.log((event.target.files[0]))
-              new Compressor(event.target.files[0], {
-                quality: 0.1, // 0.6 can also be used, but its not recommended to go below.
-                success: (compressedResult) => {
-                  // compressedResult has the compressed file.
-                  // Use the compressed file to upload the images to your server.
-                  console.log(compressedResult)
-                },
-              })
-
-
-
-
             }}
           />
         </Form.Group>
