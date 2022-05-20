@@ -114,7 +114,6 @@ const Chat = (props) => {
     }
     setChosenInterlocutor("");
     location.state = {};
-    console.log(location);
   }, []);
 
   useEffect(() => {
