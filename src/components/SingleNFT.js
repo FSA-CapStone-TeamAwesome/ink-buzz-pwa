@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Button, ToggleButton } from "react-bootstrap";
-import Container from "react-bootstrap/Container";
-import Image from "react-bootstrap/Image";
-import ListGroup from "react-bootstrap/ListGroup";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Button, ToggleButton } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import Image from 'react-bootstrap/Image';
+import ListGroup from 'react-bootstrap/ListGroup';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   collection,
   doc,
@@ -16,13 +16,13 @@ import {
   setDoc,
   getDocs,
   arrayRemove,
-} from "firebase/firestore";
-import { useDispatch, useSelector } from "react-redux";
-import { db, storage } from "../config/firebase";
-import { getDownloadURL, ref } from "firebase/storage";
+} from 'firebase/firestore';
+import { useDispatch, useSelector } from 'react-redux';
+import { db, storage } from '../config/firebase';
+import { getDownloadURL, ref } from 'firebase/storage';
 
-import { updateUser } from "../store/userStore";
-import { Heading } from "@chakra-ui/react";
+import { updateUser } from '../store/userStore';
+import { Heading } from '@chakra-ui/react';
 
 // import {admin} from 'firebase-admin'
 
@@ -42,8 +42,8 @@ const SingleNFT = () => {
   //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
   const aFunction = async () => {
     let docData = await query(
-      collection(db, "NFTs"),
-      where("id", "==", `${nftId}`)
+      collection(db, 'NFTs'),
+      where('id', '==', `${nftId}`),
     );
     await onSnapshot(docData, (query) => {
       query.forEach((doc) => {
@@ -80,7 +80,7 @@ const SingleNFT = () => {
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
-    const followRef = doc(db, "users", `${data.creatorId}`);
+    const followRef = doc(db, 'users', `${data.creatorId}`);
 
     if (
       userProfile.following &&
@@ -95,7 +95,7 @@ const SingleNFT = () => {
               name: data.creator,
             }),
           },
-        })
+        }),
       );
 
       await updateDoc(followRef, {
@@ -116,7 +116,7 @@ const SingleNFT = () => {
               name: data.creator,
             }),
           },
-        })
+        }),
       );
       await updateDoc(followRef, {
         followers: arrayUnion({
@@ -134,12 +134,11 @@ const SingleNFT = () => {
     if (!follows) {
       followToggle();
     }
-    navigate("/Chat");
+    navigate('/Chat');
   };
 
-  const chatsWithAdd = async  () => {
-
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+  const chatsWithAdd = async () => {
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
 
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
@@ -148,12 +147,7 @@ const SingleNFT = () => {
         // profilePic: userProfile.profilePic,
       }),
     });
-  }
-
-
-
-
-
+  };
 
   const favorToggle = async () => {
     if (
@@ -171,7 +165,7 @@ const SingleNFT = () => {
               image: data.image,
             }),
           },
-        })
+        }),
       );
       setFavor(false);
     } else {
@@ -186,7 +180,7 @@ const SingleNFT = () => {
               image: data.image,
             }),
           },
-        })
+        }),
       );
       setFavor(true);
     }
@@ -210,12 +204,14 @@ const SingleNFT = () => {
   if (!data) return <h2>Loading</h2>;
   const { id, name, creator, price, description, creatorId, bids } = data;
   return (
-    <Container className="d-flex flex-column justify-content-center align-items-center">
+    <Container
+      style={{ marginTop: '5rem' }}
+      className="d-flex flex-column justify-content-center align-items-center">
       <Heading>{name}</Heading>
       <Heading size="lg">
-        Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{" "}
+        Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{' '}
       </Heading>
-      <Image fluid style={{ height: "400px" }} src={photo} />
+      <Image fluid style={{ height: '400px' }} src={photo} />
       <h5 className="mt-3">${(price / 100).toFixed(2)}</h5>
       <p>{description}</p>
       {user && user.data ? (
@@ -243,7 +239,7 @@ const SingleNFT = () => {
           )}
         </div>
       ) : (
-        <Button className="mt-3" onClick={() => navigate("/SignIn")}>
+        <Button className="mt-3" onClick={() => navigate('/SignIn')}>
           Sign in to message artist
         </Button>
       )}

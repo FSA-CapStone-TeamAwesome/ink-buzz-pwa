@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
+import {
+  Button,
+  Container,
+  Form,
+  Tab,
+  Row,
+  Col,
+  Nav,
+  Card,
+} from 'react-bootstrap';
 import { assets } from '../constants';
 import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
@@ -19,6 +28,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import PreviewPost from './previewPost';
 import FollowedArtists from './FollowedArtists';
 import { Heading } from '@chakra-ui/react';
+import FollowCard from './FollowCard';
 
 const Profile = () => {
   injectStyle();
@@ -293,15 +303,9 @@ const Profile = () => {
                     </Heading>
 
                     <div className="d-flex flex-column">
-                      {user.followers.map((user, idx) => {
+                      {user.followers.map((user) => {
                         return (
-                          <div
-                            className="d-flex flex-column justify-content-center align-items-center"
-                            key={'user' + idx}>
-                            <Link to={`/profiles/${user.id}`} className="mt-3">
-                              {user.name}
-                            </Link>
-                          </div>
+                          <FollowCard key={user.id} user={user} />
                         );
                       })}
                     </div>
