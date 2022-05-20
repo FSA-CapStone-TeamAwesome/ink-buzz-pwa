@@ -91,7 +91,8 @@ const Chat = (props) => {
 
     let allInterlocutorIds = [...new Set([
       ...messages.map((msg) => msg.fromId),
-      ...messages.map((msg) => msg.toId)])].filter((id) => (id !== myId))
+      ...messages.map((msg) => msg.toId)])]
+      .filter((id) => (id !== myId))
 
       allInterlocutorIds.forEach((id) => {
         if (id && !convoIds.includes(id)) {
