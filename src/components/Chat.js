@@ -1,35 +1,40 @@
 import React, { useState, useEffect } from "react";
 
-import { Container } from "react-bootstrap";
-
-import { auth, db, app } from "../config/firebase";
-
-import { useAuthentication } from "../hooks/useAuthentication";
+import { db } from "../config/firebase";
 
 import { useSelector } from "react-redux";
 
 import Messages from "./Messages";
 import MessageFooter from "./MessageFooter";
 
-import { Flex, Button } from "@chakra-ui/react";
+import {
+  Flex,
+  Button,
+  ButtonGroup,
+  HStack,
+  VStack,
+  Select,
+  Input,
+  Box,
+  useDisclosure,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 
 import {
-  document,
-  getDocs,
   collection,
   addDoc,
   Timestamp,
   onSnapshot,
   query,
-  where,
   orderBy,
   limit,
 } from "firebase/firestore";
 
-import { VStack, Text, HStack, Select, Input, Box } from "@chakra-ui/react";
-import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
-import { Tooltip } from "@chakra-ui/react";
-import { networkParams } from "./wallet_stuff/networks";
 import { toHex, truncateAddress } from "./wallet_stuff/utils";
 import { ethers } from "ethers";
 
@@ -57,6 +62,8 @@ const Chat = (props) => {
     recipient: interlocutor,
     photoUrl: "",
   });
+
+  const { onOpen, isOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     if (user && user.data) {
@@ -98,10 +105,9 @@ const Chat = (props) => {
     } else {
       setSendToAddress("");
     }
-  }, [messages]);
+  }, [messages, interlocutor]);
 
   const {
-    navigation,
     account,
     setAccount,
     provider,
@@ -142,7 +148,7 @@ const Chat = (props) => {
       });
       console.log("tx is ", tx);
     } catch (txError) {
-      console.log("txError was ", txError);
+      console.log("txError was ", txError.code);
     }
   };
 
@@ -152,17 +158,8 @@ const Chat = (props) => {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: toHex(network) }],
       });
-    } catch (switchError) {
-      if (switchError.code === 4902) {
-        try {
-          await library.provider.request({
-            method: "wallet_addEthereumChain",
-            params: [networkParams[toHex(network)]],
-          });
-        } catch (error) {
-          setError(error);
-        }
-      }
+    } catch (error) {
+      setError(error);
     }
   };
 
@@ -227,7 +224,13 @@ const Chat = (props) => {
   };
 
   return (
-    <Flex w="100%" h="100vh" justify="center" align="center">
+    <Flex
+      w="100%"
+      h="100vh"
+      justify="center"
+      align="center"
+      className="chat-component"
+    >
       <Flex w="100%" h="90%" flexDir="column">
         <div id="conversations">
           {convoList.map((conversation, idx) => {
@@ -255,6 +258,81 @@ const Chat = (props) => {
               </Button>
             );
           })}
+          {!account ? (
+            <Button onClick={connectWallet} style={{ margin: 10 }}>
+              Connect Wallet
+            </Button>
+          ) : (
+            <ButtonGroup spacing="1">
+              <Button onClick={onOpen} style={{ margin: 10 }}>
+                Send Ether
+              </Button>
+              <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+                isCentered
+                motionPreset="scale"
+                size="lg"
+              >
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>
+                    Active Account: {truncateAddress(account)}
+                  </ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <HStack justify="center">
+                      <Box
+                        maxW="sm"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        padding="10px"
+                      >
+                        <VStack>
+                          <Button onClick={switchNetwork}>
+                            Switch Network
+                          </Button>
+                          <Select
+                            placeholder="Select network"
+                            onChange={handleNetwork}
+                          >
+                            <option value="3">Ropsten</option>
+                            <option value="4">Rinkeby</option>
+                          </Select>
+                        </VStack>
+                      </Box>
+                      <Box
+                        maxW="sm"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        padding="10px"
+                      >
+                        <VStack>
+                          <Button
+                            onClick={sendTransaction}
+                            isDisabled={sendToAddress.length}
+                          >
+                            Send Ether
+                          </Button>
+                          <Input
+                            placeholder={sendToAddress}
+                            maxLength={20}
+                            onChange={handleInput}
+                            w="140px"
+                          />
+                        </VStack>
+                      </Box>
+                    </HStack>
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+              <Button onClick={disconnect} style={{ margin: 10 }}>
+                Disconnect
+              </Button>
+            </ButtonGroup>
+          )}
         </div>
         {messages && (
           <Messages
@@ -272,70 +350,6 @@ const Chat = (props) => {
           setMessage={setMessage}
           sendMessage={sendMessage}
         />
-        {/* <VStack justifyContent="center" alignItems="center" h="100vh">
-        <HStack>
-          {!account ? (
-            <Button onClick={connectWallet}>Connect Wallet</Button>
-          ) : (
-            <Button onClick={disconnect}>Disconnect</Button>
-          )}
-        </HStack>
-        <VStack justifyContent="center" alignItems="center" padding="10px 0">
-          <HStack>
-            <Text>{`Connection Status: `}</Text>
-            {account ? (
-              <CheckCircleIcon color="green" />
-            ) : (
-              <WarningIcon color="#cd5700" />
-            )}
-          </HStack>
-
-          <Tooltip label={account} placement="right">
-            <Text>{`Account: ${truncateAddress(account)}`}</Text>
-          </Tooltip>
-          <Text>{`Network ID: ${chainId ? chainId : "No Network"}`}</Text>
-        </VStack>
-        {account && (
-          <HStack justifyContent="flex-start" alignItems="flex-start">
-            <Box
-              maxW="sm"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              padding="10px"
-            >
-              <VStack>
-                <Button onClick={switchNetwork}>Switch Network</Button>
-                <Select placeholder="Select network" onChange={handleNetwork}>
-                  <option value="3">Ropsten</option>
-                  <option value="4">Rinkeby</option>
-                  <option value="42">Kovan</option>
-                  <option value="1666600000">Harmony</option>
-                  <option value="42220">Celo</option>
-                </Select>
-              </VStack>
-            </Box>
-            <Box
-              maxW="sm"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              padding="10px"
-            >
-              <VStack>
-                <Button onClick={sendTransaction}>Send Ether</Button>
-                <Input
-                  placeholder="Set Amount"
-                  maxLength={20}
-                  onChange={handleInput}
-                  w="140px"
-                />
-              </VStack>
-            </Box>
-          </HStack>
-        )}
-        <Text>{error ? error.message : null}</Text>
-      </VStack> */}
       </Flex>
     </Flex>
   );

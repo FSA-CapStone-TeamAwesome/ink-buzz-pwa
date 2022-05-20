@@ -4,7 +4,6 @@ import { getStorage, ref, getBlob } from "firebase/storage";
 
 const Messages = (props) => {
   const { messages, myId, interlocutor } = props;
-  console.log("interlocutor is ", interlocutor);
   const [pp, setPp] = useState();
   useEffect(() => {
     if (interlocutor) {
