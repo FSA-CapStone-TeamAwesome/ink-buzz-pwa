@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 import { Container, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { Heading } from '@chakra-ui/react';
 
 const UploadFile = () => {
   const [imageUpload, setImageUpload] = useState(null);
@@ -90,8 +91,11 @@ const UploadFile = () => {
   };
   console.log(value.tags)
   return (
-    <Container className="d-flex justify-content-center">
+    <Container
+      style={{ marginTop: '5rem' }}
+      className="d-flex justify-content-center ">
       <Form onSubmit={uploadFile} className="d-flex flex-column">
+        <Heading>Upload a new design!</Heading>
         <h3 className="my-3">Name:</h3>
         <Form.Group className="mb-3" controlId="name">
           <Form.Control

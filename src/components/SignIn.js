@@ -3,6 +3,7 @@ import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { setLocal } from '../config/Auth';
 import { useSelector } from 'react-redux';
+import { Heading } from '@chakra-ui/react';
 
 export const SignIn = () => {
   const navigate = useNavigate();
@@ -42,10 +43,10 @@ export const SignIn = () => {
   }, [user, navigate]);
 
   return (
-    <div>
+    <div style={{ marginTop: '5rem' }}>
       {!!value.error && <div className="error">{value.error}</div>}
       <div className="d-flex flex-column justify-content-center align-items-center">
-        <h1 className="mb-5">Log In</h1>
+        <Heading className="mb-5">Log In</Heading>
         <Form className="controls w-50" onSubmit={signIn}>
           <Form.Group className="mb-3" controlId="email">
             <Form.Control

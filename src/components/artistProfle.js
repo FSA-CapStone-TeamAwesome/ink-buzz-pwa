@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Button, Container, Form, Tab, Row, Col, Nav } from "react-bootstrap";
-import { assets } from "../constants";
-import { toast } from "react-toastify";
-import { injectStyle } from "react-toastify/dist/inject-style";
+import React, { useState, useEffect } from 'react';
+import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
+import { assets } from '../constants';
+import { toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 import {
   doc,
   getDoc,
@@ -10,22 +10,22 @@ import {
   arrayUnion,
   query,
   arrayRemove,
-} from "firebase/firestore";
-import { db, storage } from "../config/firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { getUser, updateUser } from "../store/userStore";
+} from 'firebase/firestore';
+import { db, storage } from '../config/firebase';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUser, updateUser } from '../store/userStore';
 import {
   getAuth,
   updateEmail,
   reauthenticateWithCredential,
   EmailAuthProvider,
-} from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useNavigate, useParams, Link as DOMLink } from "react-router-dom";
-import PreviewPost from "./previewPost";
-import { getProfile, clearProfile } from "../store/profileStore";
-import { Heading, Link } from "@chakra-ui/react";
-import { updateProfile } from "../store/profileStore";
+} from 'firebase/auth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useNavigate, useParams, Link as DOMLink } from 'react-router-dom';
+import PreviewPost from './previewPost';
+import { getProfile, clearProfile } from '../store/profileStore';
+import { Heading, Link } from '@chakra-ui/react';
+import { updateProfile } from '../store/profileStore';
 
 const ArtistProfile = () => {
   injectStyle();
@@ -44,7 +44,6 @@ const ArtistProfile = () => {
 
   //function will follow/unfollow user
   const followToggle = async () => {
-
     //for removing from followers/following
     if (
       user.following &&
@@ -59,19 +58,21 @@ const ArtistProfile = () => {
               name: artistProfile.name,
             }),
           },
-        })
+        }),
       );
 
       dispatch(
-          updateProfile({
-        artistProfile,
-        update: {
-        followers: arrayRemove({
-          name: user.name,
-          id: user.data.id,
-          profilePic: user.profilePic,
-        })},
-      }))
+        updateProfile({
+          artistProfile,
+          update: {
+            followers: arrayRemove({
+              name: user.name,
+              id: user.data.id,
+              profilePic: user.profilePic,
+            }),
+          },
+        }),
+      );
       setFollow(false);
     }
     //for adding to followers/following
@@ -85,18 +86,20 @@ const ArtistProfile = () => {
               name: artistProfile.name,
             }),
           },
-        })
+        }),
       );
       dispatch(
-      updateProfile({
-      artistProfile,
-      update: {
-      followers: arrayUnion({
-        name: user.name,
-        id: user.data.id,
-        profilePic: user.profilePic,
-      })},
-    }))
+        updateProfile({
+          artistProfile,
+          update: {
+            followers: arrayUnion({
+              name: user.name,
+              id: user.data.id,
+              profilePic: user.profilePic,
+            }),
+          },
+        }),
+      );
       setFollow(true);
     }
   };
@@ -105,16 +108,14 @@ const ArtistProfile = () => {
     if (!follows) {
       followToggle();
     }
-    navigate("/Chat");
+    navigate('/Chat');
   };
 
   async function getPhoto() {
     if (artist && artist.profilePic) {
-
       await getDownloadURL(ref(storage, artist.profilePic))
         .then((url) => {
           setPhoto(url);
-
         })
         .catch((err) => {
           console.log(err);
@@ -135,16 +136,12 @@ const ArtistProfile = () => {
 
   async function onPageLoad() {
     await dispatch(getProfile(profileId));
-    await getPhoto()
+    await getPhoto();
   }
-
-  // useEffect(() => {
-  //   getPhoto();
-  // }, [artistProfile]);
 
   useEffect(() => {
     setArtistProfile(artist);
-    getPhoto()
+    getPhoto();
   }, [artist]);
 
   useEffect(() => {
@@ -154,19 +151,20 @@ const ArtistProfile = () => {
   return (
     <Container className="mt-3">
       {artistProfile && artist.data ? (
-        <div>
+        <div style={{ marginTop: '5rem' }}>
           <div className="d-flex align-items-center">
             <div className="d-flex flex-column align-items-center">
               {photo ? (
                 <img src={photo} alt="profile" className="profile-picture" />
-              ) : <></>
-              }
+              ) : (
+                <></>
+              )}
             </div>
             <div className="ms-3">
               <Heading size="lg">{artistProfile.name}</Heading>
             </div>
           </div>
-          <div className="d-flex">
+          <div className="d-flex mt-3">
             <Button className="me-3" onClick={() => messageArtist()}>
               Message Artist
             </Button>
@@ -196,19 +194,19 @@ const ArtistProfile = () => {
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="followers">
-                      {(artist.followers && artist.followers.length) || 0}{" "}
+                      {(artist.followers && artist.followers.length) || 0}{' '}
                       Followers
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="following">
-                      {(artist.following && artist.following.length) || 0}{" "}
+                      {(artist.following && artist.following.length) || 0}{' '}
                       Following
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="favorites">
-                      {(artist.favorites && artist.favorites.length) || 0}{" "}
+                      {(artist.favorites && artist.favorites.length) || 0}{' '}
                       Favorites
                     </Nav.Link>
                   </Nav.Item>
@@ -234,34 +232,32 @@ const ArtistProfile = () => {
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
                     <h3>
-                      {artist.name} has {artist.followers.length || 0}{" "}
+                      {artist.name} has {artist.followers.length || 0}{' '}
                       followers:
                     </h3>
                     <div className="d-flex flex-column">
                       {artist.followers.map((artist, idx) => {
                         if (artist.id === user.data.id) {
                           return (
-                            <div className="w-50" key={"artist" + idx}>
+                            <div className="w-50" key={'artist' + idx}>
                               <Button
                                 onClick={() => navigate(`/profile`)}
-                                className="mt-3"
-                              >
+                                className="mt-3">
                                 {artist.name}
                               </Button>
                             </div>
                           );
                         }
                         return (
-                          <div className="w-50" key={"artist" + idx}>
+                          <div className="w-50" key={'artist' + idx}>
                             <Link
                               as={DOMLink}
                               onClick={() => {
-                                dispatch(clearProfile())
+                                dispatch(clearProfile());
                                 setRefresh(!refresh);
                               }}
                               to={`/profiles/${artist.id}`}
-                              className="mt-3"
-                            >
+                              className="mt-3">
                               {artist.name}
                             </Link>
                           </div>
@@ -271,19 +267,18 @@ const ArtistProfile = () => {
                   </Tab.Pane>
                   <Tab.Pane eventKey="following">
                     <h3>
-                      {artist.name} is following {artist.following.length || 0}{" "}
+                      {artist.name} is following {artist.following.length || 0}{' '}
                       artists:
                     </h3>
                     <div className="d-flex flex-column">
                       {artist.following.map((artist, idx) => {
                         if (artist.id === user.data.id) {
                           return (
-                            <div className="w-50" key={"artist" + idx}>
+                            <div className="w-50" key={'artist' + idx}>
                               <Link
                                 as={DOMLink}
                                 to={`/profile/`}
-                                className="mt-3"
-                              >
+                                className="mt-3">
                                 {artist.name}
                               </Link>
                             </div>
@@ -291,15 +286,15 @@ const ArtistProfile = () => {
                         }
 
                         return (
-                          <div className="w-50" key={"artist" + idx}>
+                          <div className="w-50" key={'artist' + idx}>
                             <Link
                               as={DOMLink}
                               onClick={() => {
-                                dispatch(clearProfile())
-                                setRefresh(!refresh)}}
+                                dispatch(clearProfile());
+                                setRefresh(!refresh);
+                              }}
                               to={`/profiles/${artist.id}`}
-                              className="mt-3"
-                            >
+                              className="mt-3">
                               {artist.name}
                             </Link>
                           </div>
@@ -309,19 +304,18 @@ const ArtistProfile = () => {
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
                     <h3>
-                      {artist.name} has{" "}
-                      {(artist.favorites && artist.favorites.length) || 0}{" "}
+                      {artist.name} has{' '}
+                      {(artist.favorites && artist.favorites.length) || 0}{' '}
                       favorites:
                     </h3>
                     <div className="d-flex flex-column">
                       {artist.favorites &&
                         artist.favorites.map((design, idx) => {
                           return (
-                            <div className="w-50" key={"design" + idx}>
+                            <div className="w-50" key={'design' + idx}>
                               <Button
                                 onClick={() => navigate(`/nft/${design.id}`)}
-                                className="mt-3"
-                              >
+                                className="mt-3">
                                 {design.name}
                               </Button>
                             </div>
