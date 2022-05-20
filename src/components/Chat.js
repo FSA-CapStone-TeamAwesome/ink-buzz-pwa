@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Container } from "react-bootstrap";
+import { Container, Form } from "react-bootstrap";
 
 import { auth, db, app } from "../config/firebase";
 
@@ -33,6 +33,9 @@ import { networkParams } from "./wallet_stuff/networks";
 import { toHex, truncateAddress } from "./wallet_stuff/utils";
 import { ethers } from "ethers";
 
+import { NetworkFirst } from "workbox-strategies";
+import { SignEthereumTransactionResponse } from "@coinbase/wallet-sdk/dist/relay/Web3Response";
+
 // This global variable will be replaced with a converation list
 
 const Chat = (props) => {
@@ -52,6 +55,16 @@ const Chat = (props) => {
 
   const [amount, setAmount] = useState(0);
 
+  const [list, setList] = useState([]);
+
+  const [NFT, setNFT] = useState(null)
+
+  const [startTransaction, setTransaction] = useState(null)
+
+  const [completeTransaction, setComplete] = useState(null)
+
+  const [sellerId, setSeller] = useState(null)
+
   const [message, setMessage] = useState({
     content: "",
     recipient: interlocutor,
@@ -68,22 +81,24 @@ const Chat = (props) => {
 
   useEffect(() => {
     if (myId) {
-      let q = query(
-        collection(db, "messages/queue", myId),
-        orderBy("timestamp"),
-        limit(100)
-      );
+      // let q = query(
+      //   collection(db, "messages/queue", myId),
+      //   orderBy("timestamp"),
+      //   limit(100)
+      // );
 
-      const unsub = onSnapshot(q, (snapshot) => {
-        setMessages(snapshot.docs.map((doc) => doc.data()));
-      });
+      // const unsub = onSnapshot(q, (snapshot) => {
+      //   setMessages(snapshot.docs.map((doc) => doc.data()));
+      // });
 
-      return unsub;
+
+      // return unsub;
     }
   }, [myId, interlocutor]);
 
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
+    getList()
   }, [interlocutor]);
 
   useEffect(() => {
@@ -183,6 +198,59 @@ const Chat = (props) => {
     }
   }, []);
 
+
+  async function getList() {
+    console.log('called')
+    try {
+    Promise.all(
+    onSnapshot(query(collection(db, 'NFTs'), where('creatorId', '==', `${interlocutor}`)), (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data())
+        setList((prev) => [...prev, doc.data()]);
+      });
+    }))
+  }
+  catch(err) {console.log(err)}
+
+
+  }
+
+  async function beginTransaction () {
+    let timestamp = Timestamp.fromMillis(Date.now())
+    let fromAddress = "";
+    try {
+      await addDoc(collection(db, `messages/queue/${message.recipient}`), {
+        artReference: null,
+        content: message.content,
+        fromName: myName,
+        fromId: myId,
+        fromAddress: fromAddress,
+        toId: message.recipient,
+        photoUrl: null,
+        timestamp,
+      });
+    } catch (err) {
+      console.log("ERROR!");
+      console.log(err);
+    } finally {
+      try {
+        await addDoc(collection(db, `messages/queue/${myId}`), {
+          artReference: null,
+          content: message.content,
+          fromName: myName,
+          fromId: myId,
+          fromAddress: fromAddress,
+          toId: message.recipient,
+          photoUrl: null,
+          timestamp,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    setMessage({ ...message, content: "" });
+
+  }
   // Sending a message should place it in your queue folder as well
   const sendMessage = async () => {
     let timestamp = Timestamp.fromMillis(Date.now());
@@ -225,7 +293,7 @@ const Chat = (props) => {
     }
     setMessage({ ...message, content: "" });
   };
-
+console.log(NFT)
   return (
     <Flex w="100%" h="100vh" justify="center" align="center">
       <Flex w="100%" h="90%" flexDir="column">
@@ -238,7 +306,9 @@ const Chat = (props) => {
                   style={{ margin: 10 }}
                   bg="lightgrey"
                   border="2px solid black"
-                  onClick={() => setInterlocutor(conversation.id)}
+                  onClick={() => {
+                    setList([])
+                    setInterlocutor(conversation.id)}}
                 >
                   {conversation.name}
                 </Button>
@@ -249,7 +319,9 @@ const Chat = (props) => {
                 key={idx + conversation.id}
                 style={{ margin: 10 }}
                 bg="lightgrey"
-                onClick={() => setInterlocutor(conversation.id)}
+                onClick={() => {
+                  setList([])
+                  setInterlocutor(conversation.id)}}
               >
                 {conversation.name}
               </Button>
@@ -272,6 +344,24 @@ const Chat = (props) => {
           setMessage={setMessage}
           sendMessage={sendMessage}
         />
+        { list.length ?
+        <Form onChange={(evt) => setNFT(evt.target.value)}>
+          <Form.Select name='nftId' className='w-50 m-3'>
+            <option value='null'>-</option>
+           {
+             list.map((nft) => {
+               return (
+                 <option key={nft.id} value={nft}>{nft.name}</option>
+               )
+             })
+           }
+          </Form.Select>
+          <Button className=" m-3" onSubmit={()=>{
+            beginTransaction()
+            setTransaction(true)}}>Begin Transaction</Button>
+        </Form>
+          : <></>
+          }
         {/* <VStack justifyContent="center" alignItems="center" h="100vh">
         <HStack>
           {!account ? (
