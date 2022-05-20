@@ -134,11 +134,10 @@ const SingleNFT = () => {
     if (!follows) {
       followToggle();
     }
-    navigate("/Chat");
+    navigate("/Chat", { state: { chosenInterlocutor: data.creatorId } });
   };
 
-  const chatsWithAdd = async  () => {
-
+  const chatsWithAdd = async () => {
     const chatsRef = doc(db, "users", `${user.data.id}`);
 
     await updateDoc(chatsRef, {
@@ -148,12 +147,7 @@ const SingleNFT = () => {
         // profilePic: userProfile.profilePic,
       }),
     });
-  }
-
-
-
-
-
+  };
 
   const favorToggle = async () => {
     if (
