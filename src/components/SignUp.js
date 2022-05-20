@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth } from '../config/firebase';
+import { db, auth, storage } from '../config/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { setLocal } from '../config/Auth';
 import { useSelector } from 'react-redux';
 import { Heading } from '@chakra-ui/react';
+import { ref, getDownloadURL, uploadString } from 'firebase/storage';
+import defaultImg from '../assets/images/default-profile.jpeg';
 
 const SignUp = () => {
+  console.log(defaultImg);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
+  const [image, setImage] = useState(null);
 
   const [value, setValue] = useState({
     email: '',
@@ -35,9 +39,15 @@ const SignUp = () => {
       let newUserDoc = await doc(db, `users`, `${auth.currentUser.uid}`);
       //doc will make an new User doc for us in the users collection, and the name will be the user.uid
 
+      const imageRef = ref(
+        storage,
+        `images/universal/${auth.currentUser.uid}/profile-picture`,
+      );
+      await uploadString(imageRef, defaultImg, 'data_url');
+
       await setDoc(newUserDoc, {
         name: value.name,
-        profilePic: '/images/universal/default/default-profile',
+        profilePic: `/images/universal/${auth.currentUser.uid}/profile-picture`,
         data: {
           email: value.email,
           location: '',
