@@ -142,9 +142,9 @@ const Profile = () => {
 
   return (
     <Container className="mt-3">
-      <Heading>My Profile</Heading>
       {user && user.data ? (
-        <div>
+        <div style={{ marginTop: '5rem' }}>
+          <Heading>My Profile</Heading>
           <div className="d-flex align-items-center mobile-profile">
             <div className="d-flex flex-column align-items-center">
               {imageUrl ? (

@@ -18,7 +18,7 @@ const Header = (props) => {
 
   return (
     <div>
-      <Navbar collapseOnSelect expand="md" bg="dark" variant="dark">
+      <Navbar collapseOnSelect expand="md" bg="dark" variant="dark" fixed="top">
         <Container>
           <LinkContainer to="/">
             <Navbar.Brand>
