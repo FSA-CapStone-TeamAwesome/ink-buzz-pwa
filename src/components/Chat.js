@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { Container } from "react-bootstrap";
 
-import { auth, db, app } from "../config/firebase";
-
-import { useAuthentication } from "../hooks/useAuthentication";
+import { db } from "../config/firebase";
 
 import { useSelector } from "react-redux";
 
@@ -14,16 +12,17 @@ import MessageFooter from "./MessageFooter";
 import { Flex, Button } from "@chakra-ui/react";
 
 import {
-  document,
-  getDocs,
   collection,
   addDoc,
   Timestamp,
   onSnapshot,
   query,
-  where,
   orderBy,
   limit,
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion
 } from "firebase/firestore";
 
 import { VStack, Text, HStack, Select, Input, Box } from "@chakra-ui/react";
@@ -87,6 +86,20 @@ const Chat = (props) => {
   }, [interlocutor]);
 
   useEffect(() => {
+
+    let convoIds = convoList.map((convo) => convo.id)
+
+    let allInterlocutorIds = [...new Set([
+      ...messages.map((msg) => msg.fromId),
+      ...messages.map((msg) => msg.toId)])]
+      .filter((id) => (id !== myId))
+
+      allInterlocutorIds.forEach((id) => {
+        if (id && !convoIds.includes(id)) {
+          chatsWithAdd(id)
+        }
+      } )
+
     let filteredMessages = messages.filter(
       (msg) => msg.fromId === interlocutor
     );
@@ -99,6 +112,20 @@ const Chat = (props) => {
       setSendToAddress("");
     }
   }, [messages]);
+
+  const chatsWithAdd = async  (id) => {
+
+    const nameRef = doc(db, 'users', id);
+    const nameDoc = await getDoc(nameRef)
+
+    const chatsRef = doc(db, "users", `${user.data.id}`);
+        await updateDoc(chatsRef, {
+          chatsWith: arrayUnion({
+            name: nameDoc.data().name,
+            id
+          }),
+        });
+  }
 
   const {
     navigation,
