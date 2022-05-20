@@ -5,7 +5,6 @@ import { storage } from '../config/firebase';
 import { Link } from 'react-router-dom';
 
 const FollowCard = ({ user }) => {
-  console.log(user);
   const [photo, setPhoto] = useState(null);
 
   async function getPhoto() {

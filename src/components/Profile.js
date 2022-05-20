@@ -39,6 +39,7 @@ const Profile = () => {
   const [imageUrl, setImageUrl] = useState(null);
 
   const user = useSelector((state) => state.user.user);
+  const following = useSelector((state) => state.following.following);
   const navigate = useNavigate();
 
   const [formName, setFormName] = useState('');
@@ -149,6 +150,8 @@ const Profile = () => {
   }, [dispatch]);
 
   useEffect(() => {}, [show]);
+
+  console.log(following);
 
   return (
     <Container className="mt-3">
@@ -302,27 +305,25 @@ const Profile = () => {
                       You have {user.followers.length || 0} followers:
                     </Heading>
 
-                    <div className="d-flex flex-column">
-                      {user.followers.map((user) => {
+                    <div className="d-flex flex-wrap justify-content-center">
+                      {user.followers.map((user, idx) => {
                         return (
-                          <FollowCard key={user.id} user={user} />
+                          <div key={idx + user.id} className="me-3">
+                            <FollowCard user={user} />
+                          </div>
                         );
                       })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="following">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       You are following {user.following.length || 0} artists:
-                    </h3>
-                    <div className="d-flex flex-column">
-                      {user.following.map((artist, idx) => {
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
+                      {following.map((artist, idx) => {
                         return (
-                          <div className="w-50" key={'artist' + idx}>
-                            <Link
-                              to={`/profiles/${artist.id}`}
-                              className="mt-3">
-                              {artist.name}
-                            </Link>
+                          <div key={idx + user.id} className="me-3">
+                            <FollowCard user={artist} />
                           </div>
                         );
                       })}
