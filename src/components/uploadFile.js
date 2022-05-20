@@ -63,6 +63,9 @@ const UploadFile = () => {
       }),
     });
 
+
+    //size: 1004113 this is about 1MB size file
+
     //Finally there's a file with detailed information for that NFT
     const changeP = await doc(db, 'NFTs', `${value.name + date}`);
     await setDoc(changeP, {
@@ -85,7 +88,7 @@ const UploadFile = () => {
     toast.success('Image Upload Successfully!');
     navigate('/');
   };
-
+  console.log(value.tags)
   return (
     <Container className="d-flex justify-content-center">
       <Form onSubmit={uploadFile} className="d-flex flex-column">
@@ -153,6 +156,16 @@ const UploadFile = () => {
             }>
             Add another Tag
           </Button>
+          {value.tags.length ?
+          <Button
+            type="button"
+            onClick={(prev) =>{
+              let tags = value.tags
+              tags.pop()
+              setValue({ ...value, tags: [tags] })
+            }}>
+            Remove Tag
+          </Button>: <></> }
         </Form.Group>
         <Button className="mb-2" type="submit" disabled={show === true}>
           Upload Image
