@@ -29,6 +29,7 @@ import PreviewPost from './previewPost';
 import FollowedArtists from './FollowedArtists';
 import { Heading } from '@chakra-ui/react';
 import FollowCard from './FollowCard';
+import FavoriteCard from './FavoriteCard';
 
 const Profile = () => {
   injectStyle();
@@ -150,8 +151,6 @@ const Profile = () => {
   }, [dispatch]);
 
   useEffect(() => {}, [show]);
-
-  console.log(following);
 
   return (
     <Container className="mt-3">
@@ -323,27 +322,36 @@ const Profile = () => {
                       {following.map((artist, idx) => {
                         return (
                           <div key={idx + user.id} className="me-3">
-                            <FollowCard user={artist} />
+                            <FollowCard
+                              user={{
+                                profilePic: artist.profilePic,
+                                name: artist.name,
+                                id: artist.data.id,
+                              }}
+                            />
                           </div>
                         );
                       })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       You have {(user.favorites && user.favorites.length) || 0}{' '}
                       favorites:
-                    </h3>
-                    <div className="d-flex flex-column">
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
                       {user.favorites &&
                         user.favorites.map((design, idx) => {
                           return (
-                            <div className="w-50" key={'design' + idx}>
-                              <Button
-                                onClick={() => navigate(`/nft/${design.id}`)}
-                                className="mt-3">
-                                {design.name}
-                              </Button>
+                            <div key={idx + design.id} className="me-3">
+                              <FavoriteCard
+                                favorite={{
+                                  id: design.id,
+                                  photo: design.image,
+                                  name: design.name,
+                                  creator: design.creator,
+                                }}
+                              />
                             </div>
                           );
                         })}
