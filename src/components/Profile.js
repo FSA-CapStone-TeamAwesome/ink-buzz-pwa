@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
+import {
+  Button,
+  Container,
+  Form,
+  Tab,
+  Row,
+  Col,
+  Nav,
+  Card,
+} from 'react-bootstrap';
 import { assets } from '../constants';
 import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
@@ -19,6 +28,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import PreviewPost from './previewPost';
 import FollowedArtists from './FollowedArtists';
 import { Heading } from '@chakra-ui/react';
+import FollowCard from './FollowCard';
+import FavoriteCard from './FavoriteCard';
 
 const Profile = () => {
   injectStyle();
@@ -29,6 +40,7 @@ const Profile = () => {
   const [imageUrl, setImageUrl] = useState(null);
 
   const user = useSelector((state) => state.user.user);
+  const following = useSelector((state) => state.following.following);
   const navigate = useNavigate();
 
   const [formName, setFormName] = useState('');
@@ -292,53 +304,54 @@ const Profile = () => {
                       You have {user.followers.length || 0} followers:
                     </Heading>
 
-                    <div className="d-flex flex-column">
+                    <div className="d-flex flex-wrap justify-content-center">
                       {user.followers.map((user, idx) => {
                         return (
-                          <div
-                            className="d-flex flex-column justify-content-center align-items-center"
-                            key={'user' + idx}>
-                            <Link to={`/profiles/${user.id}`} className="mt-3">
-                              {user.name}
-                            </Link>
+                          <div key={idx + user.id} className="me-3">
+                            <FollowCard user={user} />
                           </div>
                         );
                       })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="following">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       You are following {user.following.length || 0} artists:
-                    </h3>
-                    <div className="d-flex flex-column">
-                      {user.following.map((artist, idx) => {
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
+                      {following.map((artist, idx) => {
                         return (
-                          <div className="w-50" key={'artist' + idx}>
-                            <Link
-                              to={`/profiles/${artist.id}`}
-                              className="mt-3">
-                              {artist.name}
-                            </Link>
+                          <div key={idx + user.id} className="me-3">
+                            <FollowCard
+                              user={{
+                                profilePic: artist.profilePic,
+                                name: artist.name,
+                                id: artist.data.id,
+                              }}
+                            />
                           </div>
                         );
                       })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       You have {(user.favorites && user.favorites.length) || 0}{' '}
                       favorites:
-                    </h3>
-                    <div className="d-flex flex-column">
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
                       {user.favorites &&
                         user.favorites.map((design, idx) => {
                           return (
-                            <div className="w-50" key={'design' + idx}>
-                              <Button
-                                onClick={() => navigate(`/nft/${design.id}`)}
-                                className="mt-3">
-                                {design.name}
-                              </Button>
+                            <div key={idx + design.id} className="me-3">
+                              <FavoriteCard
+                                favorite={{
+                                  id: design.id,
+                                  photo: design.image,
+                                  name: design.name,
+                                  creator: design.creator,
+                                }}
+                              />
                             </div>
                           );
                         })}
