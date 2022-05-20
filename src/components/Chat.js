@@ -407,6 +407,7 @@ const Chat = (props) => {
                               try {
                                 const txHash = await sendTransaction();
                                 sendTxMessage(txHash, chainId);
+                                onClose();
                               } catch (e) {
                                 console.log(e);
                               }
