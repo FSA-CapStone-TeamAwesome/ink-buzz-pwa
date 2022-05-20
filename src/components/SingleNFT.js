@@ -142,9 +142,10 @@ const SingleNFT = () => {
     const chatsRef = doc(db, "users", `${user.data.id}`);
 
 
+    console.log(data)
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
-        // name: userProfile.name,
+        name: data.creator,
         id: data.creatorId,
         // profilePic: userProfile.profilePic,
       }),
