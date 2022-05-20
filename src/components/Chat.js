@@ -34,6 +34,10 @@ import {
   query,
   orderBy,
   limit,
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 
 import { toHex, truncateAddress } from "./wallet_stuff/utils";
@@ -97,6 +101,21 @@ const Chat = (props) => {
   }, [interlocutor]);
 
   useEffect(() => {
+    let convoIds = convoList.map((convo) => convo.id);
+
+    let allInterlocutorIds = [
+      ...new Set([
+        ...messages.map((msg) => msg.fromId),
+        ...messages.map((msg) => msg.toId),
+      ]),
+    ].filter((id) => id !== myId);
+
+    allInterlocutorIds.forEach((id) => {
+      if (id && !convoIds.includes(id)) {
+        chatsWithAdd(id);
+      }
+    });
+
     let filteredMessages = messages.filter(
       (msg) => msg.fromId === interlocutor
     );
@@ -109,6 +128,19 @@ const Chat = (props) => {
       setSendToAddress("");
     }
   }, [messages, interlocutor]);
+
+  const chatsWithAdd = async (id) => {
+    const nameRef = doc(db, "users", id);
+    const nameDoc = await getDoc(nameRef);
+
+    const chatsRef = doc(db, "users", `${user.data.id}`);
+    await updateDoc(chatsRef, {
+      chatsWith: arrayUnion({
+        name: nameDoc.data().name,
+        id,
+      }),
+    });
+  };
 
   const {
     account,
