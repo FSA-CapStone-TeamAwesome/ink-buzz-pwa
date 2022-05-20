@@ -41,6 +41,7 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 
 import { toHex, truncateAddress } from "./wallet_stuff/utils";
@@ -93,6 +94,7 @@ const Chat = (props) => {
       setMyId(user.data.id);
       setConvoList([...user.chatsWith]);
       setMyName(user.name);
+
     }
   }, [user]);
 
@@ -116,10 +118,18 @@ const Chat = (props) => {
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
     getList()
+    let convoIds = convoList.map((convo) => convo.id);
+    let findIt = convoIds.indexOf(interlocutor)
+    if(convoList[findIt].buyer){
+      setTransaction(true)
+      setSeller(false)
+    }
+
   }, [interlocutor]);
 
   useEffect(() => {
     let convoIds = convoList.map((convo) => convo.id);
+
 
     let allInterlocutorIds = [
       ...new Set([
@@ -254,24 +264,13 @@ const Chat = (props) => {
     let text = '';
 
 
-    const nameRef = doc(db, "users", id);
-    const nameDoc = await getDoc(nameRef);
 
-    // const chatsRef = doc(db, "users", `${user.data.id}`);
-    // await updateDoc(chatsRef, {
-    //   chatsWith: arrayUnion({
-    //     name: nameDoc.data().name,
-    //     id,
-    //   })})
 
     const internalNFT = list[ripValue]
     let timestamp = Timestamp.fromMillis(Date.now())
     let fromAddress = "";
     if(!bool) {
        text = `Transaction Cancelled by ${myName}`
-
-
-
     }
     else {
       text = `${myName} would like to purchase the design, ${internalNFT.name}, created by ${internalNFT.creator}. The going rate is $${(internalNFT.price/100).toFixed(2)}. When payment is recieved, please confirm so transaction can clear.`;
@@ -312,6 +311,33 @@ const Chat = (props) => {
         });
       } catch (err) {
         console.log(err);
+      }
+      if(bool){
+        const nameRef = doc(db, "users", NFT.creatorId);
+        const nameDoc = await getDoc(nameRef);
+        const chatsRef = doc(db, "users", `${user.data.id}`);
+
+        await updateDoc(chatsRef, {
+          chatsWith: arrayRemove({
+            name: nameDoc.data().name,
+            id: internalNFT['creator'],
+          })})
+
+        await updateDoc(chatsRef, {
+          chatsWith: arrayUnion({
+            name: nameDoc.data().name,
+            id: internalNFT['creator'],
+            buyer: true
+          })})
+          //update for current user
+
+          await updateDoc(nameRef, {
+            chatsWith: arrayUnion({
+              name: myName,
+              id: myId,
+              seller: true
+            })})
+          //update for seller
       }
     }
     setMessage({ ...message, content: "" });
