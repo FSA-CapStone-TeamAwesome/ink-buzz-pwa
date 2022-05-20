@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { db } from "../config/firebase";
+import { db } from '../config/firebase';
 
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
-import Messages from "./Messages";
-import MessageFooter from "./MessageFooter";
+import Messages from './Messages';
+import MessageFooter from './MessageFooter';
 
 import {
   Flex,
@@ -24,7 +24,7 @@ import {
   ModalOverlay,
   ModalContent,
   ModalCloseButton,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 import {
   collection,
@@ -38,10 +38,10 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
-import { toHex, truncateAddress } from "./wallet_stuff/utils";
-import { ethers } from "ethers";
+import { toHex, truncateAddress } from './wallet_stuff/utils';
+import { ethers } from 'ethers';
 
 // This global variable will be replaced with a converation list
 
@@ -50,13 +50,13 @@ const Chat = (props) => {
 
   const [convoList, setConvoList] = useState([]);
 
-  const [myId, setMyId] = useState("");
+  const [myId, setMyId] = useState('');
 
-  const [myName, setMyName] = useState("");
+  const [myName, setMyName] = useState('');
 
-  const [interlocutor, setInterlocutor] = useState("");
+  const [interlocutor, setInterlocutor] = useState('');
 
-  const [sendToAddress, setSendToAddress] = useState("");
+  const [sendToAddress, setSendToAddress] = useState('');
 
   const [messages, setMessages] = useState([]);
 
@@ -65,9 +65,9 @@ const Chat = (props) => {
   // const [interlocutorName, setInterlocutorName] = useState("");
 
   const [message, setMessage] = useState({
-    content: "",
+    content: '',
     recipient: interlocutor,
-    photoUrl: "",
+    photoUrl: '',
   });
 
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -83,9 +83,9 @@ const Chat = (props) => {
   useEffect(() => {
     if (myId) {
       let q = query(
-        collection(db, "messages/queue", myId),
-        orderBy("timestamp"),
-        limit(100)
+        collection(db, 'messages/queue', myId),
+        orderBy('timestamp'),
+        limit(100),
       );
 
       const unsub = onSnapshot(q, (snapshot) => {
@@ -117,7 +117,7 @@ const Chat = (props) => {
     });
 
     let filteredMessages = messages.filter(
-      (msg) => msg.fromId === interlocutor
+      (msg) => msg.fromId === interlocutor,
     );
 
     if (filteredMessages.length) {
@@ -125,15 +125,15 @@ const Chat = (props) => {
         filteredMessages[filteredMessages.length - 1].fromAddress;
       setSendToAddress(sendAddressHolder);
     } else {
-      setSendToAddress("");
+      setSendToAddress('');
     }
   }, [messages, interlocutor]);
 
   const chatsWithAdd = async (id) => {
-    const nameRef = doc(db, "users", id);
+    const nameRef = doc(db, 'users', id);
     const nameDoc = await getDoc(nameRef);
 
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
         name: nameDoc.data().name,
@@ -172,25 +172,25 @@ const Chat = (props) => {
   const sendTransaction = async () => {
     try {
       const tx = await library.provider.request({
-        method: "eth_sendTransaction",
+        method: 'eth_sendTransaction',
         params: [
           {
             from: account,
             to: sendToAddress,
-            value: ethers.utils.parseUnits(amount, "ether").toHexString(),
+            value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
           },
         ],
       });
       return tx;
     } catch (txError) {
-      console.log("txError was ", txError.code);
+      console.log('txError was ', txError.code);
     }
   };
 
   const switchNetwork = async () => {
     try {
       await library.provider.request({
-        method: "wallet_switchEthereumChain",
+        method: 'wallet_switchEthereumChain',
         params: [{ chainId: toHex(network) }],
       });
     } catch (error) {
@@ -201,7 +201,7 @@ const Chat = (props) => {
   const refreshState = () => {
     setAccount();
     setChainId();
-    setNetwork("");
+    setNetwork('');
   };
 
   const disconnect = async () => {
@@ -219,7 +219,7 @@ const Chat = (props) => {
   const sendMessage = async () => {
     let timestamp = Timestamp.fromMillis(Date.now());
 
-    let fromAddress = "";
+    let fromAddress = '';
 
     if (account) {
       fromAddress = account;
@@ -239,7 +239,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log("ERROR!");
+      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -259,13 +259,13 @@ const Chat = (props) => {
         console.log(err);
       }
     }
-    setMessage({ ...message, content: "" });
+    setMessage({ ...message, content: '' });
   };
 
   const sendTxMessage = async (txHash, chainId) => {
     let timestamp = Timestamp.fromMillis(Date.now());
 
-    let fromAddress = "";
+    let fromAddress = '';
 
     if (account) {
       fromAddress = account;
@@ -285,7 +285,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log("ERROR!");
+      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -305,7 +305,7 @@ const Chat = (props) => {
         console.log(err);
       }
     }
-    setMessage({ ...message, content: "" });
+    setMessage({ ...message, content: '' });
   };
 
   return (
@@ -314,10 +314,9 @@ const Chat = (props) => {
       h="100vh"
       justify="center"
       align="center"
-      className="chat-component"
-    >
+      className="chat-component">
       <Flex w="100%" h="90%" flexDir="column">
-        <div id="conversations">
+        <div style={{ marginTop: '2rem' }} id="conversations">
           {convoList.map((conversation, idx) => {
             if (interlocutor && interlocutor === conversation.id) {
               // setInterlocutorName(conversation.name);
@@ -327,8 +326,7 @@ const Chat = (props) => {
                   style={{ margin: 10 }}
                   bg="lightgrey"
                   border="2px solid black"
-                  onClick={() => setInterlocutor(conversation.id)}
-                >
+                  onClick={() => setInterlocutor(conversation.id)}>
                   {conversation.name}
                 </Button>
               );
@@ -338,8 +336,7 @@ const Chat = (props) => {
                 key={idx + conversation.id}
                 style={{ margin: 10 }}
                 bg="lightgrey"
-                onClick={() => setInterlocutor(conversation.id)}
-              >
+                onClick={() => setInterlocutor(conversation.id)}>
                 {conversation.name}
               </Button>
             );
@@ -358,8 +355,7 @@ const Chat = (props) => {
                 onClose={onClose}
                 isCentered
                 motionPreset="scale"
-                size="lg"
-              >
+                size="lg">
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader>
@@ -383,19 +379,16 @@ const Chat = (props) => {
                         borderWidth="1px"
                         borderRadius="lg"
                         overflow="hidden"
-                        padding="10px"
-                      >
+                        padding="10px">
                         <VStack>
                           <Button
                             onClick={switchNetwork}
-                            isDisabled={!network > 0}
-                          >
+                            isDisabled={!network > 0}>
                             Choose Network
                           </Button>
                           <Select
                             placeholder="Select network"
-                            onChange={handleNetwork}
-                          >
+                            onChange={handleNetwork}>
                             <option value="3">Ropsten</option>
                             <option value="4">Rinkeby</option>
                           </Select>
@@ -406,8 +399,7 @@ const Chat = (props) => {
                         borderWidth="1px"
                         borderRadius="lg"
                         overflow="hidden"
-                        padding="10px"
-                      >
+                        padding="10px">
                         <VStack>
                           <Button
                             // onClick={sendTransaction}
@@ -415,12 +407,12 @@ const Chat = (props) => {
                               try {
                                 const txHash = await sendTransaction();
                                 sendTxMessage(txHash, chainId);
+                                onClose();
                               } catch (e) {
                                 console.log(e);
                               }
                             }}
-                            isDisabled={!sendToAddress.length}
-                          >
+                            isDisabled={!sendToAddress.length}>
                             Send Ether
                           </Button>
                           <Input
@@ -446,7 +438,7 @@ const Chat = (props) => {
             messages={messages.filter(
               (msg) =>
                 (msg.fromId === myId && msg.toId === interlocutor) ||
-                msg.fromId === interlocutor
+                msg.fromId === interlocutor,
             )}
             myId={myId}
             interlocutor={interlocutor}
