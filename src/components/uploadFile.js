@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { doc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
@@ -11,8 +11,12 @@ import { Heading } from '@chakra-ui/react';
 import Compressor from 'compressorjs';
 
 const UploadFile = () => {
+  injectStyle();
+  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.user.user);
+
   const [imageUpload, setImageUpload] = useState(null);
-  const [imageUrls, setImageUrls] = useState([]);
   const [show, setShow] = useState(false);
   const [value, setValue] = useState({
     price: 0,
@@ -20,11 +24,6 @@ const UploadFile = () => {
     description: '',
     tags: [],
   });
-  injectStyle();
-  const user = useSelector((state) => state.user.user);
-  const navigate = useNavigate();
-
-  // const imagesListRef = ref(storage, "images/");
 
   const uploadFile = async (evt) => {
     evt.preventDefault();
@@ -37,7 +36,7 @@ const UploadFile = () => {
       toast.error('Design required for upload');
       return;
     }
-    if (user.name == '' || user.name == null) {
+    if (user.name === '' || user.name == null) {
       toast.error('Set a username in profile to upload designs.');
       return;
     }
@@ -93,12 +92,6 @@ const UploadFile = () => {
       created: `${date}`,
       tags: value.tags,
     });
-
-    // let getIt = await getDownloadURL(
-    //   ref(storage, `/images/universal/${user.data.id}/${value.name + date}`),
-    // );
-    // setImageUrls((prev) => [...prev, getIt]);
-    //rendering the image to prove we can, consider it a preview
     toast.success('Image Upload Successfully!');
     navigate('/');
   };
@@ -168,19 +161,13 @@ const UploadFile = () => {
 
           <Button
             type="button"
-            onClick={(prev) =>
-              setValue({ ...value, tags: [...value.tags, ''] })
-            }>
+            onClick={() => setValue({ ...value, tags: [...value.tags, ''] })}>
             Add another Tag
           </Button>
         </Form.Group>
         <Button className="mb-2" type="submit" disabled={show === true}>
           Upload Image
         </Button>
-        <br />
-        {imageUrls.map((url, index) => {
-          return <img key={index} src={url} alt={url} style={{ width: 300 }} />;
-        })}
       </Form>
     </Container>
   );

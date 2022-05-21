@@ -1,18 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Button,
-  Container,
-  Form,
-  Tab,
-  Row,
-  Col,
-  Nav,
-  Card,
-} from 'react-bootstrap';
-import { assets } from '../constants';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
+import profilePicImg from '../assets/images/default-profile.jpeg';
 import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
-import { doc, getDoc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUser, updateUser } from '../store/userStore';
@@ -24,7 +15,6 @@ import {
 } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
-import { useNavigate, Link } from 'react-router-dom';
 import PreviewPost from './previewPost';
 import FollowedArtists from './FollowedArtists';
 import { Heading } from '@chakra-ui/react';
@@ -36,20 +26,14 @@ const Profile = () => {
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [imageUpload, setImageUpload] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
 
   const user = useSelector((state) => state.user.user);
   const following = useSelector((state) => state.following.following);
-  const navigate = useNavigate();
 
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formPassword, setFormPassword] = useState('');
-
-  const handleShow = () => {
-    setShow(!show);
-  };
 
   const handleCancel = () => {
     setShow(!show);
@@ -73,15 +57,18 @@ const Profile = () => {
             })
             .catch((error) => {
               toast.error('Error Occurred!');
-              console.log('update email error');
+              console.error('update email error');
               console.log(error);
+              return;
             });
         })
         .catch((error) => {
           toast.error('Incorrect Password!');
-          console.log('wrong password');
+          console.error('wrong password');
           console.log(error);
+          return;
         });
+
       await dispatch(
         updateUser({
           user,
@@ -120,10 +107,11 @@ const Profile = () => {
     }
   };
 
-  const loadUser = async () => {
+  const loadUser = useCallback(async () => {
     let userRef = doc(db, 'users', user.data.id);
     let getUser = await getDoc(userRef);
-    let userInfo = await getUser.data();
+    await getUser.data();
+
     try {
       let getIt = await getDownloadURL(
         ref(storage, `/images/universal/${user.data.id}/profile-picture`),
@@ -133,7 +121,7 @@ const Profile = () => {
       console.log(error);
       setImageUrl();
     }
-  };
+  }, [user]);
 
   const auth = getAuth();
 
@@ -144,7 +132,7 @@ const Profile = () => {
       setFormEmail(auth.currentUser.email);
       setImageUrl(`/images/universal/${user.data.id}/profile-picture`);
     }
-  }, [user]);
+  }, [user, auth, loadUser]);
 
   useEffect(() => {
     dispatch(getUser());
@@ -163,7 +151,7 @@ const Profile = () => {
                 <img src={imageUrl} alt="profile" className="profile-picture" />
               ) : (
                 <img
-                  src={assets.profilePic}
+                  src={profilePicImg}
                   alt="profile"
                   className="profile-picture"
                 />
@@ -178,7 +166,7 @@ const Profile = () => {
             {!show ? (
               <Button
                 variant="dark"
-                onClick={handleShow}
+                onClick={() => setShow(!show)}
                 disabled={show === true}>
                 Edit Profile
               </Button>
