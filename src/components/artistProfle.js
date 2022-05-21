@@ -95,6 +95,17 @@ const ArtistProfile = () => {
     navigate('/Chat');
   };
 
+  //checking if user has artist on follow
+  // if (
+  //   artist.data &&
+  //   user.following &&
+  //   user.following.some((item) => item.id === `${artist.data.id}`)
+  // ) {
+  //   setFollow(true);
+  // } else {
+  //   setFollow(false);
+  // }
+
   const getPhoto = useCallback(async () => {
     if (artist && artist.profilePic) {
       let getIt = await getDownloadURL(ref(storage, artist.profilePic));
@@ -102,21 +113,9 @@ const ArtistProfile = () => {
     }
   }, [artist]);
 
-  //checking if user has artist on follow
-  if (
-    artist.data &&
-    user.following &&
-    user.following.some((item) => item.id === `${artist.data.id}`)
-  ) {
-    setFollow(true);
-  } else {
-    setFollow(false);
-  }
-
   const onPageLoad = useCallback(async () => {
     await dispatch(getProfile(profileId));
-    await getPhoto();
-  }, [dispatch, getPhoto, profileId]);
+  }, [dispatch, profileId]);
 
   useEffect(() => {
     setArtistProfile(artist);
