@@ -102,7 +102,7 @@ const Chat = (props) => {
 
       return unsub;
     }
-  }, [myId, interlocutor]);
+  }, [myId]);
 
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
