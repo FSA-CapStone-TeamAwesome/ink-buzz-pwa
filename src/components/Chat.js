@@ -68,6 +68,8 @@ const Chat = (props) => {
 
   const [sendToAddress, setSendToAddress] = useState("");
 
+
+
   const [messages, setMessages] = useState([]);
 
   const [amount, setAmount] = useState(0);
@@ -109,7 +111,7 @@ const Chat = (props) => {
       let q = query(
         collection(db, "messages/queue", myId),
         orderBy("timestamp"),
-        limit(100)
+        limit(40)
       );
 
       const unsub = onSnapshot(q, (snapshot) => {
@@ -118,7 +120,7 @@ const Chat = (props) => {
 
       return unsub;
     }
-  }, [myId, interlocutor]);
+  }, [myId]);
 
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
@@ -178,12 +180,12 @@ const Chat = (props) => {
 
   const chatsWithAdd = async (id) => {
     const nameRef = doc(db, "users", id);
-    const nameDoc = await getDoc(nameRef);
+    const nameFromDoc= await getDoc(nameRef)
 
     const chatsRef = doc(db, "users", `${user.data.id}`);
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
-        name: nameDoc.data().name,
+        name: nameFromDoc.data().name,
         role: null,
         id,
       }),
@@ -301,8 +303,10 @@ const Chat = (props) => {
       }),
     });
     const nameRef = doc(db, "users", interlocutor);
-    const nameDoc = await getDoc(nameRef);
-    const text = `Transaction completed. ${NFT.name} has been sold to ${nameDoc}.`
+    const nameFromDoc= await getDoc(nameRef)
+
+
+    const text = `Transaction completed. ${NFT.name} has been sold to ${nameFromDoc.data().name}.`
     let timestamp = Timestamp.fromMillis(Date.now());
     try {
       await addDoc(collection(db, `messages/queue/${message.recipient}`), {
@@ -338,7 +342,7 @@ const Chat = (props) => {
 
     await updateDoc(nameRef, {
       chatsWith: arrayRemove({
-        name: nameDoc,
+        name: nameFromDoc.data().name,
         id: interlocutor,
         role: "buyer",
         nft: NFT
@@ -347,7 +351,7 @@ const Chat = (props) => {
 
     await updateDoc(nameRef, {
       chatsWith: arrayUnion({
-        name: nameDoc,
+        name: nameFromDoc.data().name,
         id: interlocutor,
         role: null,
       }),
@@ -383,7 +387,7 @@ const Chat = (props) => {
     let timestamp = Timestamp.fromMillis(Date.now());
     let fromAddress = "";
     const nameRef = doc(db, "users", interlocutor );
-    const nameDoc = await getDoc(nameRef);
+    const nameFromDoc= await getDoc(nameRef)
     const chatsRef = doc(db, "users", `${user.data.id}`);
 
     if (!bool) {
@@ -444,7 +448,7 @@ const Chat = (props) => {
 
         await updateDoc(chatsRef, {
           chatsWith: arrayRemove({
-            name: nameDoc.data().name,
+            name: nameFromDoc.data().name,
             id: internalNFT["creatorId"],
             role: null,
 
@@ -453,7 +457,7 @@ const Chat = (props) => {
 
         await updateDoc(chatsRef, {
           chatsWith: arrayUnion({
-            name: nameDoc.data().name,
+            name: nameFromDoc.data().name,
             id: internalNFT["creatorId"],
             role: yourRole,
             nft: internalNFT
@@ -494,8 +498,8 @@ const Chat = (props) => {
         }
 
         await updateDoc(chatsRef, {
-          chatsWith: arrayRemove({
-            name: nameDoc.data().name,
+          chatsWrith: arrayRemove({
+            name: nameFromDoc.data().name,
             id: interlocutor,
             role: yourRole,
             nft: NFT
@@ -504,10 +508,9 @@ const Chat = (props) => {
 
         await updateDoc(chatsRef, {
           chatsWith: arrayUnion({
-            name: nameDoc.data().name,
+            name: nameFromDoc.data().name,
             id: interlocutor,
             role: null,
-
           }),
         });
         //update for current user
@@ -526,20 +529,12 @@ const Chat = (props) => {
             name: myName,
             id: myId,
             role: null,
-
           }),
         });
         setSeller(null)
       }
 
-
-
-
-
       }
-
-
-
 
     setMessage({ ...message, content: "" });
   }
