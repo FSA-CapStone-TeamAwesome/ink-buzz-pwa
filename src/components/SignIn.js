@@ -4,8 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { setLocal } from '../config/Auth';
 import { useSelector } from 'react-redux';
 import { Heading } from '@chakra-ui/react';
+import { auth } from '../config/firebase';
+import { toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
 
 export const SignIn = () => {
+  injectStyle();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
 
@@ -18,6 +22,7 @@ export const SignIn = () => {
   async function signIn(evt) {
     evt.preventDefault();
     if (value.email === '' || value.password === '') {
+      toast.error('Email and password are mandatory');
       setValue({
         ...value,
         error: 'Email and password are mandatory.',
@@ -27,7 +32,6 @@ export const SignIn = () => {
 
     try {
       setLocal(value.email, value.password);
-      navigate('/');
     } catch (error) {
       setValue({
         ...value,
@@ -44,7 +48,6 @@ export const SignIn = () => {
 
   return (
     <div style={{ marginTop: '5rem' }}>
-      {!!value.error && <div className="error">{value.error}</div>}
       <div className="d-flex flex-column justify-content-center align-items-center">
         <Heading className="mb-5">Log In</Heading>
         <Form className="controls w-50" onSubmit={signIn}>
