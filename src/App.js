@@ -33,7 +33,6 @@ function App() {
   const [chainId, setChainId] = useState();
 
   useEffect(() => {
-    user && console.log('FROM APP.JS');
     user && dispatch(getUser(user));
   });
 

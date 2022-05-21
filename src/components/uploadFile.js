@@ -22,7 +22,7 @@ const UploadFile = () => {
     price: 0,
     name: '',
     description: '',
-    tags: [],
+    tags: [''],
   });
 
   const uploadFile = async (evt) => {
@@ -96,6 +96,8 @@ const UploadFile = () => {
     navigate('/');
   };
 
+  console.log(value.tags);
+
   return (
     <Container
       style={{ marginTop: '5rem' }}
@@ -134,6 +136,7 @@ const UploadFile = () => {
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="file">
+          <h3 className="mb-3">Upload Design Here:</h3>
           <Form.Control
             type="file"
             onChange={(event) => {
@@ -159,11 +162,22 @@ const UploadFile = () => {
             );
           })}
 
-          <Button
-            type="button"
-            onClick={() => setValue({ ...value, tags: [...value.tags, ''] })}>
-            Add another Tag
-          </Button>
+          {value.tags[value.tags.length - 1] !== '' && (
+            <Button
+              type="button"
+              className="me-3"
+              onClick={() => setValue({ ...value, tags: [...value.tags, ''] })}>
+              Add another Tag
+            </Button>
+          )}
+          {value.tags[0] && (
+            <Button
+              type="button"
+              variant="danger"
+              onClick={() => setValue({ ...value, tags: [''] })}>
+              Clear All Tags
+            </Button>
+          )}
         </Form.Group>
         <Button className="mb-2" type="submit" disabled={show === true}>
           Upload Image
