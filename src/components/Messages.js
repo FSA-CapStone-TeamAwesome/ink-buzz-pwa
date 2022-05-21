@@ -58,7 +58,7 @@ const Messages = (props) => {
               </Flex>
             </Flex>
           );
-        } else if (msg.isStart) {
+        } else if (msg.isStart || msg.isStart === false) {
          return(
          <Flex key={index} w="100%" justify="center">
             <Flex
