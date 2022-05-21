@@ -36,7 +36,11 @@ const FollowedArtists = () => {
   }, [followingState]);
 
   if (!following[0]) {
-    return <h3>Loading</h3>;
+    return (
+      <Heading size="md" className="text-center">
+        You currently aren't following anyone
+      </Heading>
+    );
   }
 
   return (

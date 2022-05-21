@@ -104,12 +104,6 @@ const ArtistProfile = () => {
     }
   };
 
-  const messageArtist = async () => {
-    if (!follows) {
-      followToggle();
-    }
-    navigate('/Chat');
-  };
 
   async function getPhoto() {
     if (artist && artist.profilePic) {
@@ -133,6 +127,28 @@ const ArtistProfile = () => {
       setFollow(false);
     }
   }
+
+  const messageArtist = async () => {
+    chatsWithAdd();
+    if (!follows) {
+      followToggle();
+    }
+    navigate("/Chat", { state: { chosenInterlocutor: artist.data.id } });
+  };
+
+  const chatsWithAdd = async () => {
+    const chatsRef = doc(db, "users", `${user.data.id}`);
+
+    await updateDoc(chatsRef, {
+      chatsWith: arrayUnion({
+        name: artist.name,
+        id: artist.data.id,
+        role: null
+        // profilePic: userProfile.profilePic,
+      }),
+    });
+  };
+
 
   async function onPageLoad() {
     await dispatch(getProfile(profileId));

@@ -8,6 +8,7 @@ import { injectStyle } from 'react-toastify/dist/inject-style';
 import { Container, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { Heading } from '@chakra-ui/react';
+import Compressor from 'compressorjs';
 
 const UploadFile = () => {
   const [imageUpload, setImageUpload] = useState(null);
@@ -45,10 +46,25 @@ const UploadFile = () => {
 
     //We're uploading a photo to the storage, its path is the user's folder, and the filename is the user decided filename with the date
     let date = Date.now();
+
+    const imageRefSmall = ref(
+      storage,
+      `images/universal/${user.data.id}/small/${value.name + date}.jpg`,
+    );
+
+    new Compressor(imageUpload, {
+      quality: 0.5, // 0.6 can also be used, but its not recommended to go below.
+      width: 350,
+      success: async (smallImage) => {
+        await uploadBytes(imageRefSmall, smallImage);
+      },
+    });
+
     const imageRef = ref(
       storage,
       `images/universal/${user.data.id}/${value.name + date}`,
     );
+
     await uploadBytes(imageRef, imageUpload);
 
     //The user gets a copy to their firebaseFolder

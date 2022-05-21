@@ -26,7 +26,7 @@ const Messages = (props) => {
   };
 
   return (
-    <Flex w="100%" h="80%" overflowY="scroll" flexDirection="column" p="3">
+    <Flex w="100%" h="80%" overflowY="scroll" overflowX="hidden" flexDirection="column" p="3">
       {messages.map((msg, index) => {
         if (msg.isTx) {
           let net = "";

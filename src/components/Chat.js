@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 import { Container, Form } from "react-bootstrap";
+import { useLocation } from 'react-router-dom';
 
-import { db } from "../config/firebase";
+import { db } from '../config/firebase';
+
+
 
 import { useSelector } from "react-redux";
 
@@ -63,7 +66,10 @@ const Chat = (props) => {
 
   const [interlocutor, setInterlocutor] = useState("");
 
-  const [sendToAddress, setSendToAddress] = useState("");
+
+  const [chosenInterlocutor, setChosenInterlocutor] = useState('');
+
+  const [sendToAddress, setSendToAddress] = useState('');
 
   const [messages, setMessages] = useState([]);
 
@@ -88,6 +94,10 @@ const Chat = (props) => {
   });
 
   const { onOpen, isOpen, onClose } = useDisclosure();
+
+  const location = useLocation();
+
+  // const [NFT, setNFT] = useState({});
 
   useEffect(() => {
     if (user && user.data) {
@@ -118,14 +128,27 @@ const Chat = (props) => {
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
     getList()
-    let convoIds = convoList.map((convo) => convo.id);
+    let convoIds = convoList.map((convo) => convo.id)
     let findIt = convoIds.indexOf(interlocutor)
-    if(convoList[findIt].buyer){
+    console.log(convoList)
+    if(convoList.length && convoList[findIt].role === 'buyer'){
       setTransaction(true)
       setSeller(false)
     }
+    if(convoList.length && convoList[findIt].role === 'seller'){
+      setTransaction(true)
+      setSeller(true)
+    }
 
   }, [interlocutor]);
+
+  useEffect(() => {
+    if (location.state && location.state.chosenInterlocutor) {
+      setInterlocutor(location.state.chosenInterlocutor);
+    }
+    setChosenInterlocutor('');
+    location.state = {};
+  }, []);
 
   useEffect(() => {
     let convoIds = convoList.map((convo) => convo.id);
@@ -165,6 +188,7 @@ const Chat = (props) => {
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
         name: nameDoc.data().name,
+        role: null,
         id,
       }),
     });
@@ -243,9 +267,8 @@ const Chat = (props) => {
     }
   }, []);
 
-
+  //function gets list of available NFTs for sale and is mapped into a list
   async function getList() {
-    console.log('called')
     try {
     Promise.all(
     onSnapshot(query(collection(db, 'NFTs'), where('creatorId', '==', `${interlocutor}`)), (querySnapshot) => {
@@ -260,11 +283,58 @@ const Chat = (props) => {
 
   }
 
+
+  async function sendNFT () {
+
+    let change = await doc(db, 'users', `${user.data.id}`);
+    await updateDoc(change, {
+      ownedNFT: arrayUnion({
+        NFT
+      }),
+    });
+
+    const nameRef = doc(db, "users", NFT.creatorId);
+    const nameDoc = await getDoc(nameRef);
+
+
+    const chatsRef = doc(db, "users", `${user.data.id}`);
+        await updateDoc(nameRef, {
+          chatsWith: arrayRemove({
+            name: myName,
+            id: myId,
+            role: 'buyer'
+          })})
+
+        await updateDoc(nameRef, {
+          chatsWith: arrayUnion({
+            name: myName,
+            id: myId,
+            role: null
+          })})
+
+
+
+          await updateDoc(chatsRef, {
+            chatsWith: arrayRemove({
+              name: NFT.creator,
+              id: NFT.creatorId,
+              role: 'buyer'
+            })})
+
+          await updateDoc(chatsRef, {
+            chatsWith: arrayUnion({
+              name: NFT.creator,
+              id: NFT.creatorId,
+              role: null
+            })})
+
+
+  }
+
+
+
   async function beginTransaction (bool) {
     let text = '';
-
-
-
 
     const internalNFT = list[ripValue]
     let timestamp = Timestamp.fromMillis(Date.now())
@@ -327,7 +397,7 @@ const Chat = (props) => {
           chatsWith: arrayUnion({
             name: nameDoc.data().name,
             id: internalNFT['creator'],
-            buyer: true
+            role: 'buyer'
           })})
           //update for current user
 
@@ -335,7 +405,7 @@ const Chat = (props) => {
             chatsWith: arrayUnion({
               name: myName,
               id: myId,
-              seller: true
+              role: 'seller'
             })})
           //update for seller
       }
@@ -603,12 +673,25 @@ console.log(NFT)
            }
           </Form.Select>
           <Button className=" m-3" onClick={()=>{
+            if(ripValue === null){return}
             setNFT(list[ripValue])
             setTransaction(true)
             beginTransaction(true)
             }}>Begin Transaction</Button>
         </Form>
-          : <Form>
+          :
+            (sellerId ?
+            <Form>
+            <p>After Receiving payment, please confirm transaction</p>
+            <Button className=" m-3" onClick={()=>{
+            setNFT(null)
+            setTransaction(false)
+            beginTransaction(false)
+            sendNFT()
+            }}>Confirm Payment</Button>
+          </Form>
+          :
+            <Form>
             <p>Transaction is Pending... cannot submit until previous transaction is cancelled or cleared</p>
             <Button className=" m-3" onClick={()=>{
             setNFT(null)
@@ -616,7 +699,7 @@ console.log(NFT)
             beginTransaction(false)
             }}>Cancel Transaction</Button>
           </Form>
-          }
+            )}
         {/* <VStack justifyContent="center" alignItems="center" h="100vh">
         <HStack>
           {!account ? (
