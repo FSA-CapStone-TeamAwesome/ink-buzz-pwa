@@ -20,10 +20,14 @@ import FollowedArtists from './FollowedArtists';
 import { Heading } from '@chakra-ui/react';
 import FollowCard from './FollowCard';
 import FavoriteCard from './FavoriteCard';
+import { useAuthentication } from '../hooks/useAuthentication';
 
 const Profile = () => {
   injectStyle();
   const dispatch = useDispatch();
+  const userAuth = useAuthentication();
+  const userAuthObj = userAuth.user;
+
   const [show, setShow] = useState(false);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
@@ -109,8 +113,8 @@ const Profile = () => {
 
   const loadUser = useCallback(async () => {
     let userRef = doc(db, 'users', user.data.id);
-    let getUser = await getDoc(userRef);
-    await getUser.data();
+    let getUserDoc = await getDoc(userRef);
+    await getUserDoc.data();
 
     try {
       let getIt = await getDownloadURL(
@@ -135,8 +139,8 @@ const Profile = () => {
   }, [user, auth, loadUser]);
 
   useEffect(() => {
-    dispatch(getUser());
-  }, [dispatch]);
+    dispatch(getUser(userAuthObj));
+  }, [dispatch, userAuthObj]);
 
   useEffect(() => {}, [show]);
 

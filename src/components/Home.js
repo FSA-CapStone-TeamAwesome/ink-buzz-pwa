@@ -11,10 +11,15 @@ import {
   onSnapshot,
 } from 'firebase/firestore';
 import Search from './SearchBar';
-
 import { Heading } from '@chakra-ui/react';
+import { getUser } from '../store/userStore';
+import { useAuthentication } from '../hooks/useAuthentication';
+import { useDispatch } from 'react-redux';
 
 const Home = () => {
+  const { userAuth } = useAuthentication();
+
+  const dispatch = useDispatch();
   const [newList, setNew] = useState([]);
 
   const aFunction = async () => {
@@ -36,7 +41,8 @@ const Home = () => {
 
   useEffect(() => {
     aFunction();
-  }, []);
+    // dispatch(getUser(userAuth));
+  }, [dispatch, userAuth]);
 
   return (
     <Container
