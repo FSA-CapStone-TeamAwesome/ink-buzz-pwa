@@ -20,13 +20,14 @@ const FollowCard = ({ profilePic, id, name }) => {
   }, [getPhoto]);
 
   const artistProfileFunc = (inputtedCreatorId) => {
-    console.log(inputtedCreatorId);
     if (inputtedCreatorId === user.data.id) {
       navigate('/profile');
     } else {
       navigate(`/profiles/${inputtedCreatorId}`);
     }
   };
+
+  console.log(profilePic, id, name);
 
   return (
     <div>

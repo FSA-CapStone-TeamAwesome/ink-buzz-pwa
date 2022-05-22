@@ -332,11 +332,9 @@ const Profile = () => {
                             key={idx + 'following' + user.id}
                             className="me-3">
                             <FollowCard
-                              user={{
-                                profilePic: artist.profilePic,
-                                name: artist.name,
-                                id: artist.data.id,
-                              }}
+                              profilePic={artist.profilePic}
+                              id={artist.data.id}
+                              name={artist.name}
                             />
                           </div>
                         );
