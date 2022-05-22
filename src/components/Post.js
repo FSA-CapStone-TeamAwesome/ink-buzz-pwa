@@ -7,12 +7,12 @@ import { storage } from '../config/firebase';
 
 const Post = ({ data }) => {
   const [photo, setPhoto] = useState(null);
-  const { id, name, creator, price, description, image } = data;
+  const { id, name, creator, price, description, smallImage } = data;
 
   const getPhoto = useCallback(async () => {
-    let getIt = await getDownloadURL(ref(storage, image));
+    let getIt = await getDownloadURL(ref(storage, smallImage));
     setPhoto(getIt);
-  }, [image]);
+  }, [smallImage]);
 
   useEffect(() => {
     getPhoto();

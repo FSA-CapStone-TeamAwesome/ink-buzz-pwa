@@ -27,17 +27,22 @@ const UploadFile = () => {
 
   const uploadFile = async (evt) => {
     evt.preventDefault();
-
-    if (value.tags[value.tags.length - 1] === '') {
-      value.tags.pop();
+    const arrLength = value.tags.length - 1;
+    if (arrLength !== -1) {
+      while (value.tags[value.tags.length - 1] === '') {
+        value.tags.pop();
       }
-
-      if (value.name === '' || value.tags.includes('') || value.tags.length === 0) {
+    }
+    if (
+      value.name === '' ||
+      value.tags.length === 0 ||
+      value.tags.includes('')
+    ) {
       toast.error('Every upload needs a name and tags!');
       return;
       }
     if (imageUpload == null) {
-      toast.error('Design required for upload');
+      toast.error('Design required for upload!');
       return;
     }
     if (user.name === '' || user.name == null) {
@@ -52,12 +57,13 @@ const UploadFile = () => {
 
     const imageRefSmall = ref(
       storage,
-      `images/universal/${user.data.id}/small/${value.name + date}.jpg`,
+      `images/universal/${user.data.id}/small/${value.name + date}.webp`,
     );
 
     new Compressor(imageUpload, {
-      quality: 0.5, // 0.6 can also be used, but its not recommended to go below.
+      quality: 0.5,
       width: 350,
+      mimeType: 'image/webp',
       success: async (smallImage) => {
         await uploadBytes(imageRefSmall, smallImage);
       },
@@ -65,16 +71,23 @@ const UploadFile = () => {
 
     const imageRef = ref(
       storage,
-      `images/universal/${user.data.id}/${value.name + date}`,
+      `images/universal/${user.data.id}/${value.name + date}.webp`,
     );
 
-    await uploadBytes(imageRef, imageUpload);
+    new Compressor(imageUpload, {
+      quality: 1,
+      mimeType: 'image/webp',
+      success: async (fullImage) => {
+        await uploadBytes(imageRef, fullImage);
+      },
+    });
 
     //The user gets a copy to their firebaseFolder
     let change = await doc(db, 'users', `${user.data.id}`);
     await updateDoc(change, {
       images: arrayUnion({
-        path: `/images/universal/${user.data.id}/${value.name + date}`,
+        smallPath: `/images/universal/${user.data.id}/small/${value.name + date}.webp`,
+        path: `/images/universal/${user.data.id}/${value.name + date}.webp`,
         likes: 0,
         comments: 0,
         purchases: 0,
@@ -95,7 +108,8 @@ const UploadFile = () => {
       creator: `${user.name}`,
       creatorId: `${user.data.id}`,
       description: value.description,
-      image: `/images/universal/${user.data.id}/${value.name + date}`,
+      smallImage: `/images/universal/${user.data.id}/small/${value.name + date}.webp`,
+      image: `/images/universal/${user.data.id}/${value.name + date}.webp`,
       created: `${date}`,
       tags: value.tags,
     });

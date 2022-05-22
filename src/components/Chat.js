@@ -119,7 +119,7 @@ const Chat = (props) => {
       let convoIds = convoList.map((convo) => convo.id);
       let findIt = convoIds.indexOf(interlocutor);
       const unsub = onSnapshot(q, (snapshot) => {
-        setMessages(snapshot.docs.map((doc) => doc.data()));
+        setMessages(snapshot.docs.reverse().map((doc) => doc.data()));
       });
       return unsub;
     }
