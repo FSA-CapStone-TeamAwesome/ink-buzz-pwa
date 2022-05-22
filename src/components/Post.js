@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import Container from 'react-bootstrap/Container';
+import React, { useEffect, useState, useCallback } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
@@ -10,13 +9,14 @@ const Post = ({ data }) => {
   const [photo, setPhoto] = useState(null);
   const { id, name, creator, price, description, image } = data;
 
-  async function getPhoto() {
+  const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, image));
     setPhoto(getIt);
-  }
+  }, [image]);
+
   useEffect(() => {
     getPhoto();
-  }, []);
+  }, [getPhoto]);
 
   return (
     <div className="mb-3 mobilePost">

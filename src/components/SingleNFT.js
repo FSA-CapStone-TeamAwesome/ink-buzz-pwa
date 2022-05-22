@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Button, ToggleButton } from 'react-bootstrap';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Button } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
-import ListGroup from 'react-bootstrap/ListGroup';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   collection,
@@ -12,19 +11,13 @@ import {
   onSnapshot,
   updateDoc,
   arrayUnion,
-  getDoc,
-  setDoc,
-  getDocs,
   arrayRemove,
 } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
 import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
-
 import { updateUser } from '../store/userStore';
 import { Heading } from '@chakra-ui/react';
-
-// import {admin} from 'firebase-admin'
 
 const SingleNFT = () => {
   const [data, setData] = useState(null);
@@ -32,15 +25,14 @@ const SingleNFT = () => {
   const [follows, setFollow] = useState(false);
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
-  const [searchObj, setSearchObj] = useState(null);
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
-  const aFunction = async () => {
+  //function query's server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
+  const aFunction = useCallback(async () => {
     let docData = await query(
       collection(db, 'NFTs'),
       where('id', '==', `${nftId}`),
@@ -50,10 +42,10 @@ const SingleNFT = () => {
         setData(doc.data());
       });
     });
-  };
+  }, [nftId]);
 
   //function that loads photo
-  async function getPhoto() {
+  const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, data.image));
     setPhoto(getIt);
 
@@ -76,7 +68,7 @@ const SingleNFT = () => {
     } else {
       setFavor(false);
     }
-  }
+  }, [data, user]);
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
@@ -134,11 +126,11 @@ const SingleNFT = () => {
     if (!follows) {
       followToggle();
     }
-    navigate("/Chat", { state: { chosenInterlocutor: data.creatorId } });
+    navigate('/Chat', { state: { chosenInterlocutor: data.creatorId } });
   };
 
   const chatsWithAdd = async () => {
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
 
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
@@ -188,21 +180,18 @@ const SingleNFT = () => {
 
   useEffect(() => {
     aFunction();
-  }, []);
+  }, [aFunction]);
 
   useEffect(() => {
-    data &&
-      getPhoto() &&
-      setSearchObj({
-        id: data.creatorId,
-        name: data.creator,
-      });
-  }, [data]);
+    data && getPhoto();
+  }, [data, getPhoto]);
 
   useEffect(() => setUser(user), [user]);
 
   if (!data) return <h2>Loading</h2>;
-  const { id, name, creator, price, description, creatorId, bids } = data;
+
+  const { name, creator, price, description, creatorId } = data;
+
   return (
     <Container
       style={{ marginTop: '5rem' }}

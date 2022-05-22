@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const FavoriteCard = ({ favorite }) => {
-  const navigate = useNavigate();
   const [photo, setPhoto] = useState(null);
 
-  async function getPhoto() {
+  const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, favorite.photo));
     setPhoto(getIt);
-  }
+  }, [favorite]);
+
   useEffect(() => {
     getPhoto();
-  }, []);
+  }, [getPhoto]);
 
   return (
     <div>

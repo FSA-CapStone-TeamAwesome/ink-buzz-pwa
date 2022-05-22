@@ -5,15 +5,19 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { setLocal } from '../config/Auth';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Heading } from '@chakra-ui/react';
 import { ref, uploadString } from 'firebase/storage';
 import defaultImg from '../assets/images/default-profile.jpeg';
+import { getUser } from '../store/userStore';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const user = useSelector((state) => state.user.user);
 
+  const [uploaded, setUploaded] = useState(false);
   const [value, setValue] = useState({
     email: '',
     password: '',
@@ -21,13 +25,15 @@ const SignUp = () => {
     error: '',
   });
 
-  async function signUp(evt) {
+  const signUp = async (evt) => {
     evt.preventDefault();
+    setUploaded(!uploaded);
     if (value.email === '' || value.password === '' || value.name === '') {
       setValue({
         ...value,
         error: 'Name, email, and password are mandatory.',
       });
+      setUploaded(!uploaded);
       return;
     }
 
@@ -66,6 +72,7 @@ const SignUp = () => {
       if (auth.currentUser) {
         setLocal(value.email, value.password);
         window.localStorage.setItem('token', auth.currentUser.accessToken);
+        dispatch(getUser(auth.currentUser));
         navigate('/');
       }
     } catch (error) {
@@ -73,8 +80,9 @@ const SignUp = () => {
         ...value,
         error: error.message,
       });
+      setUploaded(!uploaded);
     }
-  }
+  };
   useEffect(() => {
     if (user && user.data) {
       navigate('/');
@@ -119,7 +127,9 @@ const SignUp = () => {
               }
             />
           </Form.Group>
-          <Button type="submit">Submit</Button>
+          <Button variant="primary" type="submit" disabled={uploaded}>
+            Submit
+          </Button>
         </Form>
       </div>
     </div>

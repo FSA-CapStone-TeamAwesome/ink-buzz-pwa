@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import Container from 'react-bootstrap/Container';
+import React, { useEffect, useState, useCallback } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
@@ -10,13 +9,14 @@ const PreviewPost = ({ data, creator }) => {
   const [photo, setPhoto] = useState(null);
   const { id, name, path } = data;
 
-  async function getPhoto() {
+  const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, path));
     setPhoto(getIt);
-  }
+  }, [path]);
+
   useEffect(() => {
     getPhoto();
-  }, []);
+  }, [getPhoto]);
 
   return (
     <div className="mb-2 mobilePost">
@@ -26,7 +26,6 @@ const PreviewPost = ({ data, creator }) => {
           <Card.Title>{name}</Card.Title>
           <Card.Subtitle className="mb-2 text-muted">{creator}</Card.Subtitle>
           <Card.Subtitle className="mb-2 text-muted"></Card.Subtitle>
-
           <Link to={`/nft/${id}`}>
             <Button variant="primary">Get Details</Button>
           </Link>

@@ -48,6 +48,7 @@ Ink Buzz is a social media platform where users can connect with tattoo artists.
 - Upload users own designs to showcase and potentially sell
 
 ### Crypto Features
+
 - Crypto wallets like MetaMask and Coinbase built in
 - Pay directly within the chat window using a connected wallet.
 

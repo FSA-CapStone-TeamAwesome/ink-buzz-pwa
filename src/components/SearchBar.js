@@ -1,18 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { db, storage } from '../config/firebase';
-import { getStorage, ref, listAll } from 'firebase/storage';
-import {
-  collection,
-  doc,
-  setDoc,
-  query,
-  orderBy,
-  limit,
-  where,
-  getDocs,
-  onSnapshot,
-  loadBundle,
-} from 'firebase/firestore';
+import React, { useState, useEffect, useCallback } from 'react';
+import { db } from '../config/firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import Post from './Post';
 import { Container, Form } from 'react-bootstrap';
 
@@ -20,7 +8,7 @@ export default function Search() {
   const [searchValue, setSearch] = useState('');
   const [results, setResults] = useState([]);
 
-  const lookUp = async () => {
+  const lookUp = useCallback(async () => {
     const q = query(
       collection(db, 'NFTs'),
       where('tags', 'array-contains', `${searchValue}`),
@@ -30,12 +18,12 @@ export default function Search() {
         setResults((prev) => [...prev, doc.data()]);
       });
     });
-  };
+  }, [searchValue]);
 
   useEffect(() => {
     setResults([]);
     lookUp();
-  }, [searchValue]);
+  }, [searchValue, lookUp]);
 
   return (
     <Container className="mt-3">

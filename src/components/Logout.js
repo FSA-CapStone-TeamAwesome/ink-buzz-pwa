@@ -6,14 +6,17 @@ import { signOutState } from '../store/userStore';
 import { useDispatch } from 'react-redux';
 
 const Logout = () => {
-  const dispatch = useDispatch()
-  window.localStorage.removeItem('token');
-  signOut(auth);
-  dispatch(signOutState())
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  navigate('/');
 
-  return <div>Logout</div>;
+  useEffect(() => {
+    window.localStorage.removeItem('token');
+    signOut(auth);
+    dispatch(signOutState());
+    navigate('/');
+  });
+
+  return <div>Redirecting...</div>;
 };
 
 export default Logout;
