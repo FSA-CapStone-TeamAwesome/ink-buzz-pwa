@@ -26,7 +26,7 @@ const Post = ({ data }) => {
           <Card.Title>{name}</Card.Title>
           <Card.Subtitle className="mb-2 text-muted">{creator}</Card.Subtitle>
           <Card.Subtitle className="mb-2 text-muted">
-            ${(price / 100).toFixed(2)}
+            Ξ{(price / 100).toFixed(2)}
           </Card.Subtitle>
           <Card.Text>{description}</Card.Text>
           <Link to={`nft/${id}`}>
