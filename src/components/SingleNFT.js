@@ -280,7 +280,6 @@ const SingleNFT = (props) => {
   const { name, creator, price, description, creatorId } = data;
 
   const artistProfileFunc = (inputtedCreatorId) => {
-    console.log(inputtedCreatorId);
     if (inputtedCreatorId === user.data.id) {
       navigate('/profile');
     } else {
@@ -325,7 +324,7 @@ const SingleNFT = (props) => {
               Follow Artist
             </Button>
           )}
-          <Button onClick={onOpen} style={{ margin: 10 }}>
+          <Button onClick={onOpen} className="me-3">
             Send Ether
           </Button>
           <Modal

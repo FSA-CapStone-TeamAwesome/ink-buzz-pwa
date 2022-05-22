@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Container, Tab, Row, Col, Nav } from 'react-bootstrap';
 import { injectStyle } from 'react-toastify/dist/inject-style';
-import { arrayUnion, updateDoc, doc ,arrayRemove } from 'firebase/firestore';
+import { arrayUnion, updateDoc, doc, arrayRemove } from 'firebase/firestore';
 import { storage } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../store/userStore';
@@ -89,7 +89,6 @@ const ArtistProfile = () => {
     }
   };
 
-
   //checking if user has artist on follow
   // if (
   //   artist.data &&
@@ -110,23 +109,21 @@ const ArtistProfile = () => {
 
   const messageArtist = async () => {
     chatsWithAdd();
-    navigate("/Chat", { state: { chosenInterlocutor: artist.data.id } });
+    navigate('/Chat', { state: { chosenInterlocutor: artist.data.id } });
   };
 
   const chatsWithAdd = async () => {
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
 
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
         name: artist.name,
         id: artist.data.id,
-        role: null
+        role: null,
         // profilePic: userProfile.profilePic,
       }),
     });
   };
-
-
 
   const onPageLoad = useCallback(async () => {
     await dispatch(getProfile(profileId));
@@ -135,7 +132,18 @@ const ArtistProfile = () => {
   useEffect(() => {
     setArtistProfile(artist);
     getPhoto();
-  }, [artist, getPhoto]);
+    //checking if user has artist on follow
+    if (
+      artist &&
+      artist.data &&
+      user.following &&
+      user.following.some((item) => item.id === `${artist.data.id}`)
+    ) {
+      setFollow(true);
+    } else {
+      setFollow(false);
+    }
+  }, [artist, getPhoto, user]);
 
   useEffect(() => {
     onPageLoad();
