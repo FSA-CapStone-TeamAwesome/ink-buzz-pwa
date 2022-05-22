@@ -235,8 +235,14 @@ const ArtistProfile = () => {
                     <div className="d-flex flex-wrap justify-content-center">
                       {artist.followers.map((artist, idx) => {
                         return (
-                          <div key={idx + artist.id} className="me-3">
-                            <FollowCard user={artist} />
+                          <div
+                            key={idx + 'artist' + artist.id}
+                            className="me-3">
+                            <FollowCard
+                              profilePic={artist.profilePic}
+                              id={artist.id}
+                              name={artist.name}
+                            />
                           </div>
                         );
                       })}

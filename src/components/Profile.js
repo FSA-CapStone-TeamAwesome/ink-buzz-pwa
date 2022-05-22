@@ -92,15 +92,14 @@ const Profile = () => {
           `images/universal/${user.data.id}/profile-picture`,
         );
 
-
-      new Compressor(imageUpload, {
-        quality: 0.5,
-        width: 300,
-        mimeType: 'image/webp',
-        success: async (profileImage) => {
-          await uploadBytes(imageRef, profileImage);
-        },
-      });
+        new Compressor(imageUpload, {
+          quality: 0.5,
+          width: 300,
+          mimeType: 'image/webp',
+          success: async (profileImage) => {
+            await uploadBytes(imageRef, profileImage);
+          },
+        });
 
         //The user gets a copy to their firebaseFolder
         let change = await doc(db, 'users', `${user.data.id}`);
@@ -309,8 +308,14 @@ const Profile = () => {
                     <div className="d-flex flex-wrap justify-content-center">
                       {user.followers.map((user, idx) => {
                         return (
-                          <div key={idx + user.id} className="me-3">
-                            <FollowCard user={user} />
+                          <div
+                            key={idx + 'followers' + user.id}
+                            className="me-3">
+                            <FollowCard
+                              profilePic={user.profilePic}
+                              id={user.id}
+                              name={user.name}
+                            />
                           </div>
                         );
                       })}
@@ -323,7 +328,9 @@ const Profile = () => {
                     <div className="d-flex flex-wrap justify-content-center">
                       {following.map((artist, idx) => {
                         return (
-                          <div key={idx + user.id} className="me-3">
+                          <div
+                            key={idx + 'following' + user.id}
+                            className="me-3">
                             <FollowCard
                               user={{
                                 profilePic: artist.profilePic,
