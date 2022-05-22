@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ToggleButton } from 'react-bootstrap';
+
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -13,10 +13,32 @@ import {
   updateDoc,
   arrayUnion,
   getDoc,
-  setDoc,
-  getDocs,
+
   arrayRemove,
 } from 'firebase/firestore';
+import { toHex, truncateAddress } from "./wallet_stuff/utils";
+import {
+  Flex,
+  Button,
+  ButtonGroup,
+  HStack,
+  VStack,
+  Select,
+  Input,
+  Box,
+  useDisclosure,
+  Text,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
+} from "@chakra-ui/react";
+import { ethers } from "ethers";
+
+
+
 import { useDispatch, useSelector } from 'react-redux';
 import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
@@ -26,18 +48,40 @@ import { Heading } from '@chakra-ui/react';
 
 // import {admin} from 'firebase-admin'
 
-const SingleNFT = () => {
+const SingleNFT = (props) => {
   const [data, setData] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [follows, setFollow] = useState(false);
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
   const [searchObj, setSearchObj] = useState(null);
+  const [sendToAddress, setAddress] = useState("")
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
-
+  const [amount, setAmount] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { onOpen, isOpen, onClose } = useDisclosure();
+  const [message, setMessage] = useState(null)
+  const {
+    account,
+    setAccount,
+    provider,
+    setProvider,
+    library,
+    setLibrary,
+    error,
+    setError,
+    chainId,
+    setChainId,
+    network,
+    setNetwork,
+    connectWallet,
+    web3Modal,
+  } = props;
+
+
+
 
   //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
   const aFunction = async () => {
@@ -50,6 +94,10 @@ const SingleNFT = () => {
         setData(doc.data());
       });
     });
+    const nameRef = doc(db, "users", data.creatorId);
+    const nameFromDoc = await getDoc(nameRef);
+    setAddress(nameFromDoc.data().accounts[0])
+
   };
 
   //function that loads photo
@@ -77,7 +125,14 @@ const SingleNFT = () => {
       setFavor(false);
     }
   }
-
+  const handleNetwork = (e) => {
+    const id = e.target.value;
+    setNetwork(Number(id));
+  };
+  const handleInput = (e) => {
+    const amt = e.target.value;
+    setAmount(amt);
+  };
   //function for toggling the state of following an artist
   const followToggle = async () => {
     const followRef = doc(db, 'users', `${data.creatorId}`);
@@ -191,6 +246,33 @@ const SingleNFT = () => {
     aFunction();
   }, []);
 
+
+
+  const sendTransaction = async () => {
+    const nameRef = doc(db, "users", data.creatorId);
+    const nameFromDoc = await getDoc(nameRef);
+
+    try {
+      const tx = await library.provider.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            from: account,
+            to: nameFromDoc.data().accounts[0],
+            value: ethers.utils.parseUnits(amount, "ether").toHexString(),
+          },
+        ],
+      });
+      console.log(tx);
+      return tx;
+    } catch (txError) {
+      console.log("txError was ", txError.code);
+    }
+  };
+
+
+
+
   useEffect(() => {
     data &&
       getPhoto() &&
@@ -201,6 +283,18 @@ const SingleNFT = () => {
   }, [data]);
 
   useEffect(() => setUser(user), [user]);
+
+
+  const switchNetwork = async () => {
+    try {
+      await library.provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: toHex(network) }],
+      });
+    } catch (error) {
+      setError(error);
+    }
+  };
 
   if (!data) return <h2>Loading</h2>;
   const { id, name, creator, price, description, creatorId, bids } = data;
@@ -238,6 +332,93 @@ const SingleNFT = () => {
               Follow Artist
             </Button>
           )}
+           <Button onClick={onOpen} style={{ margin: 10 }}>
+                Send Ether
+              </Button>
+          <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+                isCentered
+                motionPreset="scale"
+                size="lg"
+              >
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>
+                    Active Account: {truncateAddress(account)}
+                  </ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    {sendToAddress.length ? (
+                      <Text>
+                        {/* Sending to {interlocutorName} at:{" "} */}
+                        Sending to: {truncateAddress(sendToAddress)}
+                      </Text>
+                    ) : (
+                      <Text>
+                        Uh oh! Target does not have a wallet connected!
+                      </Text>
+                    )}
+                    <HStack justify="center">
+                      <Box
+                        maxW="sm"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        padding="10px"
+                      >
+                        <VStack>
+                          <Button
+                            onClick={switchNetwork}
+                            isDisabled={!network > 0}
+                          >
+                            Choose Network
+                          </Button>
+                          <Select
+                            placeholder="Select network"
+                            onChange={handleNetwork}
+                          >
+                            <option value="3">Ropsten</option>
+                            <option value="4">Rinkeby</option>
+                          </Select>
+                        </VStack>
+                      </Box>
+                      <Box
+                        maxW="sm"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        padding="10px"
+                      >
+                        <VStack>
+                          <Button
+                            // onClick={sendTransaction}
+                            onClick={async () => {
+                              try {
+                                const txHash = await sendTransaction();
+                                setMessage(txHash, chainId);
+                              } catch (e) {
+                                console.log(e);
+                              }
+                            }}
+                            isDisabled={!sendToAddress.length}
+                          >
+                            Send Ether
+                          </Button>
+                          <Input
+
+                            maxLength={20}
+                            value={data.price}
+
+                            w="140px"
+                          />
+                        </VStack>
+                      </Box>
+                    </HStack>
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+
         </div>
       ) : (
         <Button className="mt-3" onClick={() => navigate('/SignIn')}>

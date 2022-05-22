@@ -2,14 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { Avatar, Flex, Text, Link } from "@chakra-ui/react";
 import { getStorage, ref, getBlob } from "firebase/storage";
 import { useDispatch } from "react-redux";
-import { getUser } from "../store/userStore";
-import { useAuthentication } from "../hooks/useAuthentication";
+
 
 const Messages = (props) => {
   const { messages, myId, interlocutor } = props;
   const [pp, setPp] = useState();
   const dispatch = useDispatch();
-  const { user } = useAuthentication();
+
 
   useEffect(() => {
     if (interlocutor) {
@@ -66,7 +65,7 @@ const Messages = (props) => {
           );
         } else if (msg.isStart || msg.isStart === false) {
 
-          dispatch(getUser(user))
+
          return(
          <Flex key={index} w="100%" justify="center">
             <Flex

@@ -6,10 +6,10 @@ import { useLocation } from "react-router-dom";
 import { db } from "../config/firebase";
 
 import { useSelector } from "react-redux";
-
+import { useDispatch } from "react-redux";
 import Messages from "./Messages";
 import MessageFooter from "./MessageFooter";
-
+import { getUser } from "../store/userStore";
 import {
   Flex,
   Button,
@@ -55,7 +55,7 @@ import { SignEthereumTransactionResponse } from "@coinbase/wallet-sdk/dist/relay
 
 const Chat = (props) => {
   const user = useSelector((state) => state.user.user);
-
+  const dispatch = useDispatch();
   const [convoList, setConvoList] = useState([]);
 
   const [myId, setMyId] = useState("");
@@ -64,21 +64,21 @@ const Chat = (props) => {
 
   const [interlocutor, setInterlocutor] = useState("");
 
-  const [chosenInterlocutor, setChosenInterlocutor] = useState("");
-
   const [sendToAddress, setSendToAddress] = useState("");
-
-
 
   const [messages, setMessages] = useState([]);
 
   const [amount, setAmount] = useState(0);
 
   const [list, setList] = useState([]);
+
+  //this gets the NFT value from the selector
   const [ripValue, setRip] = useState(null);
 
+  //sets the NFT that is part of the transaction
   const [NFT, setNFT] = useState({});
 
+  //transaction is set
   const [startTransaction, setTransaction] = useState(null);
 
   const [completeTransaction, setComplete] = useState(null);
@@ -95,25 +95,28 @@ const Chat = (props) => {
   const { onOpen, isOpen, onClose } = useDisclosure();
 
   const location = useLocation();
-
-
+  const [reload, setReload] = useState(false)
 
   useEffect(() => {
     if (user && user.data) {
       setMyId(user.data.id);
-      setConvoList([...user.chatsWith]);
       setMyName(user.name);
-    }
+  }
   }, [user]);
+
+
 
   useEffect(() => {
     if (myId) {
       let q = query(
         collection(db, "messages/queue", myId),
-        orderBy("timestamp"),
+        orderBy("timestamp", "desc"),
         limit(40)
       );
 
+
+      let convoIds = convoList.map((convo) => convo.id);
+      let findIt = convoIds.indexOf(interlocutor);
       const unsub = onSnapshot(q, (snapshot) => {
         setMessages(snapshot.docs.map((doc) => doc.data()));
       });
@@ -122,34 +125,26 @@ const Chat = (props) => {
     }
   }, [myId]);
 
+
+
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
     getList();
     let convoIds = convoList.map((convo) => convo.id);
-    let findIt = convoIds.indexOf(interlocutor);
 
-    if (convoList.length && convoList[findIt].role === "buyer") {
-      setTransaction(true);
-      setSeller(false);
-      setNFT(convoList[findIt].nft)
-    }
-    if (convoList.length && convoList[findIt].role === "seller") {
-      setTransaction(true);
-      setSeller(true);
-      setNFT(convoList[findIt].nft)
-    }
   }, [interlocutor]);
 
   useEffect(() => {
     if (location.state && location.state.chosenInterlocutor) {
       setInterlocutor(location.state.chosenInterlocutor);
     }
-    setChosenInterlocutor("");
+
     location.state = {};
   }, []);
 
   useEffect(() => {
     let convoIds = convoList.map((convo) => convo.id);
+
 
     let allInterlocutorIds = [
       ...new Set([
@@ -162,7 +157,6 @@ const Chat = (props) => {
       if (id && !convoIds.includes(id)) {
         chatsWithAdd(id);
       }
-
     });
 
     let filteredMessages = messages.filter(
@@ -178,9 +172,52 @@ const Chat = (props) => {
     }
   }, [messages, interlocutor]);
 
+  useEffect (() => {
+  if(myId){
+    const unsub = onSnapshot(doc(db, "users", `${myId}`), (doc) => {
+      console.log(doc.data())
+      setConvoList(doc.data().chatsWith)
+  });
+    return unsub
+  }}, [myId])
+
+  useEffect (() => {
+    checkTransaction()
+  }, [convoList, messages])
+
+  const checkTransaction = async () => {
+    console.log('trans checked')
+    let convoIds = convoList.map((convo) => convo.id);
+    let findIt = convoIds.indexOf(interlocutor);
+
+    if (
+      convoList.length &&
+      convoList[findIt].role === "buyer"
+    ) {
+      setTransaction(true);
+      setSeller(false);
+      setNFT(convoList[findIt].nft);
+
+      return;
+    }
+    if (
+      convoList.length &&
+      convoList[findIt].role === "seller"
+    ) {
+
+      setTransaction(true);
+      setSeller(true);
+      setNFT(convoList[findIt].nft);
+      return;
+    }
+    setSeller(null)
+    setTransaction(null)
+    setNFT(null)
+  };
+
   const chatsWithAdd = async (id) => {
     const nameRef = doc(db, "users", id);
-    const nameFromDoc= await getDoc(nameRef)
+    const nameFromDoc = await getDoc(nameRef);
 
     const chatsRef = doc(db, "users", `${user.data.id}`);
     await updateDoc(chatsRef, {
@@ -277,7 +314,6 @@ const Chat = (props) => {
           ),
           (querySnapshot) => {
             querySnapshot.forEach((doc) => {
-              console.log(doc.data());
               setList((prev) => [...prev, doc.data()]);
             });
           }
@@ -288,258 +324,7 @@ const Chat = (props) => {
     }
   }
 
-
   //Completes transaction, wipes the state.
-  async function sendNFT() {
-    let fromAddress =''
-    if (account) {
-      fromAddress = account;
-    }
-
-    let change = await doc(db, "users", `${interlocutor}`);
-    await updateDoc(change, {
-      ownedNFT: arrayUnion({
-        NFT,
-      }),
-    });
-    const nameRef = doc(db, "users", interlocutor);
-    const nameFromDoc= await getDoc(nameRef)
-
-
-    const text = `Transaction completed. ${NFT.name} has been sold to ${nameFromDoc.data().name}.`
-    let timestamp = Timestamp.fromMillis(Date.now());
-    try {
-      await addDoc(collection(db, `messages/queue/${message.recipient}`), {
-        artReference: null,
-        content: text,
-        fromName: myName,
-        fromId: myId,
-        fromAddress: fromAddress,
-        toId: message.recipient,
-        isStart: false,
-        photoUrl: null,
-        timestamp,
-      });
-    } catch (err) {
-      console.log("ERROR!");
-      console.log(err);
-    } finally {
-      try {
-        await addDoc(collection(db, `messages/queue/${myId}`), {
-          artReference: null,
-          content: text,
-          fromName: myName,
-          fromId: myId,
-          fromAddress: fromAddress,
-          toId: message.recipient,
-          isStart: false,
-          photoUrl: null,
-          timestamp,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-
-    await updateDoc(nameRef, {
-      chatsWith: arrayRemove({
-        name: nameFromDoc.data().name,
-        id: interlocutor,
-        role: "buyer",
-        nft: NFT
-      }),
-    });
-
-    await updateDoc(nameRef, {
-      chatsWith: arrayUnion({
-        name: nameFromDoc.data().name,
-        id: interlocutor,
-        role: null,
-      }),
-    });
-
-    const chatsRef = doc(db, "users", `${user.data.id}`);
-    await updateDoc(chatsRef, {
-      chatsWith: arrayRemove({
-        name: myName,
-        id: myId,
-        role: "seller",
-        nft: NFT
-      }),
-    });
-
-    await updateDoc(chatsRef, {
-      chatsWith: arrayUnion({
-        name: myName,
-        id: myId,
-        role: null,
-      }),
-    });
-    setNFT(null);
-  }
-}
-
-  async function manageTransaction(bool) {
-    let text = "";
-
-    let yourRole = '';
-    let theirRole = '';
-    const internalNFT = list[ripValue];
-    let timestamp = Timestamp.fromMillis(Date.now());
-    let fromAddress = "";
-    const nameRef = doc(db, "users", interlocutor );
-    const nameFromDoc= await getDoc(nameRef)
-    const chatsRef = doc(db, "users", `${user.data.id}`);
-
-    if (!bool) {
-      text = `Transaction Cancelled by ${myName}`;
-      setNFT(null);
-    } else {
-      text = `${myName} would like to purchase the design, ${
-        internalNFT.name
-      }, created by ${internalNFT.creator}. The going rate is $${(
-        internalNFT.price / 100
-      ).toFixed(
-        2
-      )}. When payment is recieved, please confirm so transaction can clear.`;
-    }
-
-    if (account) {
-      fromAddress = account;
-    }
-
-    //we're sending a message, either starting or canceling the transaction
-    try {
-      await addDoc(collection(db, `messages/queue/${message.recipient}`), {
-        artReference: null,
-        content: text,
-        fromName: myName,
-        fromId: myId,
-        fromAddress: fromAddress,
-        toId: message.recipient,
-        isStart: true,
-        photoUrl: null,
-        timestamp,
-      });
-    } catch (err) {
-      console.log("ERROR!");
-      console.log(err);
-    } finally {
-      try {
-        await addDoc(collection(db, `messages/queue/${myId}`), {
-          artReference: null,
-          content: text,
-          fromName: myName,
-          fromId: myId,
-          fromAddress: fromAddress,
-          toId: message.recipient,
-          isStart: true,
-          photoUrl: null,
-          timestamp,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-
-      if (bool) {
-
-
-        yourRole = "buyer"
-        theirRole = "seller"
-
-        await updateDoc(chatsRef, {
-          chatsWith: arrayRemove({
-            name: nameFromDoc.data().name,
-            id: internalNFT["creatorId"],
-            role: null,
-
-          }),
-        });
-
-        await updateDoc(chatsRef, {
-          chatsWith: arrayUnion({
-            name: nameFromDoc.data().name,
-            id: internalNFT["creatorId"],
-            role: yourRole,
-            nft: internalNFT
-          }),
-        });
-        //update for current user
-        await updateDoc(nameRef, {
-          chatsWith: arrayRemove({
-            name: myName,
-            id: myId,
-            role: null,
-
-          }),
-        });
-        console.log("anything?");
-
-        await updateDoc(nameRef, {
-          chatsWith: arrayUnion({
-            name: myName,
-            id: myId,
-            role: theirRole,
-            nft: internalNFT
-          }),
-        });
-        //update for seller
-      }
-
-
-      //If the transaction is being terminated, this is going to occur
-      if(!bool){
-        if(sellerId){
-        yourRole = 'seller'
-        theirRole = 'buyer'
-        }
-        if(!sellerId){
-          yourRole = 'buyer'
-          theirRole = 'seller'
-        }
-
-        await updateDoc(chatsRef, {
-          chatsWrith: arrayRemove({
-            name: nameFromDoc.data().name,
-            id: interlocutor,
-            role: yourRole,
-            nft: NFT
-          }),
-        });
-
-        await updateDoc(chatsRef, {
-          chatsWith: arrayUnion({
-            name: nameFromDoc.data().name,
-            id: interlocutor,
-            role: null,
-          }),
-        });
-        //update for current user
-        await updateDoc(nameRef, {
-          chatsWith: arrayRemove({
-            name: myName,
-            id: myId,
-            role: theirRole,
-            nft: NFT
-          }),
-        });
-
-
-        await updateDoc(nameRef, {
-          chatsWith: arrayUnion({
-            name: myName,
-            id: myId,
-            role: null,
-          }),
-        });
-        setSeller(null)
-      }
-
-      }
-
-    setMessage({ ...message, content: "" });
-  }
-
-
 
   // Sending a message should place it in your queue folder as well
   const sendMessage = async () => {
@@ -552,13 +337,13 @@ const Chat = (props) => {
     }
 
     try {
-      await addDoc(collection(db, `messages/queue/${message.recipient}`), {
+      await addDoc(collection(db, `messages/queue/${interlocutor}`), {
         artReference: null,
         content: message.content,
         fromName: myName,
         fromId: myId,
         fromAddress: fromAddress,
-        toId: message.recipient,
+        toId: interlocutor,
         isTx: false,
         chainId: null,
         photoUrl: null,
@@ -575,7 +360,7 @@ const Chat = (props) => {
           fromName: myName,
           fromId: myId,
           fromAddress: fromAddress,
-          toId: message.recipient,
+          toId: interlocutor,
           isTx: false,
           chainId: null,
           photoUrl: null,
@@ -635,6 +420,311 @@ const Chat = (props) => {
     setMessage({ ...message, content: "" });
   };
 
+  //as the name suggests it cancels, and how it operates depends on if you are seller or buyer
+  async function cancelTransaction(role) {
+    const text = `Transaction Cancelled by the ${role}, ${myName}.`;
+    let yourRole = "";
+    let theirRole = "";
+
+    if (role === "seller") {
+      yourRole = "seller";
+      theirRole = "buyer";
+    }
+    if (role === "buyer") {
+      yourRole = "buyer";
+      theirRole = "seller";
+    }
+
+    let fromAddress = "";
+    if (account) {
+      fromAddress = account;
+    }
+    let timestamp = Timestamp.fromMillis(Date.now());
+    try {
+      let convoIds = convoList.map((convo) => convo.id);
+      let findIt = convoIds.indexOf(interlocutor);
+      let convo = convoList[findIt];
+
+      const nameRef = doc(db, "users", interlocutor);
+      const chatsRef = doc(db, "users", `${user.data.id}`);
+      await updateDoc(chatsRef, {
+        chatsWith: arrayRemove({
+          name: convo.name,
+          id: interlocutor,
+          role: yourRole,
+          nft: convo.nft,
+        }),
+      });
+
+      //update for the other party
+      await updateDoc(nameRef, {
+        chatsWith: arrayRemove({
+          name: myName,
+          id: myId,
+          role: theirRole,
+          nft: convo.nft,
+        }),
+      });
+
+
+      await updateDoc(nameRef, {
+        chatsWith: arrayUnion({
+          name: myName,
+          id: myId,
+          role: null,
+        }),
+      });
+
+      await updateDoc(chatsRef, {
+        chatsWith: arrayUnion({
+          name: convo.name,
+          id: interlocutor,
+          role: null,
+        }),
+      });
+
+
+
+
+
+    } catch (err) {
+      console.log(err);
+    } finally {
+      try {
+        await addDoc(collection(db, `messages/queue/${message.recipient}`), {
+          artReference: null,
+          content: text,
+          fromName: myName,
+          fromId: myId,
+          fromAddress: fromAddress,
+          toId: message.recipient,
+          isStart: false,
+          photoUrl: null,
+          timestamp,
+        });
+      } catch (err) {
+        console.log("ERROR!");
+        console.log(err);
+      } finally {
+        try {
+          await addDoc(collection(db, `messages/queue/${myId}`), {
+            artReference: null,
+            content: text,
+            fromName: myName,
+            fromId: myId,
+            fromAddress: fromAddress,
+            toId: message.recipient,
+            isStart: false,
+            photoUrl: null,
+            timestamp,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+        setSeller(null);
+        setNFT(null);
+        setTransaction(null);
+      }
+      setMessage({ ...message, content: "" });
+    }
+  }
+
+  async function sendNFT() {
+    let fromAddress = "";
+    if (account) {
+      fromAddress = account;
+    }
+
+    let change = await doc(db, "users", `${interlocutor}`);
+    await updateDoc(change, {
+      ownedNFT: arrayUnion({
+        NFT,
+      }),
+    });
+    const nameRef = doc(db, "users", interlocutor);
+    const nameFromDoc = await getDoc(nameRef);
+
+    const text = `Transaction completed. ${NFT.name} has been sold to ${
+      nameFromDoc.data().name
+    }.`;
+    let timestamp = Timestamp.fromMillis(Date.now());
+
+    try {
+      //from your side, you REMOVE the array with them in it
+      const chatsRef = doc(db, "users", `${user.data.id}`);
+      await updateDoc(chatsRef, {
+        chatsWith: arrayRemove({
+          name: nameFromDoc.data().name,
+          id: interlocutor,
+          role: "seller",
+          nft: NFT,
+        }),
+      });
+
+      await updateDoc(chatsRef, {
+        chatsWith: arrayUnion({
+          name: nameFromDoc.data().name,
+          id: interlocutor,
+          role: null,
+        }),
+      });
+
+      //correcting the other parties' log reset
+      await updateDoc(nameRef, {
+        chatsWith: arrayRemove({
+          name: myName,
+          id: myId,
+          role: "buyer",
+          nft: NFT,
+        }),
+      });
+
+      await updateDoc(nameRef, {
+        chatsWith: arrayUnion({
+          name: myName,
+          id: myId,
+          role: null,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
+    try {
+      await addDoc(collection(db, `messages/queue/${message.recipient}`), {
+        artReference: null,
+        content: text,
+        fromName: myName,
+        fromId: myId,
+        fromAddress: fromAddress,
+        toId: message.recipient,
+        isStart: false,
+        photoUrl: null,
+        timestamp,
+      });
+    } catch (err) {
+      console.log("ERROR!");
+      console.log(err);
+    } finally {
+      try {
+        await addDoc(collection(db, `messages/queue/${myId}`), {
+          artReference: null,
+          content: text,
+          fromName: myName,
+          fromId: myId,
+          fromAddress: fromAddress,
+          toId: message.recipient,
+          isStart: false,
+          photoUrl: null,
+          timestamp,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+
+      setNFT(null);
+      setTransaction(null);
+    }
+  }
+  async function manageTransaction() {
+    const internalNFT = list[ripValue];
+    let timestamp = Timestamp.fromMillis(Date.now());
+    let fromAddress = "";
+    const nameRef = doc(db, "users", interlocutor);
+    const nameFromDoc = await getDoc(nameRef);
+    const chatsRef = doc(db, "users", `${user.data.id}`);
+
+    let text = `${myName} would like to purchase the design, ${
+      internalNFT.name
+    }, created by ${internalNFT.creator}. The going rate is $${(
+      internalNFT.price / 100
+    ).toFixed(
+      2
+    )}. When payment is recieved, please confirm so transaction can clear.`;
+
+    if (account) {
+      fromAddress = account;
+    }
+
+    try {
+      await updateDoc(chatsRef, {
+        chatsWith: arrayRemove({
+          name: nameFromDoc.data().name,
+          id: internalNFT["creatorId"],
+          role: null,
+        }),
+      });
+
+      await updateDoc(nameRef, {
+        chatsWith: arrayRemove({
+          name: myName,
+          id: myId,
+          role: null,
+        }),
+      });
+
+      await updateDoc(chatsRef, {
+        chatsWith: arrayUnion({
+          name: nameFromDoc.data().name,
+          id: internalNFT["creatorId"],
+          role: "buyer",
+          nft: internalNFT,
+        }),
+      });
+      //update for current user
+
+
+      await updateDoc(nameRef, {
+        chatsWith: arrayUnion({
+          name: myName,
+          id: myId,
+          role: "seller",
+          nft: internalNFT,
+        }),
+
+      });
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      await addDoc(collection(db, `messages/queue/${message.recipient}`), {
+        artReference: null,
+        content: text,
+        fromName: myName,
+        fromId: myId,
+        fromAddress: fromAddress,
+        toId: message.recipient,
+        isStart: true,
+        photoUrl: null,
+        timestamp,
+      });
+    } catch (err) {
+      console.log("ERROR!");
+      console.log(err);
+    } finally {
+      try {
+        await addDoc(collection(db, `messages/queue/${myId}`), {
+          artReference: null,
+          content: text,
+          fromName: myName,
+          fromId: myId,
+          fromAddress: fromAddress,
+          toId: message.recipient,
+          isStart: true,
+          photoUrl: null,
+          timestamp,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+
+      //ONLY FOR TRANSACTION STARTING, ONLY STARTED BY BUYER
+    }
+
+    setMessage({ ...message, content: "" });
+  }
+  console.log(convoList)
   return (
     <Flex
       w="100%"
@@ -645,7 +735,7 @@ const Chat = (props) => {
     >
       <Flex w="100%" h="90%" flexDir="column">
         <div id="conversations">
-          {convoList.map((conversation, idx) => {
+          {convoList && convoList.map((conversation, idx) => {
             if (interlocutor && interlocutor === conversation.id) {
               // setInterlocutorName(conversation.name);
               return (
@@ -791,40 +881,46 @@ const Chat = (props) => {
           sendMessage={sendMessage}
         />
         {!startTransaction ? (
-          list.length ?
-          <Form onChange={(evt) => setRip(evt.target.value)}>
-            <Form.Select name="nftId" className="w-50 m-3">
-              <option value="null">-</option>
-              {list.map((nft, index) => {
-                return (
-                  <option key={nft.id} value={`${index}`}>
-                    {nft.name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-            <Button
-              className=" m-3"
-              onClick={() => {
-                if (ripValue === null) {
-                  return;
-                }
-                setNFT(list[ripValue]);
-                setTransaction(true);
-                manageTransaction(true);
-              }}
-            >
-              Begin Transaction
-            </Button>
-          </Form> : <></>
+          list.length ? (
+            <Form onChange={(evt) => setRip(evt.target.value)}>
+              <Form.Select name="nftId" className="w-50 m-3">
+                <option value="null">-</option>
+                {list.map((nft, index) => {
+                  return (
+                    <option key={nft.id} value={`${index}`}>
+                      {nft.name}
+                    </option>
+                  );
+                })}
+              </Form.Select>
+              <Button
+                className=" m-3"
+                onClick={() => {
+                  if (ripValue === null) {
+                    return;
+                  }
+                  setNFT(list[ripValue]);
+                  setTransaction(true);
+                  manageTransaction(true);
+                }}
+              >
+                Begin Transaction
+              </Button>
+            </Form>
+          ) : (
+            <></>
+          )
         ) : sellerId ? (
           <Form>
-            <p>After Receiving payment, please confirm transaction. If the pay is not to your liking,</p>
+            <p>
+              After Receiving payment, please confirm transaction. If the pay is
+              not to your liking, cancel.
+            </p>
             <Button
               className=" m-3"
               onClick={() => {
                 setTransaction(null);
-                setSeller(null)
+                setSeller(null);
                 sendNFT();
               }}
             >
@@ -834,10 +930,8 @@ const Chat = (props) => {
             <Button
               className=" m-3"
               onClick={() => {
-
-
                 setTransaction(null);
-                manageTransaction(false);
+                cancelTransaction("seller");
               }}
             >
               Cancel Transaction
@@ -852,9 +946,8 @@ const Chat = (props) => {
             <Button
               className=" m-3"
               onClick={() => {
-                setNFT(null);
                 setTransaction(null);
-                manageTransaction(false);
+                cancelTransaction("buyer");
               }}
             >
               Cancel Transaction
