@@ -79,6 +79,9 @@ const UploadFile = () => {
       }),
     });
 
+
+    //size: 1004113 this is about 1MB size file
+
     //Finally there's a file with detailed information for that NFT
     const changeP = await doc(db, 'NFTs', `${value.name + date}`);
     await setDoc(changeP, {

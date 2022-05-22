@@ -1,10 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Avatar, Flex, Text, Link } from "@chakra-ui/react";
 import { getStorage, ref, getBlob } from "firebase/storage";
+import { useDispatch } from "react-redux";
+
 
 const Messages = (props) => {
   const { messages, myId, interlocutor } = props;
   const [pp, setPp] = useState();
+  const dispatch = useDispatch();
+
+
   useEffect(() => {
     if (interlocutor) {
       const storage = getStorage();
@@ -26,7 +31,7 @@ const Messages = (props) => {
   };
 
   return (
-    <Flex w="100%" h="80%" overflowY="scroll" flexDirection="column" p="3">
+    <Flex w="100%" h="80%" overflowY="scroll" overflowX="hidden" flexDirection="column" p="3">
       {messages.map((msg, index) => {
         if (msg.isTx) {
           let net = "";
@@ -58,6 +63,26 @@ const Messages = (props) => {
               </Flex>
             </Flex>
           );
+        } else if (msg.isStart || msg.isStart === false) {
+
+
+         return(
+         <Flex key={index} w="100%" justify="center">
+            <Flex
+               bg="orange"
+               color="black"
+               minW="100px"
+               maxW="50%"
+               my="1"
+               p="3"
+               borderRadius="3"
+               flexDirection="column"
+            >
+              <Text>{msg.content}</Text>
+              {msg.photoUrl !== null ? <img width='300px' height='300px' src={msg.photoUrl}/> : <></>}
+            </Flex>
+          </Flex>
+          )
         } else if (msg.fromId === myId) {
           return (
             <Flex key={index} w="100%" justify="flex-end">
