@@ -28,10 +28,14 @@ const UploadFile = () => {
   const uploadFile = async (evt) => {
     evt.preventDefault();
 
-    if (value.name === '' || value.tags === []) {
+    if (value.tags[value.tags.length - 1] === '') {
+      value.tags.pop();
+      }
+
+      if (value.name === '' || value.tags.includes('') || value.tags.length === 0) {
       toast.error('Every upload needs a name and tags!');
       return;
-    }
+      }
     if (imageUpload == null) {
       toast.error('Design required for upload');
       return;
