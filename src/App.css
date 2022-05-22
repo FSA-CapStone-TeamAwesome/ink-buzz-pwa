@@ -26,7 +26,7 @@ h1 {
 }
 
 .feedPostContainer {
-  justify-content: space-between;
+  justify-content: space-around;
   margin-bottom: 50px;
   margin-top: 1rem;
 }
