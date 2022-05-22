@@ -6,13 +6,14 @@ import { storage } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../store/userStore';
 import { ref, getDownloadURL } from 'firebase/storage';
-import { useNavigate, useParams, Link as DOMLink } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PreviewPost from './previewPost';
-import { getProfile, clearProfile } from '../store/profileStore';
-import { Heading, Link } from '@chakra-ui/react';
+import { getProfile } from '../store/profileStore';
+import { Heading } from '@chakra-ui/react';
 import { updateProfile } from '../store/profileStore';
 import { db } from '../config/firebase';
 import FollowCard from './FollowCard';
+import FavoriteCard from './FavoriteCard';
 
 const ArtistProfile = () => {
   injectStyle();
@@ -230,10 +231,10 @@ const ArtistProfile = () => {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       {artist.name} has {artist.followers.length || 0}{' '}
                       followers:
-                    </h3>
+                    </Heading>
                     <div className="d-flex flex-wrap justify-content-center">
                       {artist.followers.map((artist, idx) => {
                         return (
@@ -274,21 +275,24 @@ const ArtistProfile = () => {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       {artist.name} has{' '}
                       {(artist.favorites && artist.favorites.length) || 0}{' '}
                       favorites:
-                    </h3>
-                    <div className="d-flex flex-column">
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
                       {artist.favorites &&
                         artist.favorites.map((design, idx) => {
                           return (
-                            <div className="w-50" key={'design' + idx}>
-                              <Button
-                                onClick={() => navigate(`/nft/${design.id}`)}
-                                className="mt-3">
-                                {design.name}
-                              </Button>
+                            <div key={idx + design.id} className="me-3">
+                              <FavoriteCard
+                                favorite={{
+                                  id: design.id,
+                                  photo: design.image,
+                                  name: design.name,
+                                  creator: design.creator,
+                                }}
+                              />
                             </div>
                           );
                         })}
