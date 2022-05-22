@@ -1,26 +1,17 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react';
-
-=======
 import React, { useEffect, useState, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
->>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
+
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   collection,
   doc,
+  getDoc,
   query,
   where,
   onSnapshot,
   updateDoc,
   arrayUnion,
-<<<<<<< HEAD
-  getDoc,
-
-=======
->>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
   arrayRemove,
 } from 'firebase/firestore';
 import { toHex, truncateAddress } from "./wallet_stuff/utils";
@@ -52,23 +43,14 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { updateUser } from '../store/userStore';
 import { Heading } from '@chakra-ui/react';
 
-<<<<<<< HEAD
-// import {admin} from 'firebase-admin'
-
 const SingleNFT = (props) => {
-=======
-const SingleNFT = () => {
->>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
   const [data, setData] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [follows, setFollow] = useState(false);
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
-<<<<<<< HEAD
   const [searchObj, setSearchObj] = useState(null);
   const [sendToAddress, setAddress] = useState("")
-=======
->>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
   const [amount, setAmount] = useState(0);
@@ -107,15 +89,12 @@ const SingleNFT = () => {
         setData(doc.data());
       });
     });
-<<<<<<< HEAD
     const nameRef = doc(db, "users", data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
     setAddress(nameFromDoc.data().accounts[0])
 
-  };
-=======
+
   }, [nftId]);
->>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
 
   //function that loads photo
   const getPhoto = useCallback(async () => {
@@ -141,8 +120,7 @@ const SingleNFT = () => {
     } else {
       setFavor(false);
     }
-<<<<<<< HEAD
-  }
+  }, [data, user]);
   const handleNetwork = (e) => {
     const id = e.target.value;
     setNetwork(Number(id));
@@ -151,10 +129,8 @@ const SingleNFT = () => {
     const amt = e.target.value;
     setAmount(amt);
   };
-=======
-  }, [data, user]);
 
->>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
+
   //function for toggling the state of following an artist
   const followToggle = async () => {
     const followRef = doc(db, 'users', `${data.creatorId}`);

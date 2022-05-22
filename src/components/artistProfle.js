@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Container, Tab, Row, Col, Nav } from 'react-bootstrap';
 import { injectStyle } from 'react-toastify/dist/inject-style';
-import { arrayUnion, arrayRemove } from 'firebase/firestore';
+import { arrayUnion, updateDoc, doc ,arrayRemove } from 'firebase/firestore';
 import { storage } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../store/userStore';
@@ -11,6 +11,7 @@ import PreviewPost from './previewPost';
 import { getProfile, clearProfile } from '../store/profileStore';
 import { Heading, Link } from '@chakra-ui/react';
 import { updateProfile } from '../store/profileStore';
+import { db } from '../config/firebase';
 
 const ArtistProfile = () => {
   injectStyle();
@@ -126,7 +127,7 @@ const ArtistProfile = () => {
   };
 
 
-  async function onPageLoad() {
+
   const onPageLoad = useCallback(async () => {
     await dispatch(getProfile(profileId));
   }, [dispatch, profileId]);
