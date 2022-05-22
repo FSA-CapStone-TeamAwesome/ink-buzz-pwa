@@ -102,7 +102,7 @@ const Messages = (props) => {
         } else {
           return (
             <Flex key={index} w="100%">
-              <Avatar className={msg.fromName} src={pp} bg="blue.300"></Avatar>
+              <Avatar name={msg.fromName} src={pp} bg="blue.300"></Avatar>
               <Flex
                 bg="gray.100"
                 color="black"
