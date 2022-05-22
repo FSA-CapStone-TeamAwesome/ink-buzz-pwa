@@ -101,7 +101,6 @@ const Profile = () => {
         },
       });
 
-
         //The user gets a copy to their firebaseFolder
         let change = await doc(db, 'users', `${user.data.id}`);
         await updateDoc(change, {
