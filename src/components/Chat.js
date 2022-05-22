@@ -175,7 +175,6 @@ const Chat = (props) => {
   useEffect (() => {
   if(myId){
     const unsub = onSnapshot(doc(db, "users", `${myId}`), (doc) => {
-      console.log(doc.data())
       setConvoList(doc.data().chatsWith)
   });
     return unsub
@@ -724,7 +723,6 @@ const Chat = (props) => {
 
     setMessage({ ...message, content: "" });
   }
-  console.log(convoList)
   return (
     <Flex
       w="100%"
