@@ -27,12 +27,17 @@ const UploadFile = () => {
 
   const uploadFile = async (evt) => {
     evt.preventDefault();
-
-    if (value.tags[value.tags.length - 1] === '') {
-      value.tags.pop();
+    const arrLength = value.tags.length - 1;
+    if (arrLength !== -1) {
+      while (value.tags[value.tags.length - 1] === '') {
+        value.tags.pop();
+      }
     }
-
-    if (value.name === '' || value.tags.includes('')) {
+    if (
+      value.name === '' ||
+      value.tags.length === 0 ||
+      value.tags.includes('')
+    ) {
       toast.error('Every upload needs a name and tags!');
       return;
     }
@@ -102,7 +107,8 @@ const UploadFile = () => {
       creator: `${user.name}`,
       creatorId: `${user.data.id}`,
       description: value.description,
-      image: `/images/universal/${user.data.id}/${value.name + date}`,
+      smallImage: `/images/universal/small/${user.data.id}/${value.name + date}.webp`,
+      image: `/images/universal/${user.data.id}/${value.name + date}.webp`,
       created: `${date}`,
       tags: value.tags,
     });
