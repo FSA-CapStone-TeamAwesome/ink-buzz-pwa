@@ -27,8 +27,6 @@ const FollowCard = ({ profilePic, id, name }) => {
     }
   };
 
-  console.log(profilePic, id, name);
-
   return (
     <div>
       <Card style={{ width: '18rem' }}>

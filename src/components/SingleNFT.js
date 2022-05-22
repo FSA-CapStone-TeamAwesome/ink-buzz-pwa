@@ -138,6 +138,7 @@ const SingleNFT = (props) => {
             following: arrayRemove({
               id: data.creatorId,
               name: data.creator,
+              profilePic: `/images/universal/${data.creatorId}/profile-picture`,
             }),
           },
         }),
@@ -159,6 +160,7 @@ const SingleNFT = (props) => {
             following: arrayUnion({
               id: data.creatorId,
               name: data.creator,
+              profilePic: `/images/universal/${data.creatorId}/profile-picture`,
             }),
           },
         }),

@@ -42,6 +42,7 @@ const ArtistProfile = () => {
             following: arrayRemove({
               id: artistProfile.data.id,
               name: artistProfile.name,
+              profilePic: `/images/universal/${artistProfile.data.id}/profile-picture`,
             }),
           },
         }),
@@ -70,6 +71,7 @@ const ArtistProfile = () => {
             following: arrayUnion({
               id: artistProfile.data.id,
               name: artistProfile.name,
+              profilePic: `/images/universal/${artistProfile.data.id}/profile-picture`,
             }),
           },
         }),
@@ -249,40 +251,26 @@ const ArtistProfile = () => {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="following">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       {artist.name} is following {artist.following.length || 0}{' '}
                       artists:
-                    </h3>
-                    <div className="d-flex flex-column">
-                      {artist.following.map((artist, idx) => {
-                        if (artist.id === user.data.id) {
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
+                      {artist &&
+                        artist.following &&
+                        artist.following.map((artist, idx) => {
                           return (
-                            <div className="w-50" key={'artist' + idx}>
-                              <Link
-                                as={DOMLink}
-                                to={`/profile/`}
-                                className="mt-3">
-                                {artist.name}
-                              </Link>
+                            <div
+                              key={idx + 'following' + user.id}
+                              className="me-3">
+                              <FollowCard
+                                profilePic={artist.profilePic}
+                                id={artist.id}
+                                name={artist.name}
+                              />
                             </div>
                           );
-                        }
-
-                        return (
-                          <div className="w-50" key={'artist' + idx}>
-                            <Link
-                              as={DOMLink}
-                              onClick={() => {
-                                dispatch(clearProfile());
-                                setRefresh(!refresh);
-                              }}
-                              to={`/profiles/${artist.id}`}
-                              className="mt-3">
-                              {artist.name}
-                            </Link>
-                          </div>
-                        );
-                      })}
+                        })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
