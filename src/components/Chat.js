@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Container, Form } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 
-import { db } from "../config/firebase";
-
+import { db, storage } from "../config/firebase";
+import { getDownloadURL, ref } from 'firebase/storage';
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import Messages from "./Messages";
@@ -633,7 +633,7 @@ const Chat = (props) => {
     const nameRef = doc(db, "users", interlocutor);
     const nameFromDoc = await getDoc(nameRef);
     const chatsRef = doc(db, "users", `${user.data.id}`);
-
+    const photo = await getDownloadURL(ref(storage, internalNFT.image));
     let text = `${myName} would like to purchase the design, ${
       internalNFT.name
     }, created by ${internalNFT.creator}. The going rate is $${(
@@ -696,7 +696,7 @@ const Chat = (props) => {
         fromAddress: fromAddress,
         toId: message.recipient,
         isStart: true,
-        photoUrl: null,
+        photoUrl: photo,
         timestamp,
       });
     } catch (err) {
@@ -712,7 +712,7 @@ const Chat = (props) => {
           fromAddress: fromAddress,
           toId: message.recipient,
           isStart: true,
-          photoUrl: null,
+          photoUrl: photo,
           timestamp,
         });
       } catch (err) {

@@ -72,13 +72,14 @@ const Messages = (props) => {
                bg="orange"
                color="black"
                minW="100px"
-               maxW="60%"
+               maxW="50%"
                my="1"
                p="3"
                borderRadius="3"
                flexDirection="column"
             >
               <Text>{msg.content}</Text>
+              {msg.photoUrl !== null ? <img width='300px' height='300px' src={msg.photoUrl}/> : <></>}
             </Flex>
           </Flex>
           )
