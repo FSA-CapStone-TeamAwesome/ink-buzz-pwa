@@ -86,6 +86,7 @@ const UploadFile = () => {
     let change = await doc(db, 'users', `${user.data.id}`);
     await updateDoc(change, {
       images: arrayUnion({
+        smallPath: `/images/universal/${user.data.id}/small/${value.name + date}.webp`,
         path: `/images/universal/${user.data.id}/${value.name + date}.webp`,
         likes: 0,
         comments: 0,
@@ -107,7 +108,7 @@ const UploadFile = () => {
       creator: `${user.name}`,
       creatorId: `${user.data.id}`,
       description: value.description,
-      smallImage: `/images/universal/small/${user.data.id}/${value.name + date}.webp`,
+      smallImage: `/images/universal/${user.data.id}/small/${value.name + date}.webp`,
       image: `/images/universal/${user.data.id}/${value.name + date}.webp`,
       created: `${date}`,
       tags: value.tags,

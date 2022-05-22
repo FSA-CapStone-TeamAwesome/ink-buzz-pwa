@@ -21,6 +21,7 @@ import { Heading } from '@chakra-ui/react';
 import FollowCard from './FollowCard';
 import FavoriteCard from './FavoriteCard';
 import { useAuthentication } from '../hooks/useAuthentication';
+import Compressor from 'compressorjs';
 
 const Profile = () => {
   injectStyle();
