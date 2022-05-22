@@ -98,7 +98,7 @@ const SingleNFT = (props) => {
 
   //function that loads photo
   const getPhoto = useCallback(async () => {
-    let getIt = await getDownloadURL(ref(storage, data.image));
+    let getIt = await getDownloadURL(ref(storage, data.smallImage));
     setPhoto(getIt);
 
     //checking if user has artist on follow
