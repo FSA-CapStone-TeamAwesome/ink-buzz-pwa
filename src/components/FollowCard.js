@@ -20,7 +20,7 @@ const FollowCard = ({ profilePic, id, name }) => {
   }, [getPhoto]);
 
   const artistProfileFunc = (inputtedCreatorId) => {
-    if (inputtedCreatorId === user.data.id) {
+    if (user && user.data && user.data.id === inputtedCreatorId) {
       navigate('/profile');
     } else {
       navigate(`/profiles/${inputtedCreatorId}`);

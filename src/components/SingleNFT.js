@@ -282,7 +282,7 @@ const SingleNFT = (props) => {
   const { name, creator, price, description, creatorId } = data;
 
   const artistProfileFunc = (inputtedCreatorId) => {
-    if (inputtedCreatorId === user.data.id) {
+    if (user && user.data && user.data.id === inputtedCreatorId) {
       navigate('/profile');
     } else {
       navigate(`/profiles/${inputtedCreatorId}`);
@@ -398,9 +398,16 @@ const SingleNFT = (props) => {
           </Modal>
         </div>
       ) : (
-        <Button className="mt-3" onClick={() => navigate('/SignIn')}>
-          Sign in to message artist
-        </Button>
+        <div className="d-flex">
+          <Button
+            className="me-3 mt-3"
+            onClick={() => artistProfileFunc(creatorId)}>
+            Go to Artist's Profile
+          </Button>
+          <Button className="me-3 mt-3" onClick={() => navigate('/SignIn')}>
+            Sign in to message artist
+          </Button>
+        </div>
       )}
     </Container>
   );

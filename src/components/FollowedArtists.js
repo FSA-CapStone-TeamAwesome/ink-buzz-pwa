@@ -27,6 +27,8 @@ const FollowedArtists = () => {
     );
   }
 
+  console.log(following);
+
   return (
     <div>
       {following.map((coolDude) => {
