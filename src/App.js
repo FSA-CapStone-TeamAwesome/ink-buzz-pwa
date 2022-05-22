@@ -1,26 +1,26 @@
-import "./App.css";
-import { Routes, Route } from "react-router-dom";
-import { useAuthentication } from "./hooks/useAuthentication";
-import Header from "./components/Header";
-import Home from "./components/Home";
-import { SignIn } from "./components/SignIn";
-import Logout from "./components/Logout";
-import SignUp from "./components/SignUp";
-import SingleNFT from "./components/SingleNFT";
-import ErrorPage from "./components/ErrorPage";
-import Upload from "./components/uploadFile";
-import Chat from "./components/Chat";
-import { getUser } from "./store/userStore";
-import { useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
-import Profile from "./components/Profile";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import WalletConnect from "@walletconnect/web3-provider";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import ArtistProfile from "./components/artistProfle";
+import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import { useAuthentication } from './hooks/useAuthentication';
+import Header from './components/Header';
+import Home from './components/Home';
+import { SignIn } from './components/SignIn';
+import Logout from './components/Logout';
+import SignUp from './components/SignUp';
+import SingleNFT from './components/SingleNFT';
+import ErrorPage from './components/ErrorPage';
+import Upload from './components/uploadFile';
+import Chat from './components/Chat';
+import { getUser } from './store/userStore';
+import { useDispatch } from 'react-redux';
+import { useState, useEffect } from 'react';
+import Profile from './components/Profile';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
+import WalletConnect from '@walletconnect/web3-provider';
+import { ethers } from 'ethers';
+import Web3Modal from 'web3modal';
+import ArtistProfile from './components/artistProfle';
 
 function App() {
   const { user } = useAuthentication();
@@ -29,7 +29,7 @@ function App() {
   const [library, setLibrary] = useState();
   const [account, setAccount] = useState();
   const [network, setNetwork] = useState();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [chainId, setChainId] = useState();
 
   useEffect(() => {
@@ -39,7 +39,7 @@ function App() {
   useEffect(() => {
     if (provider?.on) {
       const handleAccountsChanged = (accounts) => {
-        console.log("accountsChanged", accounts);
+        console.log('accountsChanged', accounts);
         if (accounts) setAccount(accounts[0]);
       };
 
@@ -48,19 +48,19 @@ function App() {
       };
 
       const handleDisconnect = () => {
-        console.log("disconnect", error);
+        console.log('disconnect', error);
         disconnect();
       };
 
-      provider.on("accountsChanged", handleAccountsChanged);
-      provider.on("chainChanged", handleChainChanged);
-      provider.on("disconnect", handleDisconnect);
+      provider.on('accountsChanged', handleAccountsChanged);
+      provider.on('chainChanged', handleChainChanged);
+      provider.on('disconnect', handleDisconnect);
 
       return () => {
         if (provider.removeListener) {
-          provider.removeListener("accountsChanged", handleAccountsChanged);
-          provider.removeListener("chainChanged", handleChainChanged);
-          provider.removeListener("disconnect", handleDisconnect);
+          provider.removeListener('accountsChanged', handleAccountsChanged);
+          provider.removeListener('chainChanged', handleChainChanged);
+          provider.removeListener('disconnect', handleDisconnect);
         }
       };
     }
@@ -69,7 +69,7 @@ function App() {
   const refreshState = () => {
     setAccount();
     setChainId();
-    setNetwork("");
+    setNetwork('');
   };
 
   const disconnect = async () => {
@@ -81,14 +81,14 @@ function App() {
     coinbasewallet: {
       package: CoinbaseWalletSDK,
       options: {
-        appName: "Ink Buzz",
-        infuraId: "6237838e24b74f8bb53f0cb090a0244d",
+        appName: 'Ink Buzz',
+        infuraId: '6237838e24b74f8bb53f0cb090a0244d',
       },
     },
     walletconnect: {
       package: WalletConnect,
       options: {
-        infuraId: "6237838e24b74f8bb53f0cb090a0244d",
+        infuraId: '6237838e24b74f8bb53f0cb090a0244d',
       },
     },
   };

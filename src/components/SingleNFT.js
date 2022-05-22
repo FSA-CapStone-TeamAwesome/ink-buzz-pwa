@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 
+=======
+import React, { useEffect, useState, useCallback } from 'react';
+import { Button } from 'react-bootstrap';
+>>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
-import ListGroup from 'react-bootstrap/ListGroup';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   collection,
@@ -12,8 +16,11 @@ import {
   onSnapshot,
   updateDoc,
   arrayUnion,
+<<<<<<< HEAD
   getDoc,
 
+=======
+>>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
   arrayRemove,
 } from 'firebase/firestore';
 import { toHex, truncateAddress } from "./wallet_stuff/utils";
@@ -42,20 +49,26 @@ import { ethers } from "ethers";
 import { useDispatch, useSelector } from 'react-redux';
 import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
-
 import { updateUser } from '../store/userStore';
 import { Heading } from '@chakra-ui/react';
 
+<<<<<<< HEAD
 // import {admin} from 'firebase-admin'
 
 const SingleNFT = (props) => {
+=======
+const SingleNFT = () => {
+>>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
   const [data, setData] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [follows, setFollow] = useState(false);
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
+<<<<<<< HEAD
   const [searchObj, setSearchObj] = useState(null);
   const [sendToAddress, setAddress] = useState("")
+=======
+>>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
   const [amount, setAmount] = useState(0);
@@ -83,8 +96,8 @@ const SingleNFT = (props) => {
 
 
 
-  //function querys server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
-  const aFunction = async () => {
+  //function query's server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
+  const aFunction = useCallback(async () => {
     let docData = await query(
       collection(db, 'NFTs'),
       where('id', '==', `${nftId}`),
@@ -94,14 +107,18 @@ const SingleNFT = (props) => {
         setData(doc.data());
       });
     });
+<<<<<<< HEAD
     const nameRef = doc(db, "users", data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
     setAddress(nameFromDoc.data().accounts[0])
 
   };
+=======
+  }, [nftId]);
+>>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
 
   //function that loads photo
-  async function getPhoto() {
+  const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, data.image));
     setPhoto(getIt);
 
@@ -124,6 +141,7 @@ const SingleNFT = (props) => {
     } else {
       setFavor(false);
     }
+<<<<<<< HEAD
   }
   const handleNetwork = (e) => {
     const id = e.target.value;
@@ -133,6 +151,10 @@ const SingleNFT = (props) => {
     const amt = e.target.value;
     setAmount(amt);
   };
+=======
+  }, [data, user]);
+
+>>>>>>> 875a8cbdfade20f53886899fa5b468a0f7453fef
   //function for toggling the state of following an artist
   const followToggle = async () => {
     const followRef = doc(db, 'users', `${data.creatorId}`);
@@ -189,11 +211,11 @@ const SingleNFT = (props) => {
     if (!follows) {
       followToggle();
     }
-    navigate("/Chat", { state: { chosenInterlocutor: data.creatorId } });
+    navigate('/Chat', { state: { chosenInterlocutor: data.creatorId } });
   };
 
   const chatsWithAdd = async () => {
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
 
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
@@ -244,7 +266,7 @@ const SingleNFT = (props) => {
 
   useEffect(() => {
     aFunction();
-  }, []);
+  }, [aFunction]);
 
 
 
@@ -274,13 +296,8 @@ const SingleNFT = (props) => {
 
 
   useEffect(() => {
-    data &&
-      getPhoto() &&
-      setSearchObj({
-        id: data.creatorId,
-        name: data.creator,
-      });
-  }, [data]);
+    data && getPhoto();
+  }, [data, getPhoto]);
 
   useEffect(() => setUser(user), [user]);
 
@@ -297,7 +314,9 @@ const SingleNFT = (props) => {
   };
 
   if (!data) return <h2>Loading</h2>;
-  const { id, name, creator, price, description, creatorId, bids } = data;
+
+  const { name, creator, price, description, creatorId } = data;
+
   return (
     <Container
       style={{ marginTop: '5rem' }}

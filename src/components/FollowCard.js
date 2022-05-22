@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
@@ -7,13 +7,14 @@ import { Link } from 'react-router-dom';
 const FollowCard = ({ user }) => {
   const [photo, setPhoto] = useState(null);
 
-  async function getPhoto() {
+  const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, user.profilePic));
     setPhoto(getIt);
-  }
+  }, [user]);
+
   useEffect(() => {
     getPhoto();
-  }, []);
+  }, [getPhoto]);
 
   return (
     <div>

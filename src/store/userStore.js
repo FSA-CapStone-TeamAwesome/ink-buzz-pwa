@@ -1,12 +1,12 @@
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
-import { db, storage } from '../config/firebase';
+import { db } from '../config/firebase';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const getUser = createAsyncThunk(
   'user/getUserStatus',
   async (user, thunkAPI) => {
-    let userRef = await doc(db, 'users', user.auth.currentUser.uid);
+    let userRef = await doc(db, 'users', user.uid);
     let getUser = await getDoc(userRef);
     let userInfo = await getUser.data();
     return userInfo;
@@ -17,20 +17,22 @@ export const updateUser = createAsyncThunk(
   'user/updateUserStatus',
   async (userData, thunkAPI) => {
     try {
-    const { user, update } = userData;
+      const { user, update } = userData;
 
-    let userProf = await doc(db, 'users', `${user.data.id}`);
-    await updateDoc(userProf, update);
+      let userProf = await doc(db, 'users', `${user.data.id}`);
+      await updateDoc(userProf, update);
 
-    let userRef = await doc(db, 'users', user.data.id);
-    let getUser = await getDoc(userRef);
-    let userInfo = await getUser.data();
+      let userRef = await doc(db, 'users', user.data.id);
+      let getUser = await getDoc(userRef);
+      let userInfo = await getUser.data();
 
-    return userInfo;
+      return userInfo;
+    } catch (err) {
+      console.log(err);
     }
-    catch(err ){console.log(err)}
   },
 );
+
 export const userSlice = createSlice({
   name: 'user',
   initialState: {

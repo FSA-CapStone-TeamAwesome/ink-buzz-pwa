@@ -1,26 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
-import { assets } from '../constants';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button, Container, Tab, Row, Col, Nav } from 'react-bootstrap';
 import { injectStyle } from 'react-toastify/dist/inject-style';
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  query,
-  arrayRemove,
-} from 'firebase/firestore';
-import { db, storage } from '../config/firebase';
+import { arrayUnion, arrayRemove } from 'firebase/firestore';
+import { storage } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUser, updateUser } from '../store/userStore';
-import {
-  getAuth,
-  updateEmail,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-} from 'firebase/auth';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { updateUser } from '../store/userStore';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { useNavigate, useParams, Link as DOMLink } from 'react-router-dom';
 import PreviewPost from './previewPost';
 import { getProfile, clearProfile } from '../store/profileStore';
@@ -31,12 +16,11 @@ const ArtistProfile = () => {
   injectStyle();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { profileId } = useParams();
 
   const user = useSelector((state) => state.user.user);
   const artist = useSelector((state) => state.profile.profile);
-  const { profileId } = useParams();
 
-  const [show, setShow] = useState(false);
   const [artistProfile, setArtistProfile] = useState(null);
   const [follows, setFollow] = useState(false);
   const [photo, setPhoto] = useState(null);
@@ -105,34 +89,26 @@ const ArtistProfile = () => {
   };
 
 
-  async function getPhoto() {
-    if (artist && artist.profilePic) {
-      await getDownloadURL(ref(storage, artist.profilePic))
-        .then((url) => {
-          setPhoto(url);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+  //checking if user has artist on follow
+  // if (
+  //   artist.data &&
+  //   user.following &&
+  //   user.following.some((item) => item.id === `${artist.data.id}`)
+  // ) {
+  //   setFollow(true);
+  // } else {
+  //   setFollow(false);
+  // }
 
-    //checking if user has artist on follow
-    if (
-      artist.data &&
-      user.following &&
-      user.following.some((item) => item.id === `${artist.data.id}`)
-    ) {
-      setFollow(true);
-    } else {
-      setFollow(false);
+  const getPhoto = useCallback(async () => {
+    if (artist && artist.profilePic) {
+      let getIt = await getDownloadURL(ref(storage, artist.profilePic));
+      setPhoto(getIt);
     }
-  }
+  }, [artist]);
 
   const messageArtist = async () => {
     chatsWithAdd();
-    if (!follows) {
-      followToggle();
-    }
     navigate("/Chat", { state: { chosenInterlocutor: artist.data.id } });
   };
 
@@ -151,18 +127,18 @@ const ArtistProfile = () => {
 
 
   async function onPageLoad() {
+  const onPageLoad = useCallback(async () => {
     await dispatch(getProfile(profileId));
-    await getPhoto();
-  }
+  }, [dispatch, profileId]);
 
   useEffect(() => {
     setArtistProfile(artist);
     getPhoto();
-  }, [artist]);
+  }, [artist, getPhoto]);
 
   useEffect(() => {
     onPageLoad();
-  }, [profileId]);
+  }, [onPageLoad]);
 
   return (
     <Container className="mt-3">
