@@ -29,11 +29,12 @@ Ink Buzz is a social media platform where users can connect with tattoo artists.
 - React
 - Redux Toolkit
 - Coinbase Wallet SDK
-- Ethers
+- Ether.js
+- Infura
 - Web3
-- Chakra
+- Chakra UI
 - React Bootstrap
-- Firebase
+- Google Firebase
 - React Router DOM
 - React Toastify
 
@@ -54,9 +55,37 @@ Ink Buzz is a social media platform where users can connect with tattoo artists.
 
 ## Screenshots
 
-![Home Page](./images/home.jpg)
-![My Profile](./images/profile.jpg)
-![Chat Feature](./images/chat.jpg)
+### Sign up for a new account:
+
+![Sign Up](./GIFs/sign-up.gif)
+
+### Edit your profile
+
+![Edit My Profile](./GIFs/edit-profile.gif)
+
+### Follow artists and favorite their designs
+
+![Favorite/Follow Artists](./GIFs/favorite-follow.gif)
+
+### Upload your own tattoo designs
+
+![Upload Designs](./GIFs/upload.gif)
+
+### Chat with other artists
+
+![Chat with artists](./GIFs/chat.gif)
+
+### Pay artists for their designs with cryptocurrencies like Ethereum
+
+![Pay with Ethereum](./GIFs/payment.gif)
+
+### Confirm payments are on the blockchain
+
+![Confirm payments on Etherscan](./GIFs/ether-confirm.gif)
+
+### See your own designs on your profile page
+
+![See Your Designs](./GIFs/my-design.gif)
 
 ## Project Status
 
