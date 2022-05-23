@@ -31,6 +31,12 @@ const ArtistProfile = () => {
 
   //function will follow/unfollow user
   const followToggle = async () => {
+    // check if the user is logged in
+    if (Object.keys(user).length === 0) {
+      navigate('/signIn');
+      return;
+    }
+
     //for removing from followers/following
     if (
       user.following &&
@@ -101,6 +107,10 @@ const ArtistProfile = () => {
   }, [artist]);
 
   const messageArtist = async () => {
+    if (Object.keys(user).length === 0) {
+      navigate('/signIn');
+      return;
+    }
     chatsWithAdd();
     navigate('/Chat', { state: { chosenInterlocutor: artist.data.id } });
   };

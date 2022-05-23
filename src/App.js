@@ -22,7 +22,6 @@ import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import ArtistProfile from './components/artistProfle';
 
-
 function App() {
   const { user } = useAuthentication();
   const dispatch = useDispatch();
