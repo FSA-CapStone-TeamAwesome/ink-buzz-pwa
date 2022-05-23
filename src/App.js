@@ -144,8 +144,21 @@ function App() {
             />
           }
         />
-        <Route path="/nft/:nftId" element={<SingleNFT />} />
-        <Route path="*" element={<ErrorPage />} />
+        <Route exact path="/nft/:nftId" element={<SingleNFT  provider={provider}
+              setProvider={setProvider}
+              library={library}
+              setLibrary={setLibrary}
+              account={account}
+              setAccount={setAccount}
+              network={network}
+              setNetwork={setNetwork}
+              error={error}
+              setError={setError}
+              chainId={chainId}
+              setChainId={setChainId}
+              connectWallet={connectWallet}
+              web3Modal={web3Modal} />} />
+        <Route from='*' to='/404' element={<ErrorPage />} />
         <Route exact path="/profiles/:profileId" element={<ArtistProfile />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={2000} />

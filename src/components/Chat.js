@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
-import { toast } from 'react-toastify';
-import { injectStyle } from 'react-toastify/dist/inject-style';
+import { toast } from "react-toastify";
+import { injectStyle } from "react-toastify/dist/inject-style";
 import { db, storage } from "../config/firebase";
-import { getDownloadURL, ref } from 'firebase/storage';
+import { getDownloadURL, ref } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import Messages from "./Messages";
 import MessageFooter from "./MessageFooter";
-import { getUser } from "../store/userStore";
 import {
   Flex,
   Button,
@@ -82,7 +81,7 @@ const Chat = (props) => {
   //transaction is set
   const [startTransaction, setTransaction] = useState(null);
 
-  const [cryptoURL, setCryptoURL] = useState(null)
+  const [cryptoURL, setCryptoURL] = useState(null);
 
   const [sellerId, setSeller] = useState(null);
   // const [interlocutorName, setInterlocutorName] = useState("");
@@ -96,16 +95,14 @@ const Chat = (props) => {
   const { onOpen, isOpen, onClose } = useDisclosure();
 
   const location = useLocation();
-  const [reload, setReload] = useState(false)
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     if (user && user.data) {
       setMyId(user.data.id);
       setMyName(user.name);
-  }
+    }
   }, [user]);
-
-
 
   useEffect(() => {
     if (myId) {
@@ -114,7 +111,6 @@ const Chat = (props) => {
         orderBy("timestamp", "desc"),
         limit(40)
       );
-
 
       let convoIds = convoList.map((convo) => convo.id);
       let findIt = convoIds.indexOf(interlocutor);
@@ -125,13 +121,10 @@ const Chat = (props) => {
     }
   }, [myId]);
 
-
-
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
     getList();
     let convoIds = convoList.map((convo) => convo.id);
-
   }, [interlocutor]);
 
   useEffect(() => {
@@ -144,7 +137,6 @@ const Chat = (props) => {
 
   useEffect(() => {
     let convoIds = convoList.map((convo) => convo.id);
-
 
     let allInterlocutorIds = [
       ...new Set([
@@ -172,47 +164,41 @@ const Chat = (props) => {
     }
   }, [messages, interlocutor]);
 
-  useEffect (() => {
-  if(myId){
-    const unsub = onSnapshot(doc(db, "users", `${myId}`), (doc) => {
-      console.log(doc.data())
-      setConvoList(doc.data().chatsWith)
-  });
-    return unsub
-  }}, [myId])
+  useEffect(() => {
+    if (myId) {
+      const unsub = onSnapshot(doc(db, "users", `${myId}`), (doc) => {
+        console.log(doc.data());
+        setConvoList(doc.data().chatsWith);
+      });
+      return unsub;
+    }
+  }, [myId]);
 
-  useEffect (() => {
-    checkTransaction()
-  }, [convoList, messages])
+  useEffect(() => {
+    checkTransaction();
+  }, [convoList, messages]);
 
   const checkTransaction = async () => {
-    console.log('trans checked')
+    console.log("trans checked");
     let convoIds = convoList.map((convo) => convo.id);
     let findIt = convoIds.indexOf(interlocutor);
 
-    if (
-      convoList.length &&
-      convoList[findIt].role === "buyer"
-    ) {
+    if (convoList.length && convoList[findIt].role === "buyer") {
       setTransaction(true);
       setSeller(false);
       setNFT(convoList[findIt].nft);
 
       return;
     }
-    if (
-      convoList.length &&
-      convoList[findIt].role === "seller"
-    ) {
-
+    if (convoList.length && convoList[findIt].role === "seller") {
       setTransaction(true);
       setSeller(true);
       setNFT(convoList[findIt].nft);
       return;
     }
-    setSeller(null)
-    setTransaction(null)
-    setNFT(null)
+    setSeller(null);
+    setTransaction(null);
+    setNFT(null);
   };
 
   const chatsWithAdd = async (id) => {
@@ -310,7 +296,7 @@ const Chat = (props) => {
         onSnapshot(
           query(
             collection(db, "NFTs"),
-            where("creatorId", "==", `${interlocutor}`)
+            where("ownerId", "==", `${interlocutor}`)
           ),
           (querySnapshot) => {
             querySnapshot.forEach((doc) => {
@@ -466,7 +452,6 @@ const Chat = (props) => {
         }),
       });
 
-
       await updateDoc(nameRef, {
         chatsWith: arrayUnion({
           name: myName,
@@ -482,11 +467,6 @@ const Chat = (props) => {
           role: null,
         }),
       });
-
-
-
-
-
     } catch (err) {
       console.log(err);
     } finally {
@@ -530,49 +510,55 @@ const Chat = (props) => {
   }
 
   function validURL(str) {
-    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-      '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    var pattern = new RegExp(
+      "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$",
+      "i"
+    ); // fragment locator
     return !!pattern.test(str);
   }
 
   async function sendNFT() {
-    if(!validURL(cryptoURL)){
-      toast.error('Submit a valid URL for the transaction to confirm.')
-      return
-    }
 
+
+
+
+    if (!validURL(cryptoURL)) {
+      toast.error("Submit a valid URL for the transaction to confirm.");
+      return;
+    }
 
     let fromAddress = "";
     if (account) {
       fromAddress = account;
     }
 
-    try{
-    //client gets the NFT
-    let change = await doc(db, "users", `${interlocutor}`);
-    await updateDoc(change, {
-      images: arrayUnion({
-        NFT,
-      }),
-    });
-    //removed from user
-    await updateDoc(doc(db, "users", `${myId}`), {
-      images: arrayRemove({
-        NFT,
-      })
-    })}
-    catch(err){console.log(err)}
+    try {
+      //client gets the NFT
+      let change = await doc(db, "users", `${interlocutor}`);
+      await updateDoc(change, {
+        images: arrayUnion({
+          NFT,
+        }),
+      });
+      //removed from user
+      await updateDoc(doc(db, "users", `${myId}`), {
+        images: arrayRemove({
+          NFT,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
 
     const nameRef = doc(db, "users", interlocutor);
     const nameFromDoc = await (await getDoc(nameRef)).data().name;
 
-    const text = `Transaction completed. ${NFT.name} has been sold to ${
-      nameFromDoc
-    }.`;
+    const text = `Transaction completed. ${NFT.name} has been sold to ${nameFromDoc}.`;
     let timestamp = Timestamp.fromMillis(Date.now());
 
     try {
@@ -616,33 +602,40 @@ const Chat = (props) => {
       console.log(err);
     }
 
-    try{
+    try {
       let change = await doc(db, "users", `${interlocutor}`);
       await updateDoc(change, {
         billOfSale: arrayUnion({
           nftName: NFT.name,
-          nftId:  NFT.id,
+          nftId: NFT.id,
           creator: NFT.creator,
-          creatorId:  NFT.creatorId,
+          creatorId: NFT.creatorId,
+          seller: myName,
+          sellerId: myId,
+          buyer: nameFromDoc,
+          buyerId: interlocutor,
           linkTransaction: cryptoURL,
-          timestamp
+          timestamp,
         }),
       });
       //removed from user
       await updateDoc(doc(db, "users", `${myId}`), {
-        images: arrayRemove({
-          NFT,
-        })
-      })
-
-
-    }
-    catch (err) {
+        billOfSale: arrayUnion({
+          nftName: NFT.name,
+          nftId: NFT.id,
+          creator: NFT.creator,
+          creatorId: NFT.creatorId,
+          seller: myName,
+          sellerId: myId,
+          buyer: nameFromDoc,
+          buyerId: interlocutor,
+          linkTransaction: cryptoURL,
+          timestamp,
+        }),
+      });
+    } catch (err) {
       console.log(err);
     }
-
-
-
 
     try {
       await addDoc(collection(db, `messages/queue/${message.recipient}`), {
@@ -675,16 +668,39 @@ const Chat = (props) => {
       } catch (err) {
         console.log(err);
       }
+      try {
+        await updateDoc(doc(db, "NFTs", `${NFT.name + NFT.created}`), {
+          owner: nameFromDoc,
+          ownerId: interlocutor,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+
+      try {
+        let nft = user.images.find((o) => o.name === NFT.name);
 
 
-
-
+        await updateDoc(doc(db, "users", `${interlocutor}`), {
+          images: arrayUnion(nft,
+          ),
+        });
+        //removed from user
+        await updateDoc(doc(db, "users", `${sellerId}`), {
+          images: arrayRemove(
+              nft
+          ),
+        });
+      } catch (err) {
+        console.log(err);
+      }
 
       setSeller(null);
       setNFT(null);
       setTransaction(null);
     }
   }
+
   async function manageTransaction() {
     const internalNFT = list[ripValue];
     let timestamp = Timestamp.fromMillis(Date.now());
@@ -732,7 +748,6 @@ const Chat = (props) => {
       });
       //update for current user
 
-
       await updateDoc(nameRef, {
         chatsWith: arrayUnion({
           name: myName,
@@ -740,7 +755,6 @@ const Chat = (props) => {
           role: "seller",
           nft: internalNFT,
         }),
-
       });
     } catch (error) {
       console.log(error);
@@ -783,7 +797,7 @@ const Chat = (props) => {
 
     setMessage({ ...message, content: "" });
   }
-  console.log(convoList)
+  console.log(convoList);
   return (
     <Flex
       w="100%"
@@ -794,15 +808,30 @@ const Chat = (props) => {
     >
       <Flex w="100%" h="90%" flexDir="column">
         <div id="conversations">
-          {convoList && convoList.map((conversation, idx) => {
-            if (interlocutor && interlocutor === conversation.id) {
-              // setInterlocutorName(conversation.name);
+          {convoList &&
+            convoList.map((conversation, idx) => {
+              if (interlocutor && interlocutor === conversation.id) {
+                // setInterlocutorName(conversation.name);
+                return (
+                  <Button
+                    key={idx + conversation.id}
+                    style={{ margin: 10 }}
+                    bg="lightgrey"
+                    border="2px solid black"
+                    onClick={() => {
+                      setList([]);
+                      setInterlocutor(conversation.id);
+                    }}
+                  >
+                    {conversation.name}
+                  </Button>
+                );
+              }
               return (
                 <Button
                   key={idx + conversation.id}
                   style={{ margin: 10 }}
                   bg="lightgrey"
-                  border="2px solid black"
                   onClick={() => {
                     setList([]);
                     setInterlocutor(conversation.id);
@@ -811,21 +840,7 @@ const Chat = (props) => {
                   {conversation.name}
                 </Button>
               );
-            }
-            return (
-              <Button
-                key={idx + conversation.id}
-                style={{ margin: 10 }}
-                bg="lightgrey"
-                onClick={() => {
-                  setList([]);
-                  setInterlocutor(conversation.id);
-                }}
-              >
-                {conversation.name}
-              </Button>
-            );
-          })}
+            })}
           {!account ? (
             <Button onClick={connectWallet} style={{ margin: 10 }}>
               Connect Wallet
@@ -986,22 +1001,20 @@ const Chat = (props) => {
               Cancel Transaction
             </Button>
             <Input
-            placeholder="Place Transaction Link Here"
-            border="1px solid grey"
-            borderRadius="md"
-            value={cryptoURL}
-            onChange={(e)=> setCryptoURL(e.target.value)}
+              placeholder="Place Transaction Link Here"
+              border="1px solid grey"
+              borderRadius="md"
+              value={cryptoURL}
+              onChange={(e) => setCryptoURL(e.target.value)}
             />
             <Button
               className=" m-3"
               onClick={() => {
-
                 sendNFT();
               }}
             >
               Confirm Payment
             </Button>
-
           </Form>
         ) : (
           <Form>

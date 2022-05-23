@@ -85,7 +85,7 @@ const Messages = (props) => {
           )
         } else if (msg.fromId === myId) {
           return (
-            <Flex key={index} w="100%" justify="flex-end">
+            <Flex key={index} minWidth='0' w="100%" justify="flex-end">
               <Flex
                 bg="black"
                 color="white"
@@ -101,7 +101,7 @@ const Messages = (props) => {
           );
         } else {
           return (
-            <Flex key={index} w="100%">
+            <Flex key={index} minWidth='0' w="100%">
               <Avatar name={msg.fromName} src={pp} bg="blue.300"></Avatar>
               <Flex
                 bg="gray.100"

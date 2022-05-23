@@ -91,6 +91,7 @@ const UploadFile = () => {
         likes: 0,
         comments: 0,
         purchases: 0,
+        created: `${date}`,
         name: value.name,
         id: `${user.data.id + date}`,
       }),
@@ -112,6 +113,8 @@ const UploadFile = () => {
       image: `/images/universal/${user.data.id}/${value.name + date}.webp`,
       created: `${date}`,
       tags: value.tags,
+      owner: `${user.name}`,
+      ownerId: `${user.data.id}`
     });
     toast.success('Image Upload Successfully!');
     navigate('/');
