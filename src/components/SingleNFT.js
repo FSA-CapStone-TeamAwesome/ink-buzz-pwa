@@ -208,11 +208,7 @@ const SingleNFT = (props) => {
             following: arrayRemove({
               id: data.creatorId,
               name: data.creator,
-<<<<<<< HEAD
-              profilePic: `/images/universal/${data.creatorId}/profile-picture`
-=======
               profilePic: `/images/universal/${data.creatorId}/profile-picture`,
->>>>>>> 9354c6ac74b0a468cb4c76d7f4b2d47fab8ef3c8
             }),
           },
         }),
@@ -234,11 +230,7 @@ const SingleNFT = (props) => {
             following: arrayUnion({
               id: data.creatorId,
               name: data.creator,
-<<<<<<< HEAD
-              profilePic: `/images/universal/${data.creatorId}/profile-picture`
-=======
               profilePic: `/images/universal/${data.creatorId}/profile-picture`,
->>>>>>> 9354c6ac74b0a468cb4c76d7f4b2d47fab8ef3c8
             }),
           },
         }),
@@ -331,7 +323,7 @@ const SingleNFT = (props) => {
           },
         ],
       });
-      console.log(tx);
+
       return tx;
     } catch (txError) {
       console.log('txError was ', txError.code);
@@ -409,15 +401,9 @@ const SingleNFT = (props) => {
               Follow Artist
             </Button>
           )}
-<<<<<<< HEAD
-           <Button className="me-3" onClick={onOpen} style={{ margin: 10 }}>
-                Send Ether
-              </Button>
-=======
-          <Button onClick={onOpen} className="me-3 mt-3">
+          {/* <Button onClick={onOpen} onClick={onOpen} style={{ margin: 10 }} className="me-3 mt-3">
             Send Ether
           </Button>
->>>>>>> 9354c6ac74b0a468cb4c76d7f4b2d47fab8ef3c8
           <Modal
             isOpen={isOpen}
             onClose={onClose}
@@ -433,7 +419,7 @@ const SingleNFT = (props) => {
               <ModalBody>
                 {sendToAddress.length ? (
                   <Text>
-                    {/* Sending to {interlocutorName} at:{" "} */}
+
                     Sending to: {truncateAddress(sendToAddress)}
                   </Text>
                 ) : (
@@ -484,7 +470,7 @@ const SingleNFT = (props) => {
                 </HStack>
               </ModalBody>
             </ModalContent>
-          </Modal>
+          </Modal>*/}
         </div>
       ) : (
         <div className="d-flex">
