@@ -401,7 +401,7 @@ const SingleNFT = (props) => {
               Follow Artist
             </Button>
           )}
-          {/* <Button onClick={onOpen} onClick={onOpen} style={{ margin: 10 }} className="me-3 mt-3">
+          {/* <Button onClick={onOpen} className="me-3 mt-3">
             Send Ether
           </Button>
           <Modal
@@ -418,10 +418,10 @@ const SingleNFT = (props) => {
               <ModalCloseButton />
               <ModalBody>
                 {sendToAddress.length ? (
-                  <Text>
-
-                    Sending to: {truncateAddress(sendToAddress)}
-                  </Text>
+                  <Text> */}
+          {/* Sending to {interlocutorName} at:{" "} */}
+          {/* Sending to: {truncateAddress(sendToAddress)} */}
+          {/* </Text>
                 ) : (
                   <Text>Uh oh! Target does not have a wallet connected!</Text>
                 )}
@@ -451,8 +451,8 @@ const SingleNFT = (props) => {
                     overflow="hidden"
                     padding="10px">
                     <VStack>
-                      <Button
-                        // onClick={sendTransaction}
+                      <Button */}
+          {/* onClick={sendTransaction}
                         onClick={async () => {
                           try {
                             const txHash = await sendTransaction();
@@ -470,7 +470,7 @@ const SingleNFT = (props) => {
                 </HStack>
               </ModalBody>
             </ModalContent>
-          </Modal>*/}
+          </Modal> */}
         </div>
       ) : (
         <div className="d-flex">
