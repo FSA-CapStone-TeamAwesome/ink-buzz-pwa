@@ -158,7 +158,7 @@ function App() {
               setChainId={setChainId}
               connectWallet={connectWallet}
               web3Modal={web3Modal} />} />
-        <Route from='*' to='/404' element={<ErrorPage />} />
+
         <Route exact path="/profiles/:profileId" element={<ArtistProfile />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
