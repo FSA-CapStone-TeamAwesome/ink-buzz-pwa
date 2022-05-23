@@ -3,7 +3,7 @@ import { Button, Container, Form, Tab, Row, Col, Nav } from 'react-bootstrap';
 import profilePicImg from '../assets/images/default-profile.jpeg';
 import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUser, updateUser } from '../store/userStore';
