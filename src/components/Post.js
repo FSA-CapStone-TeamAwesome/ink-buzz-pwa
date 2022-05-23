@@ -21,6 +21,7 @@ const Post = ({ data }) => {
   return (
     <div className="mb-3 mobilePost">
       <Card style={{ width: '300px' }}>
+        {/* This div is required in order to make the images the right size */}
         <div className="NFTimageBox">
         <Card.Img variant="top" src={photo} className="NFTimage" />
         </div>
@@ -30,7 +31,7 @@ const Post = ({ data }) => {
           <Card.Subtitle className="mb-2 text-muted">
             Ξ{(price / 100).toFixed(2)}
           </Card.Subtitle>
-          <Card.Text>{description}</Card.Text>
+          <Card.Text className="NFTdescription">{description}</Card.Text>
           <Link to={`nft/${id}`}>
             <Button variant="dark">Get Details</Button>
           </Link>

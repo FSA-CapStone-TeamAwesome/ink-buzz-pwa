@@ -20,6 +20,12 @@ html {
   height: 100%;
 }
 
+.NFTdescription {
+  overflow: hidden;
+  height: 80px;
+  margin-bottom: 20px;
+}
+
 .profile-picture {
   width: 300;
   height: auto;
