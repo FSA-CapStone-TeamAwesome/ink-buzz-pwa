@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Container, Form } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
-import { injectStyle } from "react-toastify/dist/inject-style";
-import { db, storage } from "../config/firebase";
-import { getDownloadURL, ref } from "firebase/storage";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import Messages from "./Messages";
-import MessageFooter from "./MessageFooter";
-import { getUser } from '../store/userStore';
+import React, { useState, useEffect } from 'react';
+import { Form } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { injectStyle } from 'react-toastify/dist/inject-style';
+import { db, storage } from '../config/firebase';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { useSelector } from 'react-redux';
+import Messages from './Messages';
+import MessageFooter from './MessageFooter';
 import {
   Flex,
   Button,
@@ -48,15 +46,9 @@ import {
 import { toHex, truncateAddress } from './wallet_stuff/utils';
 import { ethers } from 'ethers';
 
-import { NetworkFirst } from 'workbox-strategies';
-import { SignEthereumTransactionResponse } from '@coinbase/wallet-sdk/dist/relay/Web3Response';
-
-// This global variable will be replaced with a converation list
-
 const Chat = (props) => {
   injectStyle();
   const user = useSelector((state) => state.user.user);
-  const dispatch = useDispatch();
   const [convoList, setConvoList] = useState([]);
 
   const [myId, setMyId] = useState('');
@@ -96,7 +88,6 @@ const Chat = (props) => {
   const { onOpen, isOpen, onClose } = useDisclosure();
 
   const location = useLocation();
-  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     if (user && user.data) {
@@ -167,8 +158,7 @@ const Chat = (props) => {
 
   useEffect(() => {
     if (myId) {
-      const unsub = onSnapshot(doc(db, "users", `${myId}`), (doc) => {
-
+      const unsub = onSnapshot(doc(db, 'users', `${myId}`), (doc) => {
         setConvoList(doc.data().chatsWith);
       });
       return unsub;
@@ -180,18 +170,18 @@ const Chat = (props) => {
   }, [convoList, messages]);
 
   const checkTransaction = async () => {
-    console.log("trans checked");
+    console.log('trans checked');
     let convoIds = convoList.map((convo) => convo.id);
     let findIt = convoIds.indexOf(interlocutor);
 
-    if (convoList.length && convoList[findIt].role === "buyer") {
+    if (convoList.length && convoList[findIt].role === 'buyer') {
       setTransaction(true);
       setSeller(false);
       setNFT(convoList[findIt].nft);
 
       return;
     }
-    if (convoList.length && convoList[findIt].role === "seller") {
+    if (convoList.length && convoList[findIt].role === 'seller') {
       setTransaction(true);
       setSeller(true);
       setNFT(convoList[findIt].nft);
@@ -219,11 +209,7 @@ const Chat = (props) => {
   const {
     account,
     setAccount,
-    provider,
-    setProvider,
     library,
-    setLibrary,
-    error,
     setError,
     chainId,
     setChainId,
@@ -296,8 +282,8 @@ const Chat = (props) => {
       Promise.all(
         onSnapshot(
           query(
-            collection(db, "NFTs"),
-            where("ownerId", "==", `${interlocutor}`)
+            collection(db, 'NFTs'),
+            where('ownerId', '==', `${interlocutor}`),
           ),
           (querySnapshot) => {
             querySnapshot.forEach((doc) => {
@@ -512,36 +498,30 @@ const Chat = (props) => {
 
   function validURL(str) {
     var pattern = new RegExp(
-      "^(https?:\\/\\/)?" + // protocol
-        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-        "(\\#[-a-z\\d_]*)?$",
-      "i"
+      '^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$',
+      'i',
     ); // fragment locator
     return !!pattern.test(str);
   }
 
   async function sendNFT() {
-
-
-
-
     if (!validURL(cryptoURL)) {
-      toast.error("Submit a valid URL for the transaction to confirm.");
+      toast.error('Submit a valid URL for the transaction to confirm.');
       return;
     }
 
-    let fromAddress = "";
+    let fromAddress = '';
     if (account) {
       fromAddress = account;
     }
 
-
-    const nameRef = doc(db, "users", interlocutor);
+    const nameRef = doc(db, 'users', interlocutor);
     const nameFromDoc = await (await getDoc(nameRef)).data().name;
-
     const text = `Transaction completed. ${NFT.name} has been sold to ${nameFromDoc}.`;
     let timestamp = Timestamp.fromMillis(Date.now());
 
@@ -587,7 +567,7 @@ const Chat = (props) => {
     }
 
     try {
-      let change = await doc(db, "users", `${interlocutor}`);
+      let change = await doc(db, 'users', `${interlocutor}`);
       await updateDoc(change, {
         billOfSale: arrayUnion({
           nftName: NFT.name,
@@ -603,7 +583,7 @@ const Chat = (props) => {
         }),
       });
       //removed from user
-      await updateDoc(doc(db, "users", `${myId}`), {
+      await updateDoc(doc(db, 'users', `${myId}`), {
         billOfSale: arrayUnion({
           nftName: NFT.name,
           nftId: NFT.id,
@@ -652,8 +632,9 @@ const Chat = (props) => {
       } catch (err) {
         console.log(err);
       }
+
       try {
-        await updateDoc(doc(db, "NFTs", `${NFT.name + NFT.created}`), {
+        await updateDoc(doc(db, 'NFTs', `${NFT.name + NFT.created}`), {
           owner: nameFromDoc,
           ownerId: interlocutor,
         });
@@ -663,16 +644,12 @@ const Chat = (props) => {
 
       try {
         let nft = user.images.find((o) => o.name === NFT.name);
-
-
-        await updateDoc(doc(db, "users", `${interlocutor}`), {
-          images: arrayUnion(nft
-          ),
+        await updateDoc(doc(db, 'users', `${interlocutor}`), {
+          images: arrayUnion(nft),
         });
         //removed from user
-        await updateDoc(doc(db, "users", `${myId}`), {
-          images: arrayRemove(nft
-          ),
+        await updateDoc(doc(db, 'users', `${myId}`), {
+          images: arrayRemove(nft),
         });
       } catch (err) {
         console.log(err);
@@ -694,9 +671,9 @@ const Chat = (props) => {
     const photo = await getDownloadURL(ref(storage, internalNFT.image));
     let text = `${myName} would like to purchase the design, ${
       internalNFT.name
-    }, created by ${internalNFT.creator}. The going rate is ${(
+    }, created by ${internalNFT.creator}. The going rate is ${
       internalNFT.price / 100
-    )} Ethereum. When payment is recieved, please confirm so transaction can clear.`;
+    } Ethereum. When payment is recieved, please confirm so transaction can clear.`;
 
     if (account) {
       fromAddress = account;
@@ -754,7 +731,6 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -772,8 +748,6 @@ const Chat = (props) => {
       } catch (err) {
         console.log(err);
       }
-
-      //ONLY FOR TRANSACTION STARTING, ONLY STARTED BY BUYER
     }
 
     setMessage({ ...message, content: '' });
@@ -790,7 +764,6 @@ const Chat = (props) => {
           {convoList &&
             convoList.map((conversation, idx) => {
               if (interlocutor && interlocutor === conversation.id) {
-                // setInterlocutorName(conversation.name);
                 return (
                   <Button
                     key={idx + conversation.id}
@@ -800,8 +773,7 @@ const Chat = (props) => {
                     onClick={() => {
                       setList([]);
                       setInterlocutor(conversation.id);
-                    }}
-                  >
+                    }}>
                     {conversation.name}
                   </Button>
                 );
@@ -844,10 +816,7 @@ const Chat = (props) => {
                   <ModalCloseButton />
                   <ModalBody>
                     {sendToAddress.length ? (
-                      <Text>
-                        {/* Sending to {interlocutorName} at:{" "} */}
-                        Sending to: {truncateAddress(sendToAddress)}
-                      </Text>
+                      <Text>Sending to: {truncateAddress(sendToAddress)}</Text>
                     ) : (
                       <Text>
                         Uh oh! Target does not have a wallet connected!
@@ -882,7 +851,6 @@ const Chat = (props) => {
                         padding="10px">
                         <VStack>
                           <Button
-                            // onClick={sendTransaction}
                             onClick={async () => {
                               try {
                                 const txHash = await sendTransaction();
@@ -970,9 +938,8 @@ const Chat = (props) => {
               className=" m-3"
               onClick={() => {
                 setTransaction(null);
-                cancelTransaction("seller");
-              }}
-            >
+                cancelTransaction('seller');
+              }}>
               Cancel Transaction
             </Button>
             <Input
@@ -986,8 +953,7 @@ const Chat = (props) => {
               className=" m-3"
               onClick={() => {
                 sendNFT();
-              }}
-            >
+              }}>
               Confirm Payment
             </Button>
           </Form>
@@ -1007,70 +973,6 @@ const Chat = (props) => {
             </Button>
           </Form>
         )}
-        {/* <VStack justifyContent="center" alignItems="center" h="100vh">
-        <HStack>
-          {!account ? (
-            <Button onClick={connectWallet}>Connect Wallet</Button>
-          ) : (
-            <Button onClick={disconnect}>Disconnect</Button>
-          )}
-        </HStack>
-        <VStack justifyContent="center" alignItems="center" padding="10px 0">
-          <HStack>
-            <Text>{`Connection Status: `}</Text>
-            {account ? (
-              <CheckCircleIcon color="green" />
-            ) : (
-              <WarningIcon color="#cd5700" />
-            )}
-          </HStack>
-
-          <Tooltip label={account} placement="right">
-            <Text>{`Account: ${truncateAddress(account)}`}</Text>
-          </Tooltip>
-          <Text>{`Network ID: ${chainId ? chainId : "No Network"}`}</Text>
-        </VStack>
-        {account && (
-          <HStack justifyContent="flex-start" alignItems="flex-start">
-            <Box
-              maxW="sm"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              padding="10px"
-            >
-              <VStack>
-                <Button onClick={switchNetwork}>Switch Network</Button>
-                <Select placeholder="Select network" onChange={handleNetwork}>
-                  <option value="3">Ropsten</option>
-                  <option value="4">Rinkeby</option>
-                  <option value="42">Kovan</option>
-                  <option value="1666600000">Harmony</option>
-                  <option value="42220">Celo</option>
-                </Select>
-              </VStack>
-            </Box>
-            <Box
-              maxW="sm"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              padding="10px"
-            >
-              <VStack>
-                <Button onClick={sendTransaction}>Send Ether</Button>
-                <Input
-                  placeholder="Set Amount"
-                  maxLength={20}
-                  onChange={handleInput}
-                  w="140px"
-                />
-              </VStack>
-            </Box>
-          </HStack>
-        )}
-        <Text>{error ? error.message : null}</Text>
-      </VStack> */}
       </Flex>
     </Flex>
   );

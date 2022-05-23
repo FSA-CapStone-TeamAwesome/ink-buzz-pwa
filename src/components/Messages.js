@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Avatar, Flex, Text, Link } from '@chakra-ui/react';
 import { getStorage, ref, getBlob } from 'firebase/storage';
-import { useDispatch } from 'react-redux';
 
 const Messages = (props) => {
   const { messages, myId, interlocutor } = props;
   const [pp, setPp] = useState();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (interlocutor) {
