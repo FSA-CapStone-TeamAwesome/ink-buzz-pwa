@@ -121,9 +121,6 @@ const Profile = () => {
   };
 
   const loadUser = useCallback(async () => {
-    let userRef = doc(db, 'users', user.data.id);
-    let getUserDoc = await getDoc(userRef);
-    await getUserDoc.data();
 
     try {
       let getIt = await getDownloadURL(

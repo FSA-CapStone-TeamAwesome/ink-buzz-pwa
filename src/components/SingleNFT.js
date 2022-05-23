@@ -247,9 +247,8 @@ const SingleNFT = (props) => {
   };
 
   const messageArtist = async () => {
+    if(user.following.some((item) => item.id === `${data,ownerId}`)){
     chatsWithAdd();
-    if (!follows) {
-      followToggle();
     }
     navigate('/Chat', { state: { chosenInterlocutor: data.creatorId } });
   };
@@ -365,13 +364,19 @@ const SingleNFT = (props) => {
       className="d-flex flex-column justify-content-center align-items-center">
       <Heading>{name}</Heading>
       <Heading size="lg" className="mb-3">
-        Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{' '}
+        Created by {user.data.id === creatorId  ? <Link to={`/profile`}> {creator} </Link> : <Link to={`/profiles/${creatorId}`}>{creator} </Link>}
       </Heading>
-      {owner ? <Heading size="md">
-        Owned by <Link to={`/profiles/${ownerId}`}>{owner} </Link>{' '}
-      </Heading> : <></>}
+      {owner ?
+      (ownerId === user.data.id ?
+      <Heading size="md">
+      Owned by <Link to={`/profile`}>{owner} </Link>
+    </Heading>
+      :
+      <Heading size="md">
+        Owned by <Link to={`/profiles/${ownerId}`}>{owner} </Link>
+      </Heading>) : <></>}
       <Image fluid style={{ height: '400px' }} src={photo} />
-      <h5 className="mt-3">Ξ{(price / 100).toFixed(2)}</h5>
+      <h5 className="mt-3">Ξ{(price / 100)}</h5>
       <p className="mt-3">{description}</p>
       {user && user.data ? (
         <div className="d-flex mobile-profile">

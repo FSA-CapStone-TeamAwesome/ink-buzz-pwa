@@ -65,12 +65,14 @@ export const followingSlice = createSlice({
         if (state.loading === "pending") {
           state.loading = "idle";
           state.following = action.payload;
+          state.error = null;
         }
       })
       .addCase(getFollowing.rejected, (state, action) => {
         if (state.loading === "pending") {
           state.loading = "idle";
           state.error = action.error;
+
         }
       });
   },
