@@ -74,16 +74,6 @@ const Profile = () => {
           return;
         });
 
-      await dispatch(
-        updateUser({
-          user,
-          update: {
-            name: formName,
-            data: { email: formEmail, id: user.data.id, location: '' },
-          },
-        }),
-      );
-
       //Start Image Upload Code Here
       if (imageUpload) {
         //We're uploading a photo to the storage, its path is the user's folder, and the filename is profile-picture
@@ -113,6 +103,17 @@ const Profile = () => {
         setImageUrl(getIt);
       }
 
+      await dispatch(
+        updateUser({
+          user,
+          update: {
+            name: formName,
+            profilePic: `/images/universal/${user.data.id}/profile-picture`,
+            data: { email: formEmail, id: user.data.id, location: '' },
+          },
+        }),
+      );
+
       setFormPassword('');
       setShow(!show);
     } else {
@@ -121,7 +122,6 @@ const Profile = () => {
   };
 
   const loadUser = useCallback(async () => {
-
     try {
       let getIt = await getDownloadURL(
         ref(storage, `/images/universal/${user.data.id}/profile-picture`),
