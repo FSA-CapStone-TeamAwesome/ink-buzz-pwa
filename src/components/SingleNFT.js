@@ -298,7 +298,7 @@ const SingleNFT = (props) => {
         Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{' '}
       </Heading>
       <Image fluid style={{ height: '400px' }} src={photo} />
-      <h5 className="mt-3">${(price / 100).toFixed(2)}</h5>
+      <h5 className="mt-3">Ξ{(price / 100).toFixed(2)}</h5>
       <p>{description}</p>
       {user && user.data ? (
         <div className="d-flex">

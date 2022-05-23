@@ -2,10 +2,28 @@ html {
   scroll-behavior: smooth;
 }
 
-.NFTimage,
+.NFTimageBox {
+  position: relative;
+}
+
+.NFTimageBox::after {
+  display: block;
+  content: '';
+  /* 16:9 aspect ratio */
+  padding-bottom: 100%;
+}
+
+.NFTimage {
+  position: absolute;
+  top: 0;
+  width: auto;
+  height: 100%;
+}
+
 .profile-picture {
-  max-height: 300px;
-  max-width: 300px;
+  width: 300;
+  height: auto;
+  border-radius: 50%;
 }
 
 .nav-pills {

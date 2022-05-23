@@ -12,7 +12,6 @@ import {
 } from 'firebase/firestore';
 import Search from './SearchBar';
 import { Heading } from '@chakra-ui/react';
-import { getUser } from '../store/userStore';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { useDispatch } from 'react-redux';
 
