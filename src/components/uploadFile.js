@@ -40,7 +40,7 @@ const UploadFile = () => {
     ) {
       toast.error('Every upload needs a name and tags!');
       return;
-    }
+      }
     if (imageUpload == null) {
       toast.error('Design required for upload!');
       return;
@@ -91,6 +91,7 @@ const UploadFile = () => {
         likes: 0,
         comments: 0,
         purchases: 0,
+        created: `${date}`,
         name: value.name,
         id: `${user.data.id + date}`,
       }),
@@ -112,6 +113,8 @@ const UploadFile = () => {
       image: `/images/universal/${user.data.id}/${value.name + date}.webp`,
       created: `${date}`,
       tags: value.tags,
+      owner: `${user.name}`,
+      ownerId: `${user.data.id}`
     });
     toast.success('Image Upload Successfully!');
     navigate('/');

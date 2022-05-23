@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-
+import { injectStyle } from 'react-toastify/dist/inject-style';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -9,6 +9,7 @@ import {
   getDoc,
   query,
   where,
+  Timestamp,
   onSnapshot,
   updateDoc,
   arrayUnion,
@@ -40,11 +41,13 @@ import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { updateUser } from '../store/userStore';
 import { Heading } from '@chakra-ui/react';
+import { toast } from 'react-toastify';
 
 const SingleNFT = (props) => {
   const [data, setData] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [follows, setFollow] = useState(false);
+  injectStyle();
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
   const [searchObj, setSearchObj] = useState(null);
@@ -89,6 +92,73 @@ const SingleNFT = (props) => {
     setAddress(nameFromDoc.data().accounts[0]);
   }, [nftId]);
 
+  useEffect(() => {
+
+    changeOwner()
+  }, [message])
+
+  const changeOwner = async () => {
+    if(message == null) {
+      return
+    }
+    let seller = data.creator
+    let sellerId = data.creatorId
+    let timestamp = Timestamp.fromMillis(Date.now())
+    if(data.owner){
+       seller = data.owner
+       sellerId = data.ownerId
+    }
+    try{
+      await updateDoc(doc(db, "users", `${sellerId}`), {
+        billOfSale: arrayUnion({
+          nftName: data.name,
+         nftId:  data.id,
+         creator: data.creator,
+         creatorId:  data.creatorId,
+         seller: seller,
+         sellerId: sellerId,
+         buyer: user.name,
+         buyerId: user.data.id,
+         linkTransaction: message,
+         timestamp
+        }),
+      });
+
+      await updateDoc(doc(db, "users", `${user.data.id}`), {
+        billOfSale: arrayUnion({
+        nftName: data.name,
+         nftId:  data.id,
+         creator: data.creator,
+         creatorId:  data.creatorId,
+         seller: seller,
+         sellerId: sellerId,
+         buyer: user.name,
+         buyerId: user.data.id,
+         linkTransaction: message,
+         timestamp
+        }),
+     });
+
+    }
+    catch(err) {console.log(err)}
+
+    try {
+
+    await updateDoc(doc(db, "users", `${user.data.id}`), {
+      images: arrayUnion({
+        data,
+      }),
+    });
+    //removed from user
+    await updateDoc(doc(db, "users", `${sellerId}`), {
+      images: arrayRemove({
+        data,
+      })
+    })
+    } catch (err) {console.log(err)}
+    toast.success('Image bought')
+
+  }
   //function that loads photo
   const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, data.smallImage));
@@ -253,7 +323,7 @@ const SingleNFT = (props) => {
           },
         ],
       });
-      console.log(tx);
+
       return tx;
     } catch (txError) {
       console.log('txError was ', txError.code);
@@ -279,7 +349,7 @@ const SingleNFT = (props) => {
 
   if (!data) return <h2>Loading</h2>;
 
-  const { name, creator, price, description, creatorId } = data;
+  const { name, creator, price, description, creatorId, owner, ownerId } = data;
 
   const artistProfileFunc = (inputtedCreatorId) => {
     if (user && user.data && user.data.id === inputtedCreatorId) {
@@ -297,6 +367,9 @@ const SingleNFT = (props) => {
       <Heading size="lg" className="mb-3">
         Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{' '}
       </Heading>
+      {owner ? <Heading size="md">
+        Owned by <Link to={`/profiles/${ownerId}`}>{owner} </Link>{' '}
+      </Heading> : <></>}
       <Image fluid style={{ height: '400px' }} src={photo} />
       <h5 className="mt-3">Ξ{(price / 100).toFixed(2)}</h5>
       <p className="mt-3">{description}</p>
