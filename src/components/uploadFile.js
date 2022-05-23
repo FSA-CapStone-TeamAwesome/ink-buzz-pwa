@@ -119,7 +119,6 @@ const UploadFile = () => {
     toast.success('Image Upload Successfully!');
     navigate('/');
   };
-
   console.log(value.tags);
 
   return (

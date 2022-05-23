@@ -12,9 +12,9 @@ import {
 } from 'firebase/firestore';
 import Search from './SearchBar';
 import { Heading } from '@chakra-ui/react';
-import { getUser } from '../store/userStore';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { useDispatch } from 'react-redux';
+import Footer from './Footer';
 
 const Home = () => {
   const { userAuth } = useAuthentication();
@@ -62,6 +62,7 @@ const Home = () => {
           return <Post key={'new' + nft.id} data={nft} />;
         })}
       </div>
+      <Footer />
     </Container>
   );
 };

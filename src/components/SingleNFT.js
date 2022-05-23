@@ -15,7 +15,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-import { toHex, truncateAddress } from "./wallet_stuff/utils";
+import { toHex, truncateAddress } from './wallet_stuff/utils';
 import {
   Flex,
   Button,
@@ -33,10 +33,8 @@ import {
   ModalOverlay,
   ModalContent,
   ModalCloseButton,
-} from "@chakra-ui/react";
-import { ethers } from "ethers";
-
-
+} from '@chakra-ui/react';
+import { ethers } from 'ethers';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { db, storage } from '../config/firebase';
@@ -53,14 +51,14 @@ const SingleNFT = (props) => {
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
   const [searchObj, setSearchObj] = useState(null);
-  const [sendToAddress, setAddress] = useState("")
+  const [sendToAddress, setAddress] = useState('');
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
   const [amount, setAmount] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { onOpen, isOpen, onClose } = useDisclosure();
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState(null);
   const {
     account,
     setAccount,
@@ -78,9 +76,6 @@ const SingleNFT = (props) => {
     web3Modal,
   } = props;
 
-
-
-
   //function query's server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
   const aFunction = useCallback(async () => {
     let docData = await query(
@@ -92,11 +87,9 @@ const SingleNFT = (props) => {
         setData(doc.data());
       });
     });
-    const nameRef = doc(db, "users", data.creatorId);
+    const nameRef = doc(db, 'users', data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
-    setAddress(nameFromDoc.data().accounts[0])
-
-
+    setAddress(nameFromDoc.data().accounts[0]);
   }, [nftId]);
 
   useEffect(() => {
@@ -200,7 +193,6 @@ const SingleNFT = (props) => {
     setAmount(amt);
   };
 
-
   //function for toggling the state of following an artist
   const followToggle = async () => {
     const followRef = doc(db, 'users', `${data.creatorId}`);
@@ -216,7 +208,11 @@ const SingleNFT = (props) => {
             following: arrayRemove({
               id: data.creatorId,
               name: data.creator,
+<<<<<<< HEAD
               profilePic: `/images/universal/${data.creatorId}/profile-picture`
+=======
+              profilePic: `/images/universal/${data.creatorId}/profile-picture`,
+>>>>>>> 9354c6ac74b0a468cb4c76d7f4b2d47fab8ef3c8
             }),
           },
         }),
@@ -238,7 +234,11 @@ const SingleNFT = (props) => {
             following: arrayUnion({
               id: data.creatorId,
               name: data.creator,
+<<<<<<< HEAD
               profilePic: `/images/universal/${data.creatorId}/profile-picture`
+=======
+              profilePic: `/images/universal/${data.creatorId}/profile-picture`,
+>>>>>>> 9354c6ac74b0a468cb4c76d7f4b2d47fab8ef3c8
             }),
           },
         }),
@@ -269,7 +269,7 @@ const SingleNFT = (props) => {
       chatsWith: arrayUnion({
         name: data.creator,
         id: data.creatorId,
-        role: null
+        role: null,
         // profilePic: userProfile.profilePic,
       }),
     });
@@ -316,32 +316,27 @@ const SingleNFT = (props) => {
     aFunction();
   }, [aFunction]);
 
-
-
   const sendTransaction = async () => {
-    const nameRef = doc(db, "users", data.creatorId);
+    const nameRef = doc(db, 'users', data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
 
     try {
       const tx = await library.provider.request({
-        method: "eth_sendTransaction",
+        method: 'eth_sendTransaction',
         params: [
           {
             from: account,
             to: nameFromDoc.data().accounts[0],
-            value: ethers.utils.parseUnits(amount, "ether").toHexString(),
+            value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
           },
         ],
       });
       console.log(tx);
       return tx;
     } catch (txError) {
-      console.log("txError was ", txError.code);
+      console.log('txError was ', txError.code);
     }
   };
-
-
-
 
   useEffect(() => {
     data && getPhoto();
@@ -349,11 +344,10 @@ const SingleNFT = (props) => {
 
   useEffect(() => setUser(user), [user]);
 
-
   const switchNetwork = async () => {
     try {
       await library.provider.request({
-        method: "wallet_switchEthereumChain",
+        method: 'wallet_switchEthereumChain',
         params: [{ chainId: toHex(network) }],
       });
     } catch (error) {
@@ -365,135 +359,144 @@ const SingleNFT = (props) => {
 
   const { name, creator, price, description, creatorId, owner, ownerId } = data;
 
+  const artistProfileFunc = (inputtedCreatorId) => {
+    if (user && user.data && user.data.id === inputtedCreatorId) {
+      navigate('/profile');
+    } else {
+      navigate(`/profiles/${inputtedCreatorId}`);
+    }
+  };
+
   return (
     <Container
       style={{ marginTop: '5rem' }}
       className="d-flex flex-column justify-content-center align-items-center">
       <Heading>{name}</Heading>
-      <Heading size="lg">
+      <Heading size="lg" className="mb-3">
         Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{' '}
       </Heading>
       {owner ? <Heading size="md">
         Owned by <Link to={`/profiles/${ownerId}`}>{owner} </Link>{' '}
       </Heading> : <></>}
       <Image fluid style={{ height: '400px' }} src={photo} />
-      <h5 className="mt-3">${(price / 100).toFixed(2)}</h5>
-      <p>{description}</p>
+      <h5 className="mt-3">Ξ{(price / 100).toFixed(2)}</h5>
+      <p className="mt-3">{description}</p>
       {user && user.data ? (
-        <div className="d-flex">
-          <Button className="me-3" onClick={() => messageArtist()}>
+        <div className="d-flex mobile-profile">
+          <Button
+            className="me-3 mt-3"
+            onClick={() => artistProfileFunc(creatorId)}>
+            Artist's Profile
+          </Button>
+          <Button className="me-3 mt-3" onClick={() => messageArtist()}>
             Message Artist
           </Button>
           {favored ? (
-            <Button className="me-3" onClick={favorToggle}>
+            <Button className="me-3 mt-3" onClick={favorToggle}>
               Unfavorite
             </Button>
           ) : (
-            <Button className="me-3" onClick={favorToggle}>
+            <Button className="me-3 mt-3" onClick={favorToggle}>
               Favorite It
             </Button>
           )}
           {follows ? (
-            <Button className="me-3" onClick={followToggle}>
+            <Button className="me-3 mt-3" onClick={followToggle}>
               Unfollow Artist
             </Button>
           ) : (
-            <Button className="me-3" onClick={followToggle}>
+            <Button className="me-3 mt-3" onClick={followToggle}>
               Follow Artist
             </Button>
           )}
+<<<<<<< HEAD
            <Button className="me-3" onClick={onOpen} style={{ margin: 10 }}>
                 Send Ether
               </Button>
+=======
+          <Button onClick={onOpen} className="me-3 mt-3">
+            Send Ether
+          </Button>
+>>>>>>> 9354c6ac74b0a468cb4c76d7f4b2d47fab8ef3c8
           <Modal
-                isOpen={isOpen}
-                onClose={onClose}
-                isCentered
-                motionPreset="scale"
-                size="lg"
-              >
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>
-                    Active Account: {truncateAddress(account)}
-                  </ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    {sendToAddress.length ? (
-                      <Text>
-                        {/* Sending to {interlocutorName} at:{" "} */}
-                        Sending to: {truncateAddress(sendToAddress)}
-                      </Text>
-                    ) : (
-                      <Text>
-                        Uh oh! Target does not have a wallet connected!
-                      </Text>
-                    )}
-                    <HStack justify="center">
-                      <Box
-                        maxW="sm"
-                        borderWidth="1px"
-                        borderRadius="lg"
-                        overflow="hidden"
-                        padding="10px"
-                      >
-                        <VStack>
-                          <Button
-                            onClick={switchNetwork}
-                            isDisabled={!network > 0}
-                          >
-                            Choose Network
-                          </Button>
-                          <Select
-                            placeholder="Select network"
-                            onChange={handleNetwork}
-                          >
-                            <option value="3">Ropsten</option>
-                            <option value="4">Rinkeby</option>
-                          </Select>
-                        </VStack>
-                      </Box>
-                      <Box
-                        maxW="sm"
-                        borderWidth="1px"
-                        borderRadius="lg"
-                        overflow="hidden"
-                        padding="10px"
-                      >
-                        <VStack>
-                          <Button
-                            // onClick={sendTransaction}
-                            onClick={async () => {
-                              try {
-                                const txHash = await sendTransaction();
-                                setMessage(txHash, chainId);
-                              } catch (e) {
-                                console.log(e);
-                              }
-                            }}
-                            isDisabled={!sendToAddress.length}
-                          >
-                            Send Ether
-                          </Button>
-                          <Input
-
-                            maxLength={20}
-                            value={data.price}
-
-                            w="140px"
-                          />
-                        </VStack>
-                      </Box>
-                    </HStack>
-                  </ModalBody>
-                </ModalContent>
-              </Modal>
-
+            isOpen={isOpen}
+            onClose={onClose}
+            isCentered
+            motionPreset="scale"
+            size="lg">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                Active Account: {truncateAddress(account)}
+              </ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                {sendToAddress.length ? (
+                  <Text>
+                    {/* Sending to {interlocutorName} at:{" "} */}
+                    Sending to: {truncateAddress(sendToAddress)}
+                  </Text>
+                ) : (
+                  <Text>Uh oh! Target does not have a wallet connected!</Text>
+                )}
+                <HStack justify="center">
+                  <Box
+                    maxW="sm"
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    overflow="hidden"
+                    padding="10px">
+                    <VStack>
+                      <Button onClick={switchNetwork} isDisabled={!network > 0}>
+                        Choose Network
+                      </Button>
+                      <Select
+                        placeholder="Select network"
+                        onChange={handleNetwork}>
+                        <option value="3">Ropsten</option>
+                        <option value="4">Rinkeby</option>
+                      </Select>
+                    </VStack>
+                  </Box>
+                  <Box
+                    maxW="sm"
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    overflow="hidden"
+                    padding="10px">
+                    <VStack>
+                      <Button
+                        // onClick={sendTransaction}
+                        onClick={async () => {
+                          try {
+                            const txHash = await sendTransaction();
+                            setMessage(txHash, chainId);
+                          } catch (e) {
+                            console.log(e);
+                          }
+                        }}
+                        isDisabled={!sendToAddress.length}>
+                        Send Ether
+                      </Button>
+                      <Input maxLength={20} value={data.price} w="140px" />
+                    </VStack>
+                  </Box>
+                </HStack>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </div>
       ) : (
-        <Button className="mt-3" onClick={() => navigate('/SignIn')}>
-          Sign in to message artist
-        </Button>
+        <div className="d-flex">
+          <Button
+            className="me-3 mt-3"
+            onClick={() => artistProfileFunc(creatorId)}>
+            Go to Artist's Profile
+          </Button>
+          <Button className="me-3 mt-3" onClick={() => navigate('/SignIn')}>
+            Sign in to message artist
+          </Button>
+        </div>
       )}
     </Container>
   );

@@ -83,6 +83,11 @@ const SignUp = () => {
       setUploaded(!uploaded);
     }
   };
+
+  const demoAccount = () => {
+    setLocal('demo@demo.com', 'demodemo');
+  };
+
   useEffect(() => {
     if (user && user.data) {
       navigate('/');
@@ -94,7 +99,7 @@ const SignUp = () => {
       {!!value.error && <div className="error">{value.error}</div>}
       <div className="d-flex flex-column justify-content-center align-items-center">
         <Heading className="mb-5">Sign Up</Heading>
-        <Form className="controls w-50" onSubmit={signUp}>
+        <Form className="controls w-50 mobile-profile" onSubmit={signUp}>
           <Form.Group className="mb-3" controlId="name">
             <Form.Control
               placeholder="Name"
@@ -127,8 +132,18 @@ const SignUp = () => {
               }
             />
           </Form.Group>
-          <Button variant="primary" type="submit" disabled={uploaded}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={uploaded}
+            className="me-5 mb-3 w-100">
             Submit
+          </Button>
+          <Button
+            variant="primary"
+            className="w-100"
+            onClick={() => demoAccount()}>
+            Sign in with a Demo account
           </Button>
         </Form>
       </div>

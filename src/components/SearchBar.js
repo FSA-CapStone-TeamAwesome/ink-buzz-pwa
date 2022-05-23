@@ -36,7 +36,7 @@ export default function Search() {
             setSearch(evt.target.value.toLowerCase());
           }}
         />
-        <div className="mb-3">
+        <div className="my-3">
           {results.map((nft) => {
             return <Post key={nft.id} data={nft} />;
           })}

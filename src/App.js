@@ -160,6 +160,7 @@ function App() {
               web3Modal={web3Modal} />} />
         <Route from='*' to='/404' element={<ErrorPage />} />
         <Route exact path="/profiles/:profileId" element={<ArtistProfile />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={2000} />
     </div>

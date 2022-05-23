@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Container, Tab, Row, Col, Nav } from 'react-bootstrap';
 import { injectStyle } from 'react-toastify/dist/inject-style';
-import { arrayUnion, updateDoc, doc ,arrayRemove } from 'firebase/firestore';
+import { arrayUnion, updateDoc, doc, arrayRemove } from 'firebase/firestore';
 import { storage } from '../config/firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../store/userStore';
 import { ref, getDownloadURL } from 'firebase/storage';
-import { useNavigate, useParams, Link as DOMLink } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PreviewPost from './previewPost';
-import { getProfile, clearProfile } from '../store/profileStore';
-import { Heading, Link } from '@chakra-ui/react';
+import { getProfile } from '../store/profileStore';
+import { Heading } from '@chakra-ui/react';
 import { updateProfile } from '../store/profileStore';
 import { db } from '../config/firebase';
+import FollowCard from './FollowCard';
+import FavoriteCard from './FavoriteCard';
 
 const ArtistProfile = () => {
   injectStyle();
@@ -29,6 +31,12 @@ const ArtistProfile = () => {
 
   //function will follow/unfollow user
   const followToggle = async () => {
+    // check if the user is logged in
+    if (Object.keys(user).length === 0) {
+      navigate('/signIn');
+      return;
+    }
+
     //for removing from followers/following
     if (
       user.following &&
@@ -41,6 +49,7 @@ const ArtistProfile = () => {
             following: arrayRemove({
               id: artistProfile.data.id,
               name: artistProfile.name,
+              profilePic: `/images/universal/${artistProfile.data.id}/profile-picture`,
             }),
           },
         }),
@@ -69,6 +78,7 @@ const ArtistProfile = () => {
             following: arrayUnion({
               id: artistProfile.data.id,
               name: artistProfile.name,
+              profilePic: `/images/universal/${artistProfile.data.id}/profile-picture`,
             }),
           },
         }),
@@ -89,18 +99,6 @@ const ArtistProfile = () => {
     }
   };
 
-
-  //checking if user has artist on follow
-  // if (
-  //   artist.data &&
-  //   user.following &&
-  //   user.following.some((item) => item.id === `${artist.data.id}`)
-  // ) {
-  //   setFollow(true);
-  // } else {
-  //   setFollow(false);
-  // }
-
   const getPhoto = useCallback(async () => {
     if (artist && artist.profilePic) {
       let getIt = await getDownloadURL(ref(storage, artist.profilePic));
@@ -109,24 +107,26 @@ const ArtistProfile = () => {
   }, [artist]);
 
   const messageArtist = async () => {
+    if (Object.keys(user).length === 0) {
+      navigate('/signIn');
+      return;
+    }
     chatsWithAdd();
-    navigate("/Chat", { state: { chosenInterlocutor: artist.data.id } });
+    navigate('/Chat', { state: { chosenInterlocutor: artist.data.id } });
   };
 
   const chatsWithAdd = async () => {
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
 
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
         name: artist.name,
         id: artist.data.id,
-        role: null
+        role: null,
         // profilePic: userProfile.profilePic,
       }),
     });
   };
-
-
 
   const onPageLoad = useCallback(async () => {
     await dispatch(getProfile(profileId));
@@ -135,7 +135,18 @@ const ArtistProfile = () => {
   useEffect(() => {
     setArtistProfile(artist);
     getPhoto();
-  }, [artist, getPhoto]);
+    //checking if user has artist on follow
+    if (
+      artist &&
+      artist.data &&
+      user.following &&
+      user.following.some((item) => item.id === `${artist.data.id}`)
+    ) {
+      setFollow(true);
+    } else {
+      setFollow(false);
+    }
+  }, [artist, getPhoto, user]);
 
   useEffect(() => {
     onPageLoad();
@@ -208,109 +219,90 @@ const ArtistProfile = () => {
               <Col sm={9}>
                 <Tab.Content>
                   <Tab.Pane eventKey="feed">
-                    <h3>
-                      {artist.name} has {artist.images.length || 0} Designs!
-                    </h3>
+                    <Heading className="text-center mb-2" size="xl">
+                      {artist.name} has {artist.images.length || 0} designs!
+                    </Heading>
                     <div className="d-flex flex-wrap justify-content-evenly align-items-center">
-                      {artist.images.map((link, index) => {
-                        return (
-                          <PreviewPost
-                            key={index}
-                            data={link}
-                            creator={artist.name}
-                          />
-                        );
-                      })}
+                      {artist.images ? (
+                        <div className="d-flex flex-wrap align-items-start feedPostContainer">
+                          {artist.images.map((link, index) => {
+                            return (
+                              <PreviewPost
+                                key={index}
+                                data={link}
+                                creator={artist.name}
+                              />
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="followers">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       {artist.name} has {artist.followers.length || 0}{' '}
                       followers:
-                    </h3>
-                    <div className="d-flex flex-column">
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
                       {artist.followers.map((artist, idx) => {
-                        if (artist.id === user.data.id) {
-                          return (
-                            <div className="w-50" key={'artist' + idx}>
-                              <Button
-                                onClick={() => navigate(`/profile`)}
-                                className="mt-3">
-                                {artist.name}
-                              </Button>
-                            </div>
-                          );
-                        }
                         return (
-                          <div className="w-50" key={'artist' + idx}>
-                            <Link
-                              as={DOMLink}
-                              onClick={() => {
-                                dispatch(clearProfile());
-                                setRefresh(!refresh);
-                              }}
-                              to={`/profiles/${artist.id}`}
-                              className="mt-3">
-                              {artist.name}
-                            </Link>
+                          <div
+                            key={idx + 'artist' + artist.id}
+                            className="me-3">
+                            <FollowCard
+                              profilePic={artist.profilePic}
+                              id={artist.id}
+                              name={artist.name}
+                            />
                           </div>
                         );
                       })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="following">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       {artist.name} is following {artist.following.length || 0}{' '}
                       artists:
-                    </h3>
-                    <div className="d-flex flex-column">
-                      {artist.following.map((artist, idx) => {
-                        if (artist.id === user.data.id) {
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
+                      {artist &&
+                        artist.following &&
+                        artist.following.map((artist, idx) => {
                           return (
-                            <div className="w-50" key={'artist' + idx}>
-                              <Link
-                                as={DOMLink}
-                                to={`/profile/`}
-                                className="mt-3">
-                                {artist.name}
-                              </Link>
+                            <div
+                              key={idx + 'following' + user.id}
+                              className="me-3">
+                              <FollowCard
+                                profilePic={artist.profilePic}
+                                id={artist.id}
+                                name={artist.name}
+                              />
                             </div>
                           );
-                        }
-
-                        return (
-                          <div className="w-50" key={'artist' + idx}>
-                            <Link
-                              as={DOMLink}
-                              onClick={() => {
-                                dispatch(clearProfile());
-                                setRefresh(!refresh);
-                              }}
-                              to={`/profiles/${artist.id}`}
-                              className="mt-3">
-                              {artist.name}
-                            </Link>
-                          </div>
-                        );
-                      })}
+                        })}
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="favorites">
-                    <h3>
+                    <Heading className="text-center mb-2" size="xl">
                       {artist.name} has{' '}
                       {(artist.favorites && artist.favorites.length) || 0}{' '}
                       favorites:
-                    </h3>
-                    <div className="d-flex flex-column">
+                    </Heading>
+                    <div className="d-flex flex-wrap justify-content-center">
                       {artist.favorites &&
                         artist.favorites.map((design, idx) => {
                           return (
-                            <div className="w-50" key={'design' + idx}>
-                              <Button
-                                onClick={() => navigate(`/nft/${design.id}`)}
-                                className="mt-3">
-                                {design.name}
-                              </Button>
+                            <div key={idx + design.id} className="me-3">
+                              <FavoriteCard
+                                favorite={{
+                                  id: design.id,
+                                  photo: design.image,
+                                  name: design.name,
+                                  creator: design.creator,
+                                }}
+                              />
                             </div>
                           );
                         })}
