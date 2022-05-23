@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-
-import { Container, Form } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
-
-import { db, storage } from '../config/firebase';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import Messages from './Messages';
-import MessageFooter from './MessageFooter';
+import React, { useState, useEffect } from "react";
+import { Container, Form } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { injectStyle } from "react-toastify/dist/inject-style";
+import { db, storage } from "../config/firebase";
+import { getDownloadURL, ref } from "firebase/storage";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import Messages from "./Messages";
+import MessageFooter from "./MessageFooter";
 import { getUser } from '../store/userStore';
 import {
   Flex,
@@ -54,6 +54,7 @@ import { SignEthereumTransactionResponse } from '@coinbase/wallet-sdk/dist/relay
 // This global variable will be replaced with a converation list
 
 const Chat = (props) => {
+  injectStyle();
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const [convoList, setConvoList] = useState([]);
@@ -81,7 +82,7 @@ const Chat = (props) => {
   //transaction is set
   const [startTransaction, setTransaction] = useState(null);
 
-  const [completeTransaction, setComplete] = useState(null);
+  const [cryptoURL, setCryptoURL] = useState(null);
 
   const [sellerId, setSeller] = useState(null);
   // const [interlocutorName, setInterlocutorName] = useState("");
@@ -117,7 +118,6 @@ const Chat = (props) => {
       const unsub = onSnapshot(q, (snapshot) => {
         setMessages(snapshot.docs.reverse().map((doc) => doc.data()));
       });
-
       return unsub;
     }
   }, [myId]);
@@ -167,7 +167,8 @@ const Chat = (props) => {
 
   useEffect(() => {
     if (myId) {
-      const unsub = onSnapshot(doc(db, 'users', `${myId}`), (doc) => {
+      const unsub = onSnapshot(doc(db, "users", `${myId}`), (doc) => {
+
         setConvoList(doc.data().chatsWith);
       });
       return unsub;
@@ -179,18 +180,18 @@ const Chat = (props) => {
   }, [convoList, messages]);
 
   const checkTransaction = async () => {
-    console.log('trans checked');
+    console.log("trans checked");
     let convoIds = convoList.map((convo) => convo.id);
     let findIt = convoIds.indexOf(interlocutor);
 
-    if (convoList.length && convoList[findIt].role === 'buyer') {
+    if (convoList.length && convoList[findIt].role === "buyer") {
       setTransaction(true);
       setSeller(false);
       setNFT(convoList[findIt].nft);
 
       return;
     }
-    if (convoList.length && convoList[findIt].role === 'seller') {
+    if (convoList.length && convoList[findIt].role === "seller") {
       setTransaction(true);
       setSeller(true);
       setNFT(convoList[findIt].nft);
@@ -295,8 +296,8 @@ const Chat = (props) => {
       Promise.all(
         onSnapshot(
           query(
-            collection(db, 'NFTs'),
-            where('creatorId', '==', `${interlocutor}`),
+            collection(db, "NFTs"),
+            where("ownerId", "==", `${interlocutor}`)
           ),
           (querySnapshot) => {
             querySnapshot.forEach((doc) => {
@@ -509,24 +510,56 @@ const Chat = (props) => {
     }
   }
 
+  function validURL(str) {
+    var pattern = new RegExp(
+      "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$",
+      "i"
+    ); // fragment locator
+    return !!pattern.test(str);
+  }
+
   async function sendNFT() {
-    let fromAddress = '';
+
+
+
+
+    if (!validURL(cryptoURL)) {
+      toast.error("Submit a valid URL for the transaction to confirm.");
+      return;
+    }
+
+    let fromAddress = "";
     if (account) {
       fromAddress = account;
     }
 
-    let change = await doc(db, 'users', `${interlocutor}`);
-    await updateDoc(change, {
-      ownedNFT: arrayUnion({
-        NFT,
-      }),
-    });
-    const nameRef = doc(db, 'users', interlocutor);
-    const nameFromDoc = await getDoc(nameRef);
+    try {
+      //client gets the NFT
+      let change = await doc(db, "users", `${interlocutor}`);
+      await updateDoc(change, {
+        images: arrayUnion({
+          NFT,
+        }),
+      });
+      //removed from user
+      await updateDoc(doc(db, "users", `${myId}`), {
+        images: arrayRemove({
+          NFT,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
 
-    const text = `Transaction completed. ${NFT.name} has been sold to ${
-      nameFromDoc.data().name
-    }.`;
+    const nameRef = doc(db, "users", interlocutor);
+    const nameFromDoc = await (await getDoc(nameRef)).data().name;
+
+    const text = `Transaction completed. ${NFT.name} has been sold to ${nameFromDoc}.`;
     let timestamp = Timestamp.fromMillis(Date.now());
 
     try {
@@ -534,7 +567,7 @@ const Chat = (props) => {
       const chatsRef = doc(db, 'users', `${user.data.id}`);
       await updateDoc(chatsRef, {
         chatsWith: arrayRemove({
-          name: nameFromDoc.data().name,
+          name: nameFromDoc,
           id: interlocutor,
           role: 'seller',
           nft: NFT,
@@ -543,7 +576,7 @@ const Chat = (props) => {
 
       await updateDoc(chatsRef, {
         chatsWith: arrayUnion({
-          name: nameFromDoc.data().name,
+          name: nameFromDoc,
           id: interlocutor,
           role: null,
         }),
@@ -564,6 +597,41 @@ const Chat = (props) => {
           name: myName,
           id: myId,
           role: null,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
+    try {
+      let change = await doc(db, "users", `${interlocutor}`);
+      await updateDoc(change, {
+        billOfSale: arrayUnion({
+          nftName: NFT.name,
+          nftId: NFT.id,
+          creator: NFT.creator,
+          creatorId: NFT.creatorId,
+          seller: myName,
+          sellerId: myId,
+          buyer: nameFromDoc,
+          buyerId: interlocutor,
+          linkTransaction: cryptoURL,
+          timestamp,
+        }),
+      });
+      //removed from user
+      await updateDoc(doc(db, "users", `${myId}`), {
+        billOfSale: arrayUnion({
+          nftName: NFT.name,
+          nftId: NFT.id,
+          creator: NFT.creator,
+          creatorId: NFT.creatorId,
+          seller: myName,
+          sellerId: myId,
+          buyer: nameFromDoc,
+          buyerId: interlocutor,
+          linkTransaction: cryptoURL,
+          timestamp,
         }),
       });
     } catch (err) {
@@ -601,11 +669,39 @@ const Chat = (props) => {
       } catch (err) {
         console.log(err);
       }
+      try {
+        await updateDoc(doc(db, "NFTs", `${NFT.name + NFT.created}`), {
+          owner: nameFromDoc,
+          ownerId: interlocutor,
+        });
+      } catch (err) {
+        console.log(err);
+      }
 
+      try {
+        let nft = user.images.find((o) => o.name === NFT.name);
+
+
+        await updateDoc(doc(db, "users", `${interlocutor}`), {
+          images: arrayUnion(nft,
+          ),
+        });
+        //removed from user
+        await updateDoc(doc(db, "users", `${sellerId}`), {
+          images: arrayRemove(
+              nft
+          ),
+        });
+      } catch (err) {
+        console.log(err);
+      }
+
+      setSeller(null);
       setNFT(null);
       setTransaction(null);
     }
   }
+
   async function manageTransaction() {
     const internalNFT = list[ripValue];
     let timestamp = Timestamp.fromMillis(Date.now());
@@ -724,7 +820,8 @@ const Chat = (props) => {
                     onClick={() => {
                       setList([]);
                       setInterlocutor(conversation.id);
-                    }}>
+                    }}
+                  >
                     {conversation.name}
                   </Button>
                 );
@@ -888,30 +985,37 @@ const Chat = (props) => {
               After Receiving payment, please confirm transaction. If the pay is
               not to your liking, cancel.
             </p>
-            <Button
-              className=" m-3"
-              onClick={() => {
-                setTransaction(null);
-                setSeller(null);
-                sendNFT();
-              }}>
-              Confirm Payment
-            </Button>
 
             <Button
               className=" m-3"
               onClick={() => {
                 setTransaction(null);
-                cancelTransaction('seller');
-              }}>
+                cancelTransaction("seller");
+              }}
+            >
               Cancel Transaction
+            </Button>
+            <Input
+              placeholder="Place Transaction Link Here"
+              border="1px solid grey"
+              borderRadius="md"
+              value={cryptoURL}
+              onChange={(e) => setCryptoURL(e.target.value)}
+            />
+            <Button
+              className=" m-3"
+              onClick={() => {
+                sendNFT();
+              }}
+            >
+              Confirm Payment
             </Button>
           </Form>
         ) : (
           <Form>
             <p>
               Transaction is Pending... cannot submit until previous transaction
-              is cancelled or cleared
+              is cancelled be either party or cleared by the seller.
             </p>
             <Button
               className=" m-3"
