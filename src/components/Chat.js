@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { Container, Form } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { Container, Form } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 
-import { db, storage } from "../config/firebase";
+import { db, storage } from '../config/firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import Messages from "./Messages";
-import MessageFooter from "./MessageFooter";
-import { getUser } from "../store/userStore";
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import Messages from './Messages';
+import MessageFooter from './MessageFooter';
+import { getUser } from '../store/userStore';
 import {
   Flex,
   Button,
@@ -27,7 +27,7 @@ import {
   ModalOverlay,
   ModalContent,
   ModalCloseButton,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 import {
   collection,
@@ -43,13 +43,13 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
-import { toHex, truncateAddress } from "./wallet_stuff/utils";
-import { ethers } from "ethers";
+import { toHex, truncateAddress } from './wallet_stuff/utils';
+import { ethers } from 'ethers';
 
-import { NetworkFirst } from "workbox-strategies";
-import { SignEthereumTransactionResponse } from "@coinbase/wallet-sdk/dist/relay/Web3Response";
+import { NetworkFirst } from 'workbox-strategies';
+import { SignEthereumTransactionResponse } from '@coinbase/wallet-sdk/dist/relay/Web3Response';
 
 // This global variable will be replaced with a converation list
 
@@ -58,13 +58,13 @@ const Chat = (props) => {
   const dispatch = useDispatch();
   const [convoList, setConvoList] = useState([]);
 
-  const [myId, setMyId] = useState("");
+  const [myId, setMyId] = useState('');
 
-  const [myName, setMyName] = useState("");
+  const [myName, setMyName] = useState('');
 
-  const [interlocutor, setInterlocutor] = useState("");
+  const [interlocutor, setInterlocutor] = useState('');
 
-  const [sendToAddress, setSendToAddress] = useState("");
+  const [sendToAddress, setSendToAddress] = useState('');
 
   const [messages, setMessages] = useState([]);
 
@@ -87,33 +87,30 @@ const Chat = (props) => {
   // const [interlocutorName, setInterlocutorName] = useState("");
 
   const [message, setMessage] = useState({
-    content: "",
+    content: '',
     recipient: interlocutor,
-    photoUrl: "",
+    photoUrl: '',
   });
 
   const { onOpen, isOpen, onClose } = useDisclosure();
 
   const location = useLocation();
-  const [reload, setReload] = useState(false)
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     if (user && user.data) {
       setMyId(user.data.id);
       setMyName(user.name);
-  }
+    }
   }, [user]);
-
-
 
   useEffect(() => {
     if (myId) {
       let q = query(
-        collection(db, "messages/queue", myId),
-        orderBy("timestamp", "desc"),
-        limit(40)
+        collection(db, 'messages/queue', myId),
+        orderBy('timestamp', 'desc'),
+        limit(40),
       );
-
 
       let convoIds = convoList.map((convo) => convo.id);
       let findIt = convoIds.indexOf(interlocutor);
@@ -125,13 +122,10 @@ const Chat = (props) => {
     }
   }, [myId]);
 
-
-
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
     getList();
     let convoIds = convoList.map((convo) => convo.id);
-
   }, [interlocutor]);
 
   useEffect(() => {
@@ -144,7 +138,6 @@ const Chat = (props) => {
 
   useEffect(() => {
     let convoIds = convoList.map((convo) => convo.id);
-
 
     let allInterlocutorIds = [
       ...new Set([
@@ -160,7 +153,7 @@ const Chat = (props) => {
     });
 
     let filteredMessages = messages.filter(
-      (msg) => msg.fromId === interlocutor
+      (msg) => msg.fromId === interlocutor,
     );
 
     if (filteredMessages.length) {
@@ -168,58 +161,51 @@ const Chat = (props) => {
         filteredMessages[filteredMessages.length - 1].fromAddress;
       setSendToAddress(sendAddressHolder);
     } else {
-      setSendToAddress("");
+      setSendToAddress('');
     }
   }, [messages, interlocutor]);
 
-  useEffect (() => {
-  if(myId){
-    const unsub = onSnapshot(doc(db, "users", `${myId}`), (doc) => {
-      console.log(doc.data())
-      setConvoList(doc.data().chatsWith)
-  });
-    return unsub
-  }}, [myId])
+  useEffect(() => {
+    if (myId) {
+      const unsub = onSnapshot(doc(db, 'users', `${myId}`), (doc) => {
+        setConvoList(doc.data().chatsWith);
+      });
+      return unsub;
+    }
+  }, [myId]);
 
-  useEffect (() => {
-    checkTransaction()
-  }, [convoList, messages])
+  useEffect(() => {
+    checkTransaction();
+  }, [convoList, messages]);
 
   const checkTransaction = async () => {
-    console.log('trans checked')
+    console.log('trans checked');
     let convoIds = convoList.map((convo) => convo.id);
     let findIt = convoIds.indexOf(interlocutor);
 
-    if (
-      convoList.length &&
-      convoList[findIt].role === "buyer"
-    ) {
+    if (convoList.length && convoList[findIt].role === 'buyer') {
       setTransaction(true);
       setSeller(false);
       setNFT(convoList[findIt].nft);
 
       return;
     }
-    if (
-      convoList.length &&
-      convoList[findIt].role === "seller"
-    ) {
-
+    if (convoList.length && convoList[findIt].role === 'seller') {
       setTransaction(true);
       setSeller(true);
       setNFT(convoList[findIt].nft);
       return;
     }
-    setSeller(null)
-    setTransaction(null)
-    setNFT(null)
+    setSeller(null);
+    setTransaction(null);
+    setNFT(null);
   };
 
   const chatsWithAdd = async (id) => {
-    const nameRef = doc(db, "users", id);
+    const nameRef = doc(db, 'users', id);
     const nameFromDoc = await getDoc(nameRef);
 
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
         name: nameFromDoc.data().name,
@@ -259,26 +245,26 @@ const Chat = (props) => {
   const sendTransaction = async () => {
     try {
       const tx = await library.provider.request({
-        method: "eth_sendTransaction",
+        method: 'eth_sendTransaction',
         params: [
           {
             from: account,
             to: sendToAddress,
-            value: ethers.utils.parseUnits(amount, "ether").toHexString(),
+            value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
           },
         ],
       });
       console.log(tx);
       return tx;
     } catch (txError) {
-      console.log("txError was ", txError.code);
+      console.log('txError was ', txError.code);
     }
   };
 
   const switchNetwork = async () => {
     try {
       await library.provider.request({
-        method: "wallet_switchEthereumChain",
+        method: 'wallet_switchEthereumChain',
         params: [{ chainId: toHex(network) }],
       });
     } catch (error) {
@@ -289,7 +275,7 @@ const Chat = (props) => {
   const refreshState = () => {
     setAccount();
     setChainId();
-    setNetwork("");
+    setNetwork('');
   };
 
   const disconnect = async () => {
@@ -309,15 +295,15 @@ const Chat = (props) => {
       Promise.all(
         onSnapshot(
           query(
-            collection(db, "NFTs"),
-            where("creatorId", "==", `${interlocutor}`)
+            collection(db, 'NFTs'),
+            where('creatorId', '==', `${interlocutor}`),
           ),
           (querySnapshot) => {
             querySnapshot.forEach((doc) => {
               setList((prev) => [...prev, doc.data()]);
             });
-          }
-        )
+          },
+        ),
       );
     } catch (err) {
       console.log(err);
@@ -330,7 +316,7 @@ const Chat = (props) => {
   const sendMessage = async () => {
     let timestamp = Timestamp.fromMillis(Date.now());
 
-    let fromAddress = "";
+    let fromAddress = '';
 
     if (account) {
       fromAddress = account;
@@ -350,7 +336,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log("ERROR!");
+      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -371,13 +357,13 @@ const Chat = (props) => {
       }
     }
 
-    setMessage({ ...message, content: "" });
+    setMessage({ ...message, content: '' });
   };
 
   const sendTxMessage = async (txHash, chainId) => {
     let timestamp = Timestamp.fromMillis(Date.now());
 
-    let fromAddress = "";
+    let fromAddress = '';
 
     if (account) {
       fromAddress = account;
@@ -397,7 +383,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log("ERROR!");
+      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -417,25 +403,25 @@ const Chat = (props) => {
         console.log(err);
       }
     }
-    setMessage({ ...message, content: "" });
+    setMessage({ ...message, content: '' });
   };
 
   //as the name suggests it cancels, and how it operates depends on if you are seller or buyer
   async function cancelTransaction(role) {
     const text = `Transaction Cancelled by the ${role}, ${myName}.`;
-    let yourRole = "";
-    let theirRole = "";
+    let yourRole = '';
+    let theirRole = '';
 
-    if (role === "seller") {
-      yourRole = "seller";
-      theirRole = "buyer";
+    if (role === 'seller') {
+      yourRole = 'seller';
+      theirRole = 'buyer';
     }
-    if (role === "buyer") {
-      yourRole = "buyer";
-      theirRole = "seller";
+    if (role === 'buyer') {
+      yourRole = 'buyer';
+      theirRole = 'seller';
     }
 
-    let fromAddress = "";
+    let fromAddress = '';
     if (account) {
       fromAddress = account;
     }
@@ -445,8 +431,8 @@ const Chat = (props) => {
       let findIt = convoIds.indexOf(interlocutor);
       let convo = convoList[findIt];
 
-      const nameRef = doc(db, "users", interlocutor);
-      const chatsRef = doc(db, "users", `${user.data.id}`);
+      const nameRef = doc(db, 'users', interlocutor);
+      const chatsRef = doc(db, 'users', `${user.data.id}`);
       await updateDoc(chatsRef, {
         chatsWith: arrayRemove({
           name: convo.name,
@@ -466,7 +452,6 @@ const Chat = (props) => {
         }),
       });
 
-
       await updateDoc(nameRef, {
         chatsWith: arrayUnion({
           name: myName,
@@ -482,11 +467,6 @@ const Chat = (props) => {
           role: null,
         }),
       });
-
-
-
-
-
     } catch (err) {
       console.log(err);
     } finally {
@@ -503,7 +483,7 @@ const Chat = (props) => {
           timestamp,
         });
       } catch (err) {
-        console.log("ERROR!");
+        console.log('ERROR!');
         console.log(err);
       } finally {
         try {
@@ -525,23 +505,23 @@ const Chat = (props) => {
         setNFT(null);
         setTransaction(null);
       }
-      setMessage({ ...message, content: "" });
+      setMessage({ ...message, content: '' });
     }
   }
 
   async function sendNFT() {
-    let fromAddress = "";
+    let fromAddress = '';
     if (account) {
       fromAddress = account;
     }
 
-    let change = await doc(db, "users", `${interlocutor}`);
+    let change = await doc(db, 'users', `${interlocutor}`);
     await updateDoc(change, {
       ownedNFT: arrayUnion({
         NFT,
       }),
     });
-    const nameRef = doc(db, "users", interlocutor);
+    const nameRef = doc(db, 'users', interlocutor);
     const nameFromDoc = await getDoc(nameRef);
 
     const text = `Transaction completed. ${NFT.name} has been sold to ${
@@ -551,12 +531,12 @@ const Chat = (props) => {
 
     try {
       //from your side, you REMOVE the array with them in it
-      const chatsRef = doc(db, "users", `${user.data.id}`);
+      const chatsRef = doc(db, 'users', `${user.data.id}`);
       await updateDoc(chatsRef, {
         chatsWith: arrayRemove({
           name: nameFromDoc.data().name,
           id: interlocutor,
-          role: "seller",
+          role: 'seller',
           nft: NFT,
         }),
       });
@@ -574,7 +554,7 @@ const Chat = (props) => {
         chatsWith: arrayRemove({
           name: myName,
           id: myId,
-          role: "buyer",
+          role: 'buyer',
           nft: NFT,
         }),
       });
@@ -603,7 +583,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log("ERROR!");
+      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -629,17 +609,17 @@ const Chat = (props) => {
   async function manageTransaction() {
     const internalNFT = list[ripValue];
     let timestamp = Timestamp.fromMillis(Date.now());
-    let fromAddress = "";
-    const nameRef = doc(db, "users", interlocutor);
+    let fromAddress = '';
+    const nameRef = doc(db, 'users', interlocutor);
     const nameFromDoc = await getDoc(nameRef);
-    const chatsRef = doc(db, "users", `${user.data.id}`);
+    const chatsRef = doc(db, 'users', `${user.data.id}`);
     const photo = await getDownloadURL(ref(storage, internalNFT.image));
     let text = `${myName} would like to purchase the design, ${
       internalNFT.name
     }, created by ${internalNFT.creator}. The going rate is $${(
       internalNFT.price / 100
     ).toFixed(
-      2
+      2,
     )}. When payment is recieved, please confirm so transaction can clear.`;
 
     if (account) {
@@ -650,7 +630,7 @@ const Chat = (props) => {
       await updateDoc(chatsRef, {
         chatsWith: arrayRemove({
           name: nameFromDoc.data().name,
-          id: internalNFT["creatorId"],
+          id: internalNFT['creatorId'],
           role: null,
         }),
       });
@@ -666,22 +646,20 @@ const Chat = (props) => {
       await updateDoc(chatsRef, {
         chatsWith: arrayUnion({
           name: nameFromDoc.data().name,
-          id: internalNFT["creatorId"],
-          role: "buyer",
+          id: internalNFT['creatorId'],
+          role: 'buyer',
           nft: internalNFT,
         }),
       });
       //update for current user
 
-
       await updateDoc(nameRef, {
         chatsWith: arrayUnion({
           name: myName,
           id: myId,
-          role: "seller",
+          role: 'seller',
           nft: internalNFT,
         }),
-
       });
     } catch (error) {
       console.log(error);
@@ -700,7 +678,7 @@ const Chat = (props) => {
         timestamp,
       });
     } catch (err) {
-      console.log("ERROR!");
+      console.log('ERROR!');
       console.log(err);
     } finally {
       try {
@@ -722,58 +700,57 @@ const Chat = (props) => {
       //ONLY FOR TRANSACTION STARTING, ONLY STARTED BY BUYER
     }
 
-    setMessage({ ...message, content: "" });
+    setMessage({ ...message, content: '' });
   }
-  console.log(convoList)
   return (
     <Flex
       w="100%"
       h="100vh"
       justify="center"
       align="center"
-      className="chat-component"
-    >
+      className="chat-component">
       <Flex w="100%" h="90%" flexDir="column">
         <div id="conversations">
-          {convoList && convoList.map((conversation, idx) => {
-            if (interlocutor && interlocutor === conversation.id) {
-              // setInterlocutorName(conversation.name);
+          {convoList &&
+            convoList.map((conversation, idx) => {
+              if (interlocutor && interlocutor === conversation.id) {
+                // setInterlocutorName(conversation.name);
+                return (
+                  <Button
+                    key={idx + conversation.id}
+                    style={{ margin: 10 }}
+                    bg="lightgrey"
+                    border="2px solid black"
+                    onClick={() => {
+                      setList([]);
+                      setInterlocutor(conversation.id);
+                    }}>
+                    {conversation.name}
+                  </Button>
+                );
+              }
               return (
                 <Button
                   key={idx + conversation.id}
                   style={{ margin: 10 }}
                   bg="lightgrey"
-                  border="2px solid black"
                   onClick={() => {
                     setList([]);
                     setInterlocutor(conversation.id);
-                  }}
-                >
+                  }}>
                   {conversation.name}
                 </Button>
               );
-            }
-            return (
-              <Button
-                key={idx + conversation.id}
-                style={{ margin: 10 }}
-                bg="lightgrey"
-                onClick={() => {
-                  setList([]);
-                  setInterlocutor(conversation.id);
-                }}
-              >
-                {conversation.name}
-              </Button>
-            );
-          })}
+            })}
           {!account ? (
-            <Button onClick={connectWallet} style={{ margin: 10 }}>
+            <Button
+              onClick={connectWallet}
+              style={{ margin: 10, marginTop: 30 }}>
               Connect Wallet
             </Button>
           ) : (
             <ButtonGroup spacing="1">
-              <Button onClick={onOpen} style={{ margin: 10 }}>
+              <Button onClick={onOpen} style={{ margin: 10, marginTop: 30 }}>
                 Send Ether
               </Button>
               <Modal
@@ -781,8 +758,7 @@ const Chat = (props) => {
                 onClose={onClose}
                 isCentered
                 motionPreset="scale"
-                size="lg"
-              >
+                size="lg">
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader>
@@ -806,19 +782,16 @@ const Chat = (props) => {
                         borderWidth="1px"
                         borderRadius="lg"
                         overflow="hidden"
-                        padding="10px"
-                      >
+                        padding="10px">
                         <VStack>
                           <Button
                             onClick={switchNetwork}
-                            isDisabled={!network > 0}
-                          >
+                            isDisabled={!network > 0}>
                             Choose Network
                           </Button>
                           <Select
                             placeholder="Select network"
-                            onChange={handleNetwork}
-                          >
+                            onChange={handleNetwork}>
                             <option value="3">Ropsten</option>
                             <option value="4">Rinkeby</option>
                           </Select>
@@ -829,8 +802,7 @@ const Chat = (props) => {
                         borderWidth="1px"
                         borderRadius="lg"
                         overflow="hidden"
-                        padding="10px"
-                      >
+                        padding="10px">
                         <VStack>
                           <Button
                             // onClick={sendTransaction}
@@ -842,8 +814,7 @@ const Chat = (props) => {
                                 console.log(e);
                               }
                             }}
-                            isDisabled={!sendToAddress.length}
-                          >
+                            isDisabled={!sendToAddress.length}>
                             Send Ether
                           </Button>
                           <Input
@@ -858,7 +829,9 @@ const Chat = (props) => {
                   </ModalBody>
                 </ModalContent>
               </Modal>
-              <Button onClick={disconnect} style={{ margin: 10 }}>
+              <Button
+                onClick={disconnect}
+                style={{ margin: 10, marginTop: 30 }}>
                 Disconnect
               </Button>
             </ButtonGroup>
@@ -869,7 +842,7 @@ const Chat = (props) => {
             messages={messages.filter(
               (msg) =>
                 (msg.fromId === myId && msg.toId === interlocutor) ||
-                msg.fromId === interlocutor
+                msg.fromId === interlocutor,
             )}
             myId={myId}
             interlocutor={interlocutor}
@@ -902,8 +875,7 @@ const Chat = (props) => {
                   setNFT(list[ripValue]);
                   setTransaction(true);
                   manageTransaction(true);
-                }}
-              >
+                }}>
                 Begin Transaction
               </Button>
             </Form>
@@ -922,8 +894,7 @@ const Chat = (props) => {
                 setTransaction(null);
                 setSeller(null);
                 sendNFT();
-              }}
-            >
+              }}>
               Confirm Payment
             </Button>
 
@@ -931,9 +902,8 @@ const Chat = (props) => {
               className=" m-3"
               onClick={() => {
                 setTransaction(null);
-                cancelTransaction("seller");
-              }}
-            >
+                cancelTransaction('seller');
+              }}>
               Cancel Transaction
             </Button>
           </Form>
@@ -947,9 +917,8 @@ const Chat = (props) => {
               className=" m-3"
               onClick={() => {
                 setTransaction(null);
-                cancelTransaction("buyer");
-              }}
-            >
+                cancelTransaction('buyer');
+              }}>
               Cancel Transaction
             </Button>
           </Form>

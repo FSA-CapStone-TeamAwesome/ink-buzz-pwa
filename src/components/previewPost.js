@@ -7,12 +7,12 @@ import { storage } from '../config/firebase';
 
 const PreviewPost = ({ data, creator }) => {
   const [photo, setPhoto] = useState(null);
-  const { id, name, path } = data;
+  const { id, name, smallPath } = data;
 
   const getPhoto = useCallback(async () => {
-    let getIt = await getDownloadURL(ref(storage, path));
+    let getIt = await getDownloadURL(ref(storage, smallPath));
     setPhoto(getIt);
-  }, [path]);
+  }, [smallPath]);
 
   useEffect(() => {
     getPhoto();
@@ -20,12 +20,10 @@ const PreviewPost = ({ data, creator }) => {
 
   return (
     <div className="mb-2 mobilePost">
-      <Card style={{ width: '300px' }}>
-        <Card.Img variant="top" src={photo} className="NFTimage" />
+      <Card style={{ width: '18rem' }}>
+        <Card.Img variant="top" src={photo} />
         <Card.Body className="text-center">
           <Card.Title>{name}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">{creator}</Card.Subtitle>
-          <Card.Subtitle className="mb-2 text-muted"></Card.Subtitle>
           <Link to={`/nft/${id}`}>
             <Button variant="primary">Get Details</Button>
           </Link>

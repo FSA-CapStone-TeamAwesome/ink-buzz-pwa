@@ -2,10 +2,34 @@ html {
   scroll-behavior: smooth;
 }
 
-.NFTimage,
+.NFTimageBox {
+  position: relative;
+}
+
+.NFTimageBox::after {
+  display: block;
+  content: '';
+  /* 16:9 aspect ratio */
+  padding-bottom: 100%;
+}
+
+.NFTimage {
+  position: absolute;
+  top: 0;
+  width: auto;
+  height: 100%;
+}
+
+.NFTdescription {
+  overflow: hidden;
+  height: 80px;
+  margin-bottom: 20px;
+}
+
 .profile-picture {
-  max-height: 200px;
-  max-width: 300px;
+  width: 300;
+  height: auto;
+  border-radius: 50%;
 }
 
 .nav-pills {
@@ -26,7 +50,7 @@ h1 {
 }
 
 .feedPostContainer {
-  justify-content: space-between;
+  justify-content: space-around;
   margin-bottom: 50px;
   margin-top: 1rem;
 }
@@ -36,6 +60,13 @@ h1 {
     display: flex;
     flex-direction: column;
     margin-top: 1rem;
+  }
+
+  .mobile-footer {
+    position: relative;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
 
   .feedPostContainer {
