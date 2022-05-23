@@ -111,7 +111,9 @@ const ArtistProfile = () => {
       navigate('/signIn');
       return;
     }
-    chatsWithAdd();
+    if(user.chatsWith.some((item) => item.id === `${artist.data.id}`)){
+    chatsWithAdd();}
+
     navigate('/Chat', { state: { chosenInterlocutor: artist.data.id } });
   };
 

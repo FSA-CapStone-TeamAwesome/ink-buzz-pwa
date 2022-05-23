@@ -120,7 +120,7 @@ const Chat = (props) => {
       });
       return unsub;
     }
-  }, [myId]);
+  }, [myId, interlocutor]);
 
   useEffect(() => {
     setMessage({ ...message, recipient: interlocutor });
@@ -538,23 +538,6 @@ const Chat = (props) => {
       fromAddress = account;
     }
 
-    try {
-      //client gets the NFT
-      let change = await doc(db, "users", `${interlocutor}`);
-      await updateDoc(change, {
-        images: arrayUnion({
-          NFT,
-        }),
-      });
-      //removed from user
-      await updateDoc(doc(db, "users", `${myId}`), {
-        images: arrayRemove({
-          NFT,
-        }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
 
     const nameRef = doc(db, "users", interlocutor);
     const nameFromDoc = await (await getDoc(nameRef)).data().name;
@@ -683,13 +666,12 @@ const Chat = (props) => {
 
 
         await updateDoc(doc(db, "users", `${interlocutor}`), {
-          images: arrayUnion(nft,
+          images: arrayUnion(nft
           ),
         });
         //removed from user
-        await updateDoc(doc(db, "users", `${sellerId}`), {
-          images: arrayRemove(
-              nft
+        await updateDoc(doc(db, "users", `${myId}`), {
+          images: arrayRemove(nft
           ),
         });
       } catch (err) {
@@ -712,11 +694,9 @@ const Chat = (props) => {
     const photo = await getDownloadURL(ref(storage, internalNFT.image));
     let text = `${myName} would like to purchase the design, ${
       internalNFT.name
-    }, created by ${internalNFT.creator}. The going rate is $${(
+    }, created by ${internalNFT.creator}. The going rate is ${(
       internalNFT.price / 100
-    ).toFixed(
-      2,
-    )}. When payment is recieved, please confirm so transaction can clear.`;
+    )} Ethereum. When payment is recieved, please confirm so transaction can clear.`;
 
     if (account) {
       fromAddress = account;
@@ -726,7 +706,7 @@ const Chat = (props) => {
       await updateDoc(chatsRef, {
         chatsWith: arrayRemove({
           name: nameFromDoc.data().name,
-          id: internalNFT['creatorId'],
+          id: interlocutor,
           role: null,
         }),
       });
@@ -742,7 +722,7 @@ const Chat = (props) => {
       await updateDoc(chatsRef, {
         chatsWith: arrayUnion({
           name: nameFromDoc.data().name,
-          id: internalNFT['creatorId'],
+          id: interlocutor,
           role: 'buyer',
           nft: internalNFT,
         }),

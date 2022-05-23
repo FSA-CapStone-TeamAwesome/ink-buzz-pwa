@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { doc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import {updateUser} from '../store/userStore'
 import { toast } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 import { Container, Form, Button } from 'react-bootstrap';
@@ -10,10 +11,11 @@ import { useNavigate } from 'react-router-dom';
 import { Heading } from '@chakra-ui/react';
 import Compressor from 'compressorjs';
 
+
 const UploadFile = () => {
   injectStyle();
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
 
   const [imageUpload, setImageUpload] = useState(null);
@@ -88,14 +90,26 @@ const UploadFile = () => {
       images: arrayUnion({
         smallPath: `/images/universal/${user.data.id}/small/${value.name + date}.webp`,
         path: `/images/universal/${user.data.id}/${value.name + date}.webp`,
-        likes: 0,
-        comments: 0,
-        purchases: 0,
         created: `${date}`,
         name: value.name,
         id: `${user.data.id + date}`,
       }),
     });
+
+    await dispatch(
+      updateUser({
+        user,
+        update: {
+          images: arrayUnion({
+            smallPath: `/images/universal/${user.data.id}/small/${value.name + date}.webp`,
+            path: `/images/universal/${user.data.id}/${value.name + date}.webp`,
+            created: `${date}`,
+            name: value.name,
+            id: `${user.data.id + date}`,
+        })}
+      })
+    )
+
 
 
     //size: 1004113 this is about 1MB size file
@@ -135,12 +149,12 @@ const UploadFile = () => {
             onChange={(evt) => setValue({ ...value, name: evt.target.value })}
           />
         </Form.Group>
-        <h3 className="mb-3">Price:</h3>
+        <h3 className="mb-3">Ethereum Price:</h3>
         <Form.Group className="mb-3" controlId="price">
           <Form.Control
             type="number"
             min="0"
-            step="0.01"
+            step="0.0001"
             value={value.price}
             onChange={(evt) => setValue({ ...value, price: evt.target.value })}
           />
