@@ -27,7 +27,6 @@ const ArtistProfile = () => {
   const [artistProfile, setArtistProfile] = useState(null);
   const [follows, setFollow] = useState(false);
   const [photo, setPhoto] = useState(null);
-  const [refresh, setRefresh] = useState(false);
 
   //function will follow/unfollow user
   const followToggle = async () => {
