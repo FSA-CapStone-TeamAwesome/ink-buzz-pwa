@@ -22,6 +22,7 @@ import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import ArtistProfile from './components/artistProfle';
 
+
 function App() {
   const { user } = useAuthentication();
   const dispatch = useDispatch();
@@ -144,9 +145,9 @@ function App() {
             />
           }
         />
-        <Route path="/nft/:nftId" element={<SingleNFT />} />
-        <Route path="*" element={<ErrorPage />} />
+        <Route exact path="/nft/:nftId" element={<SingleNFT />} />
         <Route exact path="/profiles/:profileId" element={<ArtistProfile />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={2000} />
     </div>

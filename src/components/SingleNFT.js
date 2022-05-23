@@ -294,39 +294,41 @@ const SingleNFT = (props) => {
       style={{ marginTop: '5rem' }}
       className="d-flex flex-column justify-content-center align-items-center">
       <Heading>{name}</Heading>
-      <Heading size="lg">
+      <Heading size="lg" className="mb-3">
         Created by <Link to={`/profiles/${creatorId}`}>{creator} </Link>{' '}
       </Heading>
       <Image fluid style={{ height: '400px' }} src={photo} />
       <h5 className="mt-3">Ξ{(price / 100).toFixed(2)}</h5>
-      <p>{description}</p>
+      <p className="mt-3">{description}</p>
       {user && user.data ? (
-        <div className="d-flex">
-          <Button className="me-3" onClick={() => artistProfileFunc(creatorId)}>
+        <div className="d-flex mobile-profile">
+          <Button
+            className="me-3 mt-3"
+            onClick={() => artistProfileFunc(creatorId)}>
             Artist's Profile
           </Button>
-          <Button className="me-3" onClick={() => messageArtist()}>
+          <Button className="me-3 mt-3" onClick={() => messageArtist()}>
             Message Artist
           </Button>
           {favored ? (
-            <Button className="me-3" onClick={favorToggle}>
+            <Button className="me-3 mt-3" onClick={favorToggle}>
               Unfavorite
             </Button>
           ) : (
-            <Button className="me-3" onClick={favorToggle}>
+            <Button className="me-3 mt-3" onClick={favorToggle}>
               Favorite It
             </Button>
           )}
           {follows ? (
-            <Button className="me-3" onClick={followToggle}>
+            <Button className="me-3 mt-3" onClick={followToggle}>
               Unfollow Artist
             </Button>
           ) : (
-            <Button className="me-3" onClick={followToggle}>
+            <Button className="me-3 mt-3" onClick={followToggle}>
               Follow Artist
             </Button>
           )}
-          <Button onClick={onOpen} className="me-3">
+          <Button onClick={onOpen} className="me-3 mt-3">
             Send Ether
           </Button>
           <Modal
