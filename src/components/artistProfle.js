@@ -110,8 +110,9 @@ const ArtistProfile = () => {
       navigate('/signIn');
       return;
     }
-    if(user.chatsWith.some((item) => item.id === `${artist.data.id}`)){
-    chatsWithAdd();}
+    if (user.chatsWith.some((item) => item.id === `${artist.data.id}`)) {
+      chatsWithAdd();
+    }
 
     navigate('/Chat', { state: { chosenInterlocutor: artist.data.id } });
   };
@@ -157,7 +158,7 @@ const ArtistProfile = () => {
     <Container className="mt-3">
       {artistProfile && artist.data ? (
         <div style={{ marginTop: '5rem' }}>
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center mobile-profile">
             <div className="d-flex flex-column align-items-center">
               {photo ? (
                 <img src={photo} alt="profile" className="profile-picture" />
@@ -165,7 +166,7 @@ const ArtistProfile = () => {
                 <></>
               )}
             </div>
-            <div className="ms-3">
+            <div className="ms-3 my-3">
               <Heading size="lg">{artistProfile.name}</Heading>
             </div>
           </div>
