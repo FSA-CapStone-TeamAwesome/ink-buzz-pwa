@@ -27,13 +27,11 @@ const FollowedArtists = () => {
     );
   }
 
-  console.log(following);
-
   return (
     <div>
       {following.map((coolDude) => {
         return (
-          <div>
+          <div key={coolDude.id}>
             <Heading className="text-center mb-2" size="xl">
               {coolDude.name}
             </Heading>
