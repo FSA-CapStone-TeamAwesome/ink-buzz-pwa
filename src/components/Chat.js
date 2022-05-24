@@ -763,8 +763,7 @@ const Chat = (props) => {
       paddingTop={10}
       justify="center"
       align="center"
-      className="chat-component">
-
+      className="chat-component mt-5">
       <Flex w="100%" h="90%" flexDir="column">
 
         <HStack
