@@ -15,6 +15,27 @@ import { Heading } from '@chakra-ui/react';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { useDispatch } from 'react-redux';
 import Footer from './Footer';
+import {
+  Flex,
+  Button,
+  ButtonGroup,
+  HStack,
+  VStack,
+  Select,
+  extendTheme,
+  Tag,
+  Input,
+  Box,
+  useDisclosure,
+  Text,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
+} from '@chakra-ui/react';
+import ChakraCarousel from './chakraCar';
 
 const Home = () => {
   const { userAuth } = useAuthentication();
@@ -58,11 +79,29 @@ const Home = () => {
         <Search></Search>
       </div>
       <div className="d-flex flex-wrap justify-content-center align-items-center">
-        {newList.map((nft) => {
-          return <Post key={'new' + nft.id} data={nft} />;
+      <ChakraCarousel gap={80}>
+        {newList.map((nft, idx) => {
+            return <Flex
+            key={idx}
+
+            justifyContent="space-between"
+            flexDirection="column"
+            overflow="hidden"
+            color="gray.300"
+            bg="base.d100"
+            rounded={5}
+            flex={1}
+            p={5}
+          >
+            <VStack mb={6}>
+          <Post key={'new' + nft.id} data={nft} />;
+          </VStack>
+          </Flex>
         })}
+         </ChakraCarousel>
       </div>
       <Footer />
+
     </Container>
   );
 };

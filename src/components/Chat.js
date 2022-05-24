@@ -767,42 +767,19 @@ const Chat = (props) => {
       <Flex w="100%" h="90%" flexDir="column">
 
         <div id="conversations">
-        <Container
-        py={8}
-        px={0}
-        maxW={{
-          base: "100%",
-          sm: "35rem",
-          md: "43.75rem",
-          lg: "57.5rem",
-          xl: "75rem",
-          xxl: "87.5rem"
-        }}
-      >
-        <ChakraCarousel gap={10}>
 
-          {convoList &&
+            {convoList &&
             convoList.map((conversation, idx) => {
               return (
-                <Flex
-                key={idx}
-                boxShadow="rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
-                justifyContent="space-between"
-                flexDirection="column"
-                overflow="hidden"
-                color="gray.300"
-                bg="base.d100"
-                rounded={5}
-                flex={1}
-                p={1}
-                  >
-                <VStack mb={6}>
-              {interlocutor && interlocutor === conversation.id ?
+
+              interlocutor && interlocutor === conversation.id ?
 
                   <Button
                     key={idx + conversation.id}
                     style={{ margin: 10 }}
+                    color='black'
                     bg="lightgrey"
+
                     border="2px solid black"
                     onClick={() => {
                       setList([]);
@@ -814,20 +791,16 @@ const Chat = (props) => {
                 <Button
                   key={idx + conversation.id}
                   style={{ margin: 10 }}
-
+                  colorScheme='blackAlpha'
                   onClick={() => {
                     setList([]);
                     setInterlocutor(conversation.id);
                   }}>
                   {conversation.name}
                 </Button>
-            }
-                </VStack>
-                </Flex>
-             )})}
 
-           </ChakraCarousel>
-           </Container>
+
+             )})}
           {!account ? (
             <Button
               onClick={connectWallet}
@@ -965,7 +938,7 @@ const Chat = (props) => {
             <></>
           )
         ) : sellerId ? (
-          <Form>
+          <Container>
             <p>
               After Receiving payment, please confirm transaction. If the pay is
               not to your liking, cancel.
@@ -993,7 +966,7 @@ const Chat = (props) => {
               }}>
               Confirm Payment
             </Button>
-          </Form>
+          </Container>
         ) : (
           <Form>
             <p>

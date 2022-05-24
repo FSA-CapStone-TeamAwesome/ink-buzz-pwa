@@ -60,7 +60,7 @@ const ChakraCarousel = ({ children, gap }) => {
 
   useEffect(() => {
     if (isBetweenBaseAndMd) {
-      setItemWidth(sliderWidth - gap);
+      setItemWidth(sliderWidth / 1 - gap);
       setMultiplier(0.65);
       setConstraint(1);
     }
@@ -70,8 +70,8 @@ const ChakraCarousel = ({ children, gap }) => {
       setConstraint(2);
     }
     if (isGreaterThanXL) {
-      setItemWidth(sliderWidth / 3 - gap);
-      setMultiplier(0.35);
+      setItemWidth(sliderWidth / 5 - gap);
+      setMultiplier(0.5);
       setConstraint(3);
     }
   }, [isBetweenBaseAndMd, isBetweenMdAndXl, isGreaterThanXL, sliderWidth, gap]);
@@ -137,7 +137,7 @@ const Slider = ({
 }) => {
 
   const [ref, { width }] = useBounding()
-  useLayoutEffect(() => initSliderWidth(Math.round(width)), [
+  useLayoutEffect(() => initSliderWidth(Math.floor(width)), [
     width,
     initSliderWidth
   ]);
@@ -165,6 +165,7 @@ const Slider = ({
         px={`${gap / 2}px`}
         position="relative"
         overflow="hidden"
+        mb={1}
         _before={{
           bgGradient: "linear(to-r, base.d400, transparent)",
           position: "absolute",
@@ -351,7 +352,7 @@ const Track = ({
             style={{ x }}
             drag="x"
             _active={{ cursor: "grabbing" }}
-            minWidth="min-content"
+            minWidth="30%"
             flexWrap="nowrap"
             cursor="grab"
           >
