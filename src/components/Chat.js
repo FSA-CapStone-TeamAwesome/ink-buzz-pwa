@@ -46,7 +46,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-import ChakraCarousel from './chakraCar';
+
 import { toHex, truncateAddress } from './wallet_stuff/utils';
 import { ethers } from 'ethers';
 
