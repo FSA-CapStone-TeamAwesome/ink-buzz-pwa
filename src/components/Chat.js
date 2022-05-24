@@ -783,22 +783,22 @@ const Chat = (props) => {
 
           {convoList &&
             convoList.map((conversation, idx) => {
+              return (
+                <Flex
+                key={idx}
+                boxShadow="rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
+                justifyContent="space-between"
+                flexDirection="column"
+                overflow="hidden"
+                color="gray.300"
+                bg="base.d100"
+                rounded={5}
+                flex={1}
+                p={1}
+                  >
+                <VStack mb={6}>
+              {interlocutor && interlocutor === conversation.id ?
 
-              if (interlocutor && interlocutor === conversation.id) {
-                return (
-                  <Flex
-              key={idx}
-              boxShadow="rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
-              justifyContent="space-between"
-              flexDirection="column"
-              overflow="hidden"
-              color="gray.300"
-              bg="base.d100"
-              rounded={5}
-              flex={1}
-              p={5}
-                >
-                  <VStack mb={6}>
                   <Button
                     key={idx + conversation.id}
                     style={{ margin: 10 }}
@@ -810,26 +810,21 @@ const Chat = (props) => {
                     }}>
                     {conversation.name}
                   </Button>
-                  </VStack>
-                  </Flex>
-                );
-              }
-              return (
-
+                 :
                 <Button
                   key={idx + conversation.id}
                   style={{ margin: 10 }}
-                  bg="lightgrey"
+
                   onClick={() => {
                     setList([]);
                     setInterlocutor(conversation.id);
                   }}>
                   {conversation.name}
                 </Button>
-              )
-            })
-
             }
+                </VStack>
+                </Flex>
+             )})}
 
            </ChakraCarousel>
            </Container>
