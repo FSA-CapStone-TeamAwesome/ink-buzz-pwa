@@ -80,39 +80,13 @@ const Home = () => {
         <Search></Search>
       </div>
       <div className="d-flex flex-wrap justify-content-center align-items-center">
-      <Container
-        py={8}
-        px={0}
-        maxW={{
-          base: "100%",
-          sm: "35rem",
-          md: "43.75rem",
-          lg: "57.5rem",
-          xl: "75rem",
-          xxl: "87.5rem"
-        }}
-      >
-      <ChakraCarousel gap={80}>
-        {newList.map((nft, idx) => {
-            return <Flex
-            key={idx}
 
-            justifyContent="space-between"
-            flexDirection="column"
-            overflow="hidden"
-            color="gray.300"
-            bg="base.d100"
-            rounded={5}
-            flex={1}
-            p={5}
-          >
-            <VStack mb={5}>
+        {newList.map((nft, idx) => {
+            return
           <Post key={nft.id} data={nft} />;
-          </VStack>
-          </Flex>
+
         })}
-         </ChakraCarousel>
-         </Container>
+
       </div>
       {/* <Footer /> */}
 
