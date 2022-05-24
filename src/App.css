@@ -8,7 +8,7 @@ html {
 
 .NFTimageBox::after {
   display: block;
-  content: '';
+  content: "";
   /* 16:9 aspect ratio */
   padding-bottom: 100%;
 }
@@ -75,5 +75,9 @@ h1 {
 
   .mobilePost {
     margin-right: 0;
+  }
+
+  .mobileHstackChat {
+    flex: "wrap";
   }
 }

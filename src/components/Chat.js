@@ -15,6 +15,10 @@ import {
   HStack,
   VStack,
   Select,
+  extendTheme,
+  Container,
+  Heading,
+  Tag,
   Input,
   Box,
   useDisclosure,
@@ -170,7 +174,7 @@ const Chat = (props) => {
   }, [convoList, messages]);
 
   const checkTransaction = async () => {
-    console.log('trans checked');
+
     let convoIds = convoList.map((convo) => convo.id);
     let findIt = convoIds.indexOf(interlocutor);
 
@@ -241,7 +245,7 @@ const Chat = (props) => {
           },
         ],
       });
-      console.log(tx);
+
       return tx;
     } catch (txError) {
       console.log('txError was ', txError.code);
@@ -673,7 +677,7 @@ const Chat = (props) => {
       internalNFT.name
     }, created by ${internalNFT.creator}. The going rate is ${
       internalNFT.price / 100
-    } Ethereum. When payment is recieved, please confirm so transaction can clear.`;
+    } Ethereum. When payment is received, please confirm so transaction can clear.`;
 
     if (account) {
       fromAddress = account;
@@ -756,50 +760,58 @@ const Chat = (props) => {
     <Flex
       w="100%"
       h="100vh"
+      paddingTop={10}
       justify="center"
       align="center"
       className="chat-component mt-5">
       <Flex w="100%" h="90%" flexDir="column">
-        <div id="conversations">
-          {convoList &&
+
+        <HStack
+        className='mobileHStackChat'
+         w="80%"
+
+         borderTop={'40px'}
+         backgroundSize='50px'
+         align="center"
+         justify="center"
+         style={{margin: 10}}
+
+         >
+            <Select
+              variant='filled'
+              s='lg'
+              w='md'
+              align='center'
+
+              placeholder='Contact List'
+              onChange={(evt) => {
+              setList([])
+              setInterlocutor(evt.target.value)
+            } }>
+            {convoList &&
             convoList.map((conversation, idx) => {
-              if (interlocutor && interlocutor === conversation.id) {
-                return (
-                  <Button
-                    key={idx + conversation.id}
-                    style={{ margin: 10 }}
-                    bg="lightgrey"
-                    border="2px solid black"
-                    onClick={() => {
-                      setList([]);
-                      setInterlocutor(conversation.id);
-                    }}>
-                    {conversation.name}
-                  </Button>
-                );
-              }
               return (
-                <Button
-                  key={idx + conversation.id}
-                  style={{ margin: 10 }}
-                  bg="lightgrey"
-                  onClick={() => {
-                    setList([]);
-                    setInterlocutor(conversation.id);
-                  }}>
-                  {conversation.name}
-                </Button>
-              );
-            })}
+
+                  <option
+                  text
+                    key={idx + conversation.id}
+                    value={conversation.id}
+                    >
+                    {conversation.name}
+                  </option>
+
+
+             )})}
+             </Select>
           {!account ? (
             <Button
               onClick={connectWallet}
-              style={{ margin: 10, marginTop: 30 }}>
+              >
               Connect Wallet
             </Button>
           ) : (
             <ButtonGroup spacing="1">
-              <Button onClick={onOpen} style={{ margin: 10, marginTop: 30 }}>
+              <Button onClick={onOpen} style={{}}>
                 Send Ether
               </Button>
               <Modal
@@ -876,12 +888,12 @@ const Chat = (props) => {
               </Modal>
               <Button
                 onClick={disconnect}
-                style={{ margin: 10, marginTop: 30 }}>
+                style={{}}>
                 Disconnect
               </Button>
             </ButtonGroup>
           )}
-        </div>
+        </HStack>
         {messages && (
           <Messages
             messages={messages.filter(
@@ -901,7 +913,11 @@ const Chat = (props) => {
         {!startTransaction ? (
           list.length ? (
             <Form onChange={(evt) => setRip(evt.target.value)}>
-              <Form.Select name="nftId" className="w-50 m-3">
+              <Form.Select
+              name="nftId"
+              className="w-30 m-3"
+              w='md'
+              >
                 <option value="null">-</option>
                 {list.map((nft, index) => {
                   return (
@@ -912,7 +928,7 @@ const Chat = (props) => {
                 })}
               </Form.Select>
               <Button
-                className=" m-3"
+
                 onClick={() => {
                   if (ripValue === null) {
                     return;
@@ -928,35 +944,47 @@ const Chat = (props) => {
             <></>
           )
         ) : sellerId ? (
-          <Form>
-            <p>
-              After Receiving payment, please confirm transaction. If the pay is
-              not to your liking, cancel.
-            </p>
+          <Container w='100%'
+          justify="center"
+          max-width='80%'>
+            <Text
+            m='3'
 
-            <Button
-              className=" m-3"
-              onClick={() => {
-                setTransaction(null);
-                cancelTransaction('seller');
-              }}>
-              Cancel Transaction
-            </Button>
+            >
+              After Receiving payment, please confirm transaction by pasting the URL generated from the transaction. If payment is not received, or to your liking, refund and cancel.
+            </Text>
+
+
             <Input
+              w='sm'
+              m='3'
               placeholder="Place Transaction Link Here"
               border="1px solid grey"
               borderRadius="md"
               value={cryptoURL}
               onChange={(e) => setCryptoURL(e.target.value)}
             />
+            <Flex>
             <Button
-              className=" m-3"
+              m='3'
+              min-width='20px'
+              onClick={() => {
+                setTransaction(null);
+                cancelTransaction('seller');
+              }}>
+              Cancel
+            </Button>
+            <Button
+            min-width='15px'
+              m='3'
               onClick={() => {
                 sendNFT();
               }}>
-              Confirm Payment
+              Confirm Transaction
             </Button>
-          </Form>
+
+            </Flex>
+          </Container>
         ) : (
           <Form>
             <p>
@@ -969,7 +997,7 @@ const Chat = (props) => {
                 setTransaction(null);
                 cancelTransaction('buyer');
               }}>
-              Cancel Transaction
+              Cancel
             </Button>
           </Form>
         )}

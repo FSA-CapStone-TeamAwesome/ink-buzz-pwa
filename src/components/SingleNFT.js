@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { injectStyle } from 'react-toastify/dist/inject-style';
-import Container from 'react-bootstrap/Container';
-import Image from 'react-bootstrap/Image';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from "react";
+import { injectStyle } from "react-toastify/dist/inject-style";
+import Container from "react-bootstrap/Container";
+import Image from "react-bootstrap/Image";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   collection,
   doc,
@@ -14,8 +14,8 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-} from 'firebase/firestore';
-import { toHex, truncateAddress } from './wallet_stuff/utils';
+} from "firebase/firestore";
+import { toHex, truncateAddress } from "./wallet_stuff/utils";
 import {
   Flex,
   Button,
@@ -33,15 +33,15 @@ import {
   ModalOverlay,
   ModalContent,
   ModalCloseButton,
-} from '@chakra-ui/react';
-import { ethers } from 'ethers';
+} from "@chakra-ui/react";
+import { ethers } from "ethers";
 
-import { useDispatch, useSelector } from 'react-redux';
-import { db, storage } from '../config/firebase';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { updateUser } from '../store/userStore';
-import { Heading } from '@chakra-ui/react';
-import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from "react-redux";
+import { db, storage } from "../config/firebase";
+import { getDownloadURL, ref } from "firebase/storage";
+import { updateUser } from "../store/userStore";
+import { Heading } from "@chakra-ui/react";
+import { toast } from "react-toastify";
 
 const SingleNFT = (props) => {
   const [data, setData] = useState(null);
@@ -51,7 +51,7 @@ const SingleNFT = (props) => {
   const [userProfile, setUser] = useState(null);
   const [favored, setFavor] = useState(null);
   const [searchObj, setSearchObj] = useState(null);
-  const [sendToAddress, setAddress] = useState('');
+  const [sendToAddress, setAddress] = useState("");
   const { nftId } = useParams();
   const user = useSelector((state) => state.user.user);
   const [amount, setAmount] = useState(0);
@@ -79,8 +79,8 @@ const SingleNFT = (props) => {
   //function query's server for that Id and finds the right doc for the NFT, causes the rest of the doc to render
   const aFunction = useCallback(async () => {
     let docData = await query(
-      collection(db, 'NFTs'),
-      where('id', '==', `${nftId}`),
+      collection(db, "NFTs"),
+      where("id", "==", `${nftId}`)
     );
     await onSnapshot(docData, (query) => {
       query.forEach((doc) => {
@@ -90,7 +90,7 @@ const SingleNFT = (props) => {
   }, [nftId]);
 
   const bFunction = useCallback(async () => {
-    const nameRef = doc(db, 'users', data.creatorId);
+    const nameRef = doc(db, "users", data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
     setAddress(nameFromDoc.data().accounts[0]);
   }, [data]);
@@ -111,7 +111,7 @@ const SingleNFT = (props) => {
       sellerId = data.ownerId;
     }
     try {
-      await updateDoc(doc(db, 'users', `${sellerId}`), {
+      await updateDoc(doc(db, "users", `${sellerId}`), {
         billOfSale: arrayUnion({
           nftName: data.name,
           nftId: data.id,
@@ -126,7 +126,7 @@ const SingleNFT = (props) => {
         }),
       });
 
-      await updateDoc(doc(db, 'users', `${user.data.id}`), {
+      await updateDoc(doc(db, "users", `${user.data.id}`), {
         billOfSale: arrayUnion({
           nftName: data.name,
           nftId: data.id,
@@ -145,13 +145,13 @@ const SingleNFT = (props) => {
     }
 
     try {
-      await updateDoc(doc(db, 'users', `${user.data.id}`), {
+      await updateDoc(doc(db, "users", `${user.data.id}`), {
         images: arrayUnion({
           data,
         }),
       });
       //removed from user
-      await updateDoc(doc(db, 'users', `${sellerId}`), {
+      await updateDoc(doc(db, "users", `${sellerId}`), {
         images: arrayRemove({
           data,
         }),
@@ -159,7 +159,7 @@ const SingleNFT = (props) => {
     } catch (err) {
       console.log(err);
     }
-    toast.success('Image bought');
+    toast.success("Image bought");
   };
   //function that loads photo
   const getPhoto = useCallback(async () => {
@@ -197,7 +197,7 @@ const SingleNFT = (props) => {
 
   //function for toggling the state of following an artist
   const followToggle = async () => {
-    const followRef = doc(db, 'users', `${data.creatorId}`);
+    const followRef = doc(db, "users", `${data.creatorId}`);
 
     if (
       userProfile.following &&
@@ -213,7 +213,7 @@ const SingleNFT = (props) => {
               profilePic: `/images/universal/${data.creatorId}/profile-picture`,
             }),
           },
-        }),
+        })
       );
 
       await updateDoc(followRef, {
@@ -235,7 +235,7 @@ const SingleNFT = (props) => {
               profilePic: `/images/universal/${data.creatorId}/profile-picture`,
             }),
           },
-        }),
+        })
       );
       await updateDoc(followRef, {
         followers: arrayUnion({
@@ -252,11 +252,11 @@ const SingleNFT = (props) => {
     if (user.following.some((item) => item.id === `${(data, ownerId)}`)) {
       chatsWithAdd();
     }
-    navigate('/Chat', { state: { chosenInterlocutor: data.creatorId } });
+    navigate("/Chat", { state: { chosenInterlocutor: data.creatorId } });
   };
 
   const chatsWithAdd = async () => {
-    const chatsRef = doc(db, 'users', `${user.data.id}`);
+    const chatsRef = doc(db, "users", `${user.data.id}`);
 
     await updateDoc(chatsRef, {
       chatsWith: arrayUnion({
@@ -284,7 +284,7 @@ const SingleNFT = (props) => {
               image: data.image,
             }),
           },
-        }),
+        })
       );
       setFavor(false);
     } else {
@@ -299,7 +299,7 @@ const SingleNFT = (props) => {
               image: data.image,
             }),
           },
-        }),
+        })
       );
       setFavor(true);
     }
@@ -314,24 +314,24 @@ const SingleNFT = (props) => {
   }, [data, bFunction]);
 
   const sendTransaction = async () => {
-    const nameRef = doc(db, 'users', data.creatorId);
+    const nameRef = doc(db, "users", data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
 
     try {
       const tx = await library.provider.request({
-        method: 'eth_sendTransaction',
+        method: "eth_sendTransaction",
         params: [
           {
             from: account,
             to: nameFromDoc.data().accounts[0],
-            value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
+            value: ethers.utils.parseUnits(amount, "ether").toHexString(),
           },
         ],
       });
 
       return tx;
     } catch (txError) {
-      console.log('txError was ', txError.code);
+      console.log("txError was ", txError.code);
     }
   };
 
@@ -339,12 +339,16 @@ const SingleNFT = (props) => {
     data && getPhoto();
   }, [data, getPhoto]);
 
-  useEffect(() => setUser(user), [user]);
+  useEffect(() => {
+    if (user !== {}) {
+      setUser(user);
+    }
+  }, [user]);
 
   const switchNetwork = async () => {
     try {
       await library.provider.request({
-        method: 'wallet_switchEthereumChain',
+        method: "wallet_switchEthereumChain",
         params: [{ chainId: toHex(network) }],
       });
     } catch (error) {
@@ -358,7 +362,7 @@ const SingleNFT = (props) => {
 
   const artistProfileFunc = (inputtedCreatorId) => {
     if (user && user.data && user.data.id === inputtedCreatorId) {
-      navigate('/profile');
+      navigate("/profile");
     } else {
       navigate(`/profiles/${inputtedCreatorId}`);
     }
@@ -366,23 +370,20 @@ const SingleNFT = (props) => {
 
   return (
     <Container
-      style={{ marginTop: '5rem' }}
-      className="d-flex flex-column justify-content-center align-items-center">
+      style={{ marginTop: "5rem" }}
+      className="d-flex flex-column justify-content-center align-items-center"
+    >
       <Heading>{name}</Heading>
-      {user.data !== undefined ? (
-        <Heading size="lg" className="mb-3">
-          Created by{' '}
-          {user.data.id === creatorId ? (
-            <Link to={`/profile`}> {creator} </Link>
-          ) : (
-            <Link to={`/profiles/${creatorId}`}>{creator} </Link>
-          )}
-        </Heading>
-      ) : (
-        <div></div>
-      )}
-      {owner && user.data ? (
-        ownerId === user.data.id ? (
+      <Heading size="lg" className="mb-3">
+        Created by{" "}
+        {user && user.data && user.data.id === creatorId ? (
+          <Link to={`/profile`}> {creator} </Link>
+        ) : (
+          <Link to={`/profiles/${creatorId}`}>{creator} </Link>
+        )}
+      </Heading>
+      {owner ? (
+        user && user.data && user.data.id === ownerId ? (
           <Heading size="md">
             Owned by <Link to={`/profile`}>{owner} </Link>
           </Heading>
@@ -394,14 +395,15 @@ const SingleNFT = (props) => {
       ) : (
         <></>
       )}
-      <Image fluid style={{ height: '400px' }} src={photo} />
+      <Image fluid style={{ height: "400px" }} src={photo} />
       <h5 className="mt-3">Ξ{price / 100}</h5>
       <p className="mt-3">{description}</p>
       {user && user.data ? (
         <div className="d-flex mobile-profile">
           <Button
             className="me-3 mt-3"
-            onClick={() => artistProfileFunc(creatorId)}>
+            onClick={() => artistProfileFunc(creatorId)}
+          >
             Artist's Profile
           </Button>
           <Button className="me-3 mt-3" onClick={() => messageArtist()}>
@@ -500,10 +502,11 @@ const SingleNFT = (props) => {
         <div className="d-flex">
           <Button
             className="me-3 mt-3"
-            onClick={() => artistProfileFunc(creatorId)}>
+            onClick={() => artistProfileFunc(creatorId)}
+          >
             Go to Artist's Profile
           </Button>
-          <Button className="me-3 mt-3" onClick={() => navigate('/SignIn')}>
+          <Button className="me-3 mt-3" onClick={() => navigate("/SignIn")}>
             Sign in to message artist
           </Button>
         </div>
