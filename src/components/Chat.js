@@ -15,6 +15,10 @@ import {
   HStack,
   VStack,
   Select,
+  extendTheme,
+  Container,
+  Heading,
+  Tag,
   Input,
   Box,
   useDisclosure,
@@ -42,7 +46,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-
+import ChakraCarousel from './chakraCar';
 import { toHex, truncateAddress } from './wallet_stuff/utils';
 import { ethers } from 'ethers';
 
@@ -759,12 +763,42 @@ const Chat = (props) => {
       justify="center"
       align="center"
       className="chat-component">
+
       <Flex w="100%" h="90%" flexDir="column">
+
         <div id="conversations">
+        <Container
+        py={8}
+        px={0}
+        maxW={{
+          base: "100%",
+          sm: "35rem",
+          md: "43.75rem",
+          lg: "57.5rem",
+          xl: "75rem",
+          xxl: "87.5rem"
+        }}
+      >
+        <ChakraCarousel gap={10}>
+
           {convoList &&
             convoList.map((conversation, idx) => {
+
               if (interlocutor && interlocutor === conversation.id) {
                 return (
+                  <Flex
+              key={idx}
+              boxShadow="rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
+              justifyContent="space-between"
+              flexDirection="column"
+              overflow="hidden"
+              color="gray.300"
+              bg="base.d100"
+              rounded={5}
+              flex={1}
+              p={5}
+                >
+                  <VStack mb={6}>
                   <Button
                     key={idx + conversation.id}
                     style={{ margin: 10 }}
@@ -776,9 +810,12 @@ const Chat = (props) => {
                     }}>
                     {conversation.name}
                   </Button>
+                  </VStack>
+                  </Flex>
                 );
               }
               return (
+
                 <Button
                   key={idx + conversation.id}
                   style={{ margin: 10 }}
@@ -789,8 +826,13 @@ const Chat = (props) => {
                   }}>
                   {conversation.name}
                 </Button>
-              );
-            })}
+              )
+            })
+
+            }
+
+           </ChakraCarousel>
+           </Container>
           {!account ? (
             <Button
               onClick={connectWallet}

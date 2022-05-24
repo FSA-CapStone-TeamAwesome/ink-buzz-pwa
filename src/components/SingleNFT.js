@@ -333,7 +333,8 @@ const SingleNFT = (props) => {
     data && getPhoto();
   }, [data, getPhoto]);
 
-  useEffect(() => setUser(user), [user]);
+
+  useEffect(() => {if(user !== {}) {setUser(user)}}, [user]);
 
   const switchNetwork = async () => {
     try {
@@ -357,17 +358,18 @@ const SingleNFT = (props) => {
       navigate(`/profiles/${inputtedCreatorId}`);
     }
   };
-
+  console.log(userProfile)
+  console.log(user)
   return (
     <Container
       style={{ marginTop: '5rem' }}
       className="d-flex flex-column justify-content-center align-items-center">
       <Heading>{name}</Heading>
       <Heading size="lg" className="mb-3">
-        Created by {user.data.id === creatorId  ? <Link to={`/profile`}> {creator} </Link> : <Link to={`/profiles/${creatorId}`}>{creator} </Link>}
+        Created by {user && user.data && user.data.id === creatorId  ? <Link to={`/profile`}> {creator} </Link> : <Link to={`/profiles/${creatorId}`}>{creator} </Link>}
       </Heading>
       {owner ?
-      (ownerId === user.data.id ?
+      (user && user.data && user.data.id === ownerId ?
       <Heading size="md">
       Owned by <Link to={`/profile`}>{owner} </Link>
     </Heading>
