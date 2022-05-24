@@ -367,8 +367,7 @@ const SingleNFT = (props) => {
       navigate(`/profiles/${inputtedCreatorId}`);
     }
   };
-  console.log(userProfile);
-  console.log(user);
+
   return (
     <Container
       style={{ marginTop: "5rem" }}

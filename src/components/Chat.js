@@ -174,7 +174,7 @@ const Chat = (props) => {
   }, [convoList, messages]);
 
   const checkTransaction = async () => {
-    console.log('trans checked');
+
     let convoIds = convoList.map((convo) => convo.id);
     let findIt = convoIds.indexOf(interlocutor);
 
@@ -245,7 +245,7 @@ const Chat = (props) => {
           },
         ],
       });
-      console.log(tx);
+
       return tx;
     } catch (txError) {
       console.log('txError was ', txError.code);
@@ -677,7 +677,7 @@ const Chat = (props) => {
       internalNFT.name
     }, created by ${internalNFT.creator}. The going rate is ${
       internalNFT.price / 100
-    } Ethereum. When payment is recieved, please confirm so transaction can clear.`;
+    } Ethereum. When payment is received, please confirm so transaction can clear.`;
 
     if (account) {
       fromAddress = account;
@@ -806,7 +806,7 @@ const Chat = (props) => {
           {!account ? (
             <Button
               onClick={connectWallet}
-              style={{}}>
+              >
               Connect Wallet
             </Button>
           ) : (
@@ -951,7 +951,7 @@ const Chat = (props) => {
             m='3'
 
             >
-              After Receiving payment, please confirm transaction by pasting the URL generated from the transaction. If pay is not recieved, or to your liking, refund and cancel.
+              After Receiving payment, please confirm transaction by pasting the URL generated from the transaction. If payment is not received, or to your liking, refund and cancel.
             </Text>
 
 
