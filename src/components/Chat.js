@@ -760,56 +760,57 @@ const Chat = (props) => {
     <Flex
       w="100%"
       h="100vh"
+      paddingTop={10}
       justify="center"
       align="center"
       className="chat-component">
 
       <Flex w="100%" h="90%" flexDir="column">
 
-        <div id="conversations">
+        <HStack
+        className='mobileHStackChat'
+         w="80%"
 
+         align="center"
+         justify="center"
+         style={{margin: 10}}
+
+         >
+            <Select
+              variant='filled'
+              s='lg'
+              w='md'
+              align='center'
+
+              placeholder='Contact List'
+              onChange={(evt) => {
+              setList([])
+              setInterlocutor(evt.target.value)
+            } }>
             {convoList &&
             convoList.map((conversation, idx) => {
               return (
 
-              interlocutor && interlocutor === conversation.id ?
-
-                  <Button
+                  <option
+                  text
                     key={idx + conversation.id}
-                    style={{ margin: 10 }}
-                    color='black'
-                    bg="lightgrey"
-
-                    border="2px solid black"
-                    onClick={() => {
-                      setList([]);
-                      setInterlocutor(conversation.id);
-                    }}>
+                    value={conversation.id}
+                    >
                     {conversation.name}
-                  </Button>
-                 :
-                <Button
-                  key={idx + conversation.id}
-                  style={{ margin: 10 }}
-                  colorScheme='blackAlpha'
-                  onClick={() => {
-                    setList([]);
-                    setInterlocutor(conversation.id);
-                  }}>
-                  {conversation.name}
-                </Button>
+                  </option>
 
 
              )})}
+             </Select>
           {!account ? (
             <Button
               onClick={connectWallet}
-              style={{ margin: 10, marginTop: 30 }}>
+              style={{}}>
               Connect Wallet
             </Button>
           ) : (
             <ButtonGroup spacing="1">
-              <Button onClick={onOpen} style={{ margin: 10, marginTop: 30 }}>
+              <Button onClick={onOpen} style={{}}>
                 Send Ether
               </Button>
               <Modal
@@ -886,12 +887,12 @@ const Chat = (props) => {
               </Modal>
               <Button
                 onClick={disconnect}
-                style={{ margin: 10, marginTop: 30 }}>
+                style={{}}>
                 Disconnect
               </Button>
             </ButtonGroup>
           )}
-        </div>
+        </HStack>
         {messages && (
           <Messages
             messages={messages.filter(
@@ -911,7 +912,11 @@ const Chat = (props) => {
         {!startTransaction ? (
           list.length ? (
             <Form onChange={(evt) => setRip(evt.target.value)}>
-              <Form.Select name="nftId" className="w-50 m-3">
+              <Form.Select
+              name="nftId"
+              className="w-30 m-3"
+              w='md'
+              >
                 <option value="null">-</option>
                 {list.map((nft, index) => {
                   return (
@@ -922,7 +927,7 @@ const Chat = (props) => {
                 })}
               </Form.Select>
               <Button
-                className=" m-3"
+
                 onClick={() => {
                   if (ripValue === null) {
                     return;
@@ -939,13 +944,17 @@ const Chat = (props) => {
           )
         ) : sellerId ? (
           <Container>
-            <p>
-              After Receiving payment, please confirm transaction. If the pay is
-              not to your liking, cancel.
-            </p>
+            <Text
+            m='3'
 
+            >
+              After Receiving payment, please confirm transaction by pasting the URL generated from the transaction. If pay is not recieved, or to your liking, refund and cancel.
+            </Text>
+            <Flex
+            justify = 'center'>
             <Button
-              className=" m-3"
+              m='3'
+              min-width='20px'
               onClick={() => {
                 setTransaction(null);
                 cancelTransaction('seller');
@@ -953,6 +962,8 @@ const Chat = (props) => {
               Cancel Transaction
             </Button>
             <Input
+              w='md'
+              m='3'
               placeholder="Place Transaction Link Here"
               border="1px solid grey"
               borderRadius="md"
@@ -960,12 +971,14 @@ const Chat = (props) => {
               onChange={(e) => setCryptoURL(e.target.value)}
             />
             <Button
-              className=" m-3"
+            min-width='15px'
+              m='3'
               onClick={() => {
                 sendNFT();
               }}>
               Confirm Payment
             </Button>
+          </Flex>
           </Container>
         ) : (
           <Form>

@@ -137,7 +137,7 @@ const Slider = ({
 }) => {
 
   const [ref, { width }] = useBounding()
-  useLayoutEffect(() => initSliderWidth(Math.floor(width)), [
+  useLayoutEffect(() => initSliderWidth(Math.round(width)), [
     width,
     initSliderWidth
   ]);
@@ -190,7 +190,7 @@ const Slider = ({
         {children}
       </Box>
 
-      <Flex w={`${itemWidth}px`} mt={`${gap / 2}px`} mx="auto">
+      <Flex w={`300px`} mt={`${gap / 2}px`}>
         <Button
           onClick={handleDecrementClick}
           onFocus={handleFocus}
@@ -332,11 +332,11 @@ const Track = ({
   useEffect(() => {
     handleResize(positions);
 
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handleClick);
+    // document.addEventListener("keydown", handleKeyDown);
+    // document.addEventListener("mousedown", handleClick);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handleClick);
+      // document.removeEventListener("keydown", handleKeyDown);
+      // document.removeEventListener("mousedown", handleClick);
     };
   }, [handleClick, handleResize, handleKeyDown, positions]);
 

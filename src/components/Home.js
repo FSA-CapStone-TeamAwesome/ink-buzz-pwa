@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Container from 'react-bootstrap/Container';
+
 import 'animate.css';
 import Post from './Post';
 import { db } from '../config/firebase';
@@ -21,6 +21,7 @@ import {
   ButtonGroup,
   HStack,
   VStack,
+  Container,
   Select,
   extendTheme,
   Tag,
@@ -79,6 +80,18 @@ const Home = () => {
         <Search></Search>
       </div>
       <div className="d-flex flex-wrap justify-content-center align-items-center">
+      <Container
+        py={8}
+        px={0}
+        maxW={{
+          base: "100%",
+          sm: "35rem",
+          md: "43.75rem",
+          lg: "57.5rem",
+          xl: "75rem",
+          xxl: "87.5rem"
+        }}
+      >
       <ChakraCarousel gap={80}>
         {newList.map((nft, idx) => {
             return <Flex
@@ -93,14 +106,15 @@ const Home = () => {
             flex={1}
             p={5}
           >
-            <VStack mb={6}>
-          <Post key={'new' + nft.id} data={nft} />;
+            <VStack mb={5}>
+          <Post key={nft.id} data={nft} />;
           </VStack>
           </Flex>
         })}
          </ChakraCarousel>
+         </Container>
       </div>
-      <Footer />
+      {/* <Footer /> */}
 
     </Container>
   );
