@@ -771,6 +771,8 @@ const Chat = (props) => {
         className='mobileHStackChat'
          w="80%"
 
+         borderTop={'40px'}
+         backgroundSize='50px'
          align="center"
          justify="center"
          style={{margin: 10}}
@@ -943,26 +945,19 @@ const Chat = (props) => {
             <></>
           )
         ) : sellerId ? (
-          <Container>
+          <Container w='100%'
+          justify="center"
+          max-width='80%'>
             <Text
             m='3'
 
             >
               After Receiving payment, please confirm transaction by pasting the URL generated from the transaction. If pay is not recieved, or to your liking, refund and cancel.
             </Text>
-            <Flex
-            justify = 'center'>
-            <Button
-              m='3'
-              min-width='20px'
-              onClick={() => {
-                setTransaction(null);
-                cancelTransaction('seller');
-              }}>
-              Cancel Transaction
-            </Button>
+
+
             <Input
-              w='md'
+              w='sm'
               m='3'
               placeholder="Place Transaction Link Here"
               border="1px solid grey"
@@ -970,15 +965,26 @@ const Chat = (props) => {
               value={cryptoURL}
               onChange={(e) => setCryptoURL(e.target.value)}
             />
+            <Flex>
+            <Button
+              m='3'
+              min-width='20px'
+              onClick={() => {
+                setTransaction(null);
+                cancelTransaction('seller');
+              }}>
+              Cancel
+            </Button>
             <Button
             min-width='15px'
               m='3'
               onClick={() => {
                 sendNFT();
               }}>
-              Confirm Payment
+              Confirm Transaction
             </Button>
-          </Flex>
+
+            </Flex>
           </Container>
         ) : (
           <Form>
@@ -992,7 +998,7 @@ const Chat = (props) => {
                 setTransaction(null);
                 cancelTransaction('buyer');
               }}>
-              Cancel Transaction
+              Cancel
             </Button>
           </Form>
         )}

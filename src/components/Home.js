@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import Container from 'react-bootstrap/Container';
 import 'animate.css';
 import Post from './Post';
 import { db } from '../config/firebase';
@@ -15,28 +15,6 @@ import { Heading } from '@chakra-ui/react';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { useDispatch } from 'react-redux';
 import Footer from './Footer';
-import {
-  Flex,
-  Button,
-  ButtonGroup,
-  HStack,
-  VStack,
-  Container,
-  Select,
-  extendTheme,
-  Tag,
-  Input,
-  Box,
-  useDisclosure,
-  Text,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalOverlay,
-  ModalContent,
-  ModalCloseButton,
-} from '@chakra-ui/react';
-import ChakraCarousel from './chakraCar';
 
 const Home = () => {
   const { userAuth } = useAuthentication();
@@ -80,16 +58,11 @@ const Home = () => {
         <Search></Search>
       </div>
       <div className="d-flex flex-wrap justify-content-center align-items-center">
-
-        {newList.map((nft, idx) => {
-            return
-          <Post key={nft.id} data={nft} />;
-
+        {newList.map((nft) => {
+          return <Post key={'new' + nft.id} data={nft} />;
         })}
-
       </div>
-      {/* <Footer /> */}
-
+      <Footer />
     </Container>
   );
 };

@@ -78,5 +78,6 @@ h1 {
   }
 
   .mobileHstackChat {
+    flex: "wrap";
   }
 }
