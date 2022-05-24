@@ -87,78 +87,80 @@ const SingleNFT = (props) => {
         setData(doc.data());
       });
     });
+  }, [nftId]);
+
+  const bFunction = useCallback(async () => {
     const nameRef = doc(db, 'users', data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
     setAddress(nameFromDoc.data().accounts[0]);
-  }, [nftId]);
+  }, [data]);
 
   useEffect(() => {
-
-    changeOwner()
-  }, [message])
+    changeOwner();
+  }, [message]);
 
   const changeOwner = async () => {
-    if(message == null) {
-      return
+    if (message == null) {
+      return;
     }
-    let seller = data.creator
-    let sellerId = data.creatorId
-    let timestamp = Timestamp.fromMillis(Date.now())
-    if(data.owner){
-       seller = data.owner
-       sellerId = data.ownerId
+    let seller = data.creator;
+    let sellerId = data.creatorId;
+    let timestamp = Timestamp.fromMillis(Date.now());
+    if (data.owner) {
+      seller = data.owner;
+      sellerId = data.ownerId;
     }
-    try{
-      await updateDoc(doc(db, "users", `${sellerId}`), {
+    try {
+      await updateDoc(doc(db, 'users', `${sellerId}`), {
         billOfSale: arrayUnion({
           nftName: data.name,
-         nftId:  data.id,
-         creator: data.creator,
-         creatorId:  data.creatorId,
-         seller: seller,
-         sellerId: sellerId,
-         buyer: user.name,
-         buyerId: user.data.id,
-         linkTransaction: message,
-         timestamp
+          nftId: data.id,
+          creator: data.creator,
+          creatorId: data.creatorId,
+          seller: seller,
+          sellerId: sellerId,
+          buyer: user.name,
+          buyerId: user.data.id,
+          linkTransaction: message,
+          timestamp,
         }),
       });
 
-      await updateDoc(doc(db, "users", `${user.data.id}`), {
+      await updateDoc(doc(db, 'users', `${user.data.id}`), {
         billOfSale: arrayUnion({
-        nftName: data.name,
-         nftId:  data.id,
-         creator: data.creator,
-         creatorId:  data.creatorId,
-         seller: seller,
-         sellerId: sellerId,
-         buyer: user.name,
-         buyerId: user.data.id,
-         linkTransaction: message,
-         timestamp
+          nftName: data.name,
+          nftId: data.id,
+          creator: data.creator,
+          creatorId: data.creatorId,
+          seller: seller,
+          sellerId: sellerId,
+          buyer: user.name,
+          buyerId: user.data.id,
+          linkTransaction: message,
+          timestamp,
         }),
-     });
-
+      });
+    } catch (err) {
+      console.log(err);
     }
-    catch(err) {console.log(err)}
 
     try {
-
-    await updateDoc(doc(db, "users", `${user.data.id}`), {
-      images: arrayUnion({
-        data,
-      }),
-    });
-    //removed from user
-    await updateDoc(doc(db, "users", `${sellerId}`), {
-      images: arrayRemove({
-        data,
-      })
-    })
-    } catch (err) {console.log(err)}
-    toast.success('Image bought')
-
-  }
+      await updateDoc(doc(db, 'users', `${user.data.id}`), {
+        images: arrayUnion({
+          data,
+        }),
+      });
+      //removed from user
+      await updateDoc(doc(db, 'users', `${sellerId}`), {
+        images: arrayRemove({
+          data,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    toast.success('Image bought');
+  };
   //function that loads photo
   const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, data.smallImage));
@@ -247,8 +249,8 @@ const SingleNFT = (props) => {
   };
 
   const messageArtist = async () => {
-    if(user.following.some((item) => item.id === `${data,ownerId}`)){
-    chatsWithAdd();
+    if (user.following.some((item) => item.id === `${(data, ownerId)}`)) {
+      chatsWithAdd();
     }
     navigate('/Chat', { state: { chosenInterlocutor: data.creatorId } });
   };
@@ -307,6 +309,10 @@ const SingleNFT = (props) => {
     aFunction();
   }, [aFunction]);
 
+  useEffect(() => {
+    data && bFunction();
+  }, [data, bFunction]);
+
   const sendTransaction = async () => {
     const nameRef = doc(db, 'users', data.creatorId);
     const nameFromDoc = await getDoc(nameRef);
@@ -363,20 +369,33 @@ const SingleNFT = (props) => {
       style={{ marginTop: '5rem' }}
       className="d-flex flex-column justify-content-center align-items-center">
       <Heading>{name}</Heading>
-      <Heading size="lg" className="mb-3">
-        Created by {user.data.id === creatorId  ? <Link to={`/profile`}> {creator} </Link> : <Link to={`/profiles/${creatorId}`}>{creator} </Link>}
-      </Heading>
-      {owner ?
-      (ownerId === user.data.id ?
-      <Heading size="md">
-      Owned by <Link to={`/profile`}>{owner} </Link>
-    </Heading>
-      :
-      <Heading size="md">
-        Owned by <Link to={`/profiles/${ownerId}`}>{owner} </Link>
-      </Heading>) : <></>}
+      {user.data !== undefined ? (
+        <Heading size="lg" className="mb-3">
+          Created by{' '}
+          {user.data.id === creatorId ? (
+            <Link to={`/profile`}> {creator} </Link>
+          ) : (
+            <Link to={`/profiles/${creatorId}`}>{creator} </Link>
+          )}
+        </Heading>
+      ) : (
+        <div></div>
+      )}
+      {owner && user.data ? (
+        ownerId === user.data.id ? (
+          <Heading size="md">
+            Owned by <Link to={`/profile`}>{owner} </Link>
+          </Heading>
+        ) : (
+          <Heading size="md">
+            Owned by <Link to={`/profiles/${ownerId}`}>{owner} </Link>
+          </Heading>
+        )
+      ) : (
+        <></>
+      )}
       <Image fluid style={{ height: '400px' }} src={photo} />
-      <h5 className="mt-3">Ξ{(price / 100)}</h5>
+      <h5 className="mt-3">Ξ{price / 100}</h5>
       <p className="mt-3">{description}</p>
       {user && user.data ? (
         <div className="d-flex mobile-profile">
