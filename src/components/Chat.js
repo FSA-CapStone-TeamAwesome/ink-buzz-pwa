@@ -769,14 +769,15 @@ const Chat = (props) => {
       paddingTop={10}
       justify="center"
       align="center"
+      flexShrink="1"
+      overflow= "auto"
       className="chat-component mt-5">
       <Flex w="100%" h="90%" flexDir="column">
 
         <HStack
         className='mobileHStackChat'
          flexBasis="auto"
-          // w="80%"
-          alignItems="flex-start"
+         alignItems="flex-start"
          borderTop={'40px'}
          backgroundSize='50px'
          align="center"
@@ -907,6 +908,7 @@ const Chat = (props) => {
           />
         )}
         <MessageFooter
+          flexShrink="0"
           message={message}
           setMessage={setMessage}
           sendMessage={sendMessage}
