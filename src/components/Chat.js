@@ -776,14 +776,14 @@ const Chat = (props) => {
         className='mobileHStackChat'
          flexBasis="auto"
           // w="80%"
+          alignItems="flex-start"
          borderTop={'40px'}
          backgroundSize='50px'
          align="center"
          justify="center"
          style={{margin: 10}}
-
          >
-            {convoSelectIsOpen ? (
+        {convoSelectIsOpen ? (
            <VStack>
             {convoList && convoList.map((conversation, idx) => {
              return (
@@ -804,17 +804,6 @@ const Chat = (props) => {
               setConvoSelectIsOpen(true);
             }}
             >{interlocutorName}</Button>}
-            {/* <Select
-              variant='filled'
-              s='lg'
-              w='md'
-              align='center'
-
-              placeholder='Contact List'
-              onChange={(evt) => {
-              setList([])
-              setInterlocutor(evt.target.value)
-            } }> */}
           {!account ? (
             <Button
               onClick={connectWallet}
