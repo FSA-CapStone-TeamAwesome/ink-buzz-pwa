@@ -53,13 +53,19 @@ import { ethers } from 'ethers';
 const Chat = (props) => {
   injectStyle();
   const user = useSelector((state) => state.user.user);
+
   const [convoList, setConvoList] = useState([]);
+
+  // This determines whether the conversation select tray is open
+  const [convoSelectIsOpen, setConvoSelectIsOpen] = useState(false)
 
   const [myId, setMyId] = useState('');
 
   const [myName, setMyName] = useState('');
 
   const [interlocutor, setInterlocutor] = useState('');
+
+  const [interlocutorName, setInterlocutorName] = useState('Conversations')
 
   const [sendToAddress, setSendToAddress] = useState('');
 
@@ -777,18 +783,27 @@ const Chat = (props) => {
          style={{margin: 10}}
 
          >
+            {convoSelectIsOpen ? (
            <VStack>
-           {convoList &&
-           convoList.map((conversation, idx) => {
+            {convoList && convoList.map((conversation, idx) => {
              return (
                <Button onClick={() => {
                  setList([])
                  setInterlocutor(conversation.id)
+                 setConvoSelectIsOpen(false);
+                 setInterlocutorName(conversation.name);
                 }}
+                border={(conversation.name === interlocutorName) ?
+                  '2px' : '0px'}
+                colorScheme='gray'
                 key={idx + conversation.id}>{conversation.name}
                  </Button>
             )})}
-            </VStack>
+            </VStack>) :
+            <Button onClick={() => {
+              setConvoSelectIsOpen(true);
+            }}
+            >{interlocutorName}</Button>}
             {/* <Select
               variant='filled'
               s='lg'
