@@ -768,8 +768,8 @@ const Chat = (props) => {
 
         <HStack
         className='mobileHStackChat'
-         w="80%"
-
+         flexBasis="auto"
+          // w="80%"
          borderTop={'40px'}
          backgroundSize='50px'
          align="center"
@@ -777,7 +777,19 @@ const Chat = (props) => {
          style={{margin: 10}}
 
          >
-            <Select
+           <VStack>
+           {convoList &&
+           convoList.map((conversation, idx) => {
+             return (
+               <Button onClick={() => {
+                 setList([])
+                 setInterlocutor(conversation.id)
+                }}
+                key={idx + conversation.id}>{conversation.name}
+                 </Button>
+            )})}
+            </VStack>
+            {/* <Select
               variant='filled'
               s='lg'
               w='md'
@@ -787,22 +799,7 @@ const Chat = (props) => {
               onChange={(evt) => {
               setList([])
               setInterlocutor(evt.target.value)
-            } }>
-            {convoList &&
-            convoList.map((conversation, idx) => {
-              return (
-
-                  <option
-                  text
-                    key={idx + conversation.id}
-                    value={conversation.id}
-                    >
-                    {conversation.name}
-                  </option>
-
-
-             )})}
-             </Select>
+            } }> */}
           {!account ? (
             <Button
               onClick={connectWallet}
