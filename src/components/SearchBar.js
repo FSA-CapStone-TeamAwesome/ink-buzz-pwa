@@ -7,6 +7,7 @@ import { Container, Form } from 'react-bootstrap';
 export default function Search() {
   const [searchValue, setSearch] = useState('');
   const [results, setResults] = useState([]);
+  const [notFound, setNotFound] = useState('')
 
   const lookUp = useCallback(async () => {
     const q = query(
@@ -20,6 +21,11 @@ export default function Search() {
     });
   }, [searchValue]);
 
+  useEffect(()=>{
+    setNotFound('')
+    window.setTimeout(() => {setNotFound('No results found for that tag')}, 5000)
+  }, [searchValue])
+
   useEffect(() => {
     setResults([]);
     lookUp();
@@ -30,17 +36,26 @@ export default function Search() {
       <Form>
         <Form.Control
           type="text"
+          className='mb-4 border-bottom border border-secondary'
           placeholder="Search By Tag"
           value={searchValue}
           onChange={(evt) => {
+            setNotFound('')
             setSearch(evt.target.value.toLowerCase());
           }}
+          onSubmit={(evt)=> {
+            evt.preventDefault()
+            evt.stopImmediatePropagation()}}
         />
-        <div className="my-3">
-          {results.map((nft) => {
+        {searchValue !== '' && results.length == 0 ?
+       <h1>{notFound}</h1>
+         :
+        <div className="d-flex mb-3 flex-wrap justify-content-center align-items-center border-bottom">
+          {
+          results.map((nft) => {
             return <Post key={nft.id} data={nft} />;
           })}
-        </div>
+        </div>}
       </Form>
     </Container>
   );

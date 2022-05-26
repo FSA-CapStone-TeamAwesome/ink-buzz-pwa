@@ -198,7 +198,7 @@ const SingleNFT = (props) => {
   //function for toggling the state of following an artist
   const followToggle = async () => {
     const followRef = doc(db, "users", `${data.creatorId}`);
-
+    if(user.data.id === data.creatorId){return}
     if (
       userProfile.following &&
       user.following.some((item) => item.id === `${data.creatorId}`)
@@ -418,7 +418,10 @@ const SingleNFT = (props) => {
               Favorite It
             </Button>
           )}
-          {follows ? (
+          {user && user.data && user.data.id === data.creatorId ?
+          <></>
+          : (follows ?
+          (
             <Button className="me-3 mt-3" onClick={followToggle}>
               Unfollow Artist
             </Button>
@@ -426,7 +429,7 @@ const SingleNFT = (props) => {
             <Button className="me-3 mt-3" onClick={followToggle}>
               Follow Artist
             </Button>
-          )}
+          ))}
           {/* <Button onClick={onOpen} className="me-3 mt-3">
             Send Ether
           </Button>
