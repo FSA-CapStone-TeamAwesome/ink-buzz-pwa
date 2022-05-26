@@ -14,8 +14,8 @@ import {
   ButtonGroup,
   HStack,
   VStack,
+  StackDivider,
   Select,
-  extendTheme,
   Container,
   Heading,
   Tag,
@@ -53,13 +53,19 @@ import { ethers } from 'ethers';
 const Chat = (props) => {
   injectStyle();
   const user = useSelector((state) => state.user.user);
+
   const [convoList, setConvoList] = useState([]);
+
+  // This determines whether the conversation select tray is open
+  const [convoSelectIsOpen, setConvoSelectIsOpen] = useState(false)
 
   const [myId, setMyId] = useState('');
 
   const [myName, setMyName] = useState('');
 
   const [interlocutor, setInterlocutor] = useState('');
+
+  const [interlocutorName, setInterlocutorName] = useState('Conversations')
 
   const [sendToAddress, setSendToAddress] = useState('');
 
@@ -763,46 +769,55 @@ const Chat = (props) => {
       paddingTop={10}
       justify="center"
       align="center"
+      flexShrink="1"
+      overflow= "auto"
       className="chat-component mt-5">
       <Flex w="100%" h="90%" flexDir="column">
 
         <HStack
         className='mobileHStackChat'
-         w="80%"
-
+         flexBasis="auto"
+         alignItems="flex-start"
          borderTop={'40px'}
          backgroundSize='50px'
          align="center"
          justify="center"
          style={{margin: 10}}
-
          >
-            <Select
-              variant='filled'
-              s='lg'
-              w='md'
-              align='center'
-
-              placeholder='Contact List'
-              onChange={(evt) => {
-              setList([])
-              setInterlocutor(evt.target.value)
-            } }>
-            {convoList &&
-            convoList.map((conversation, idx) => {
-              return (
-
-                  <option
-                  text
-                    key={idx + conversation.id}
-                    value={conversation.id}
-                    >
-                    {conversation.name}
-                  </option>
-
-
-             )})}
-             </Select>
+        {convoSelectIsOpen ? (
+           <VStack
+          //  backgroundColor="#F2F2F2"
+           border="2px"
+           boxSizing="border-box"
+           borderRadius="8px"
+           borderColor="RGBA(146, 194, 237, .8)"
+           borderAlpha=".2"
+           >
+            {convoList && convoList.map((conversation, idx) => {
+             return (
+               <Button onClick={() => {
+                 setList([])
+                 setInterlocutor(conversation.id)
+                 setConvoSelectIsOpen(false);
+                 setInterlocutorName(conversation.name);
+                }}
+                colorScheme='gray'
+                variant={(conversation.name === interlocutorName) ?
+                    'solid' : 'outline'}
+                // border={(conversation.name === interlocutorName) ?
+                //   '2px' : '0px'}
+                // borderColor="#92C2ED"
+                // boxSizing="border-box"
+                width="100%"
+                key={idx + conversation.id}>{conversation.name}
+                 </Button>
+            )})}
+            </VStack>) :
+            <Button
+            onClick={() => {
+              setConvoSelectIsOpen(true);
+            }}
+            >{interlocutorName}</Button>}
           {!account ? (
             <Button
               onClick={connectWallet}
@@ -906,6 +921,7 @@ const Chat = (props) => {
           />
         )}
         <MessageFooter
+          flexShrink="0"
           message={message}
           setMessage={setMessage}
           sendMessage={sendMessage}
