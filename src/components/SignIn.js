@@ -74,11 +74,11 @@ export const SignIn = () => {
               }
             />
           </Form.Group>
-          <Button variant="primary" type="submit" className="me-5 mb-3 w-100">
+          <Button variant="dark" type="submit" className="me-5 mb-3 w-100">
             Submit
           </Button>
           <Button
-            variant="primary"
+            variant="dark"
             onClick={() => demoAccount()}
             className="w-100">
             Sign in with a Demo account
