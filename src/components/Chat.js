@@ -14,8 +14,8 @@ import {
   ButtonGroup,
   HStack,
   VStack,
+  StackDivider,
   Select,
-  extendTheme,
   Container,
   Heading,
   Tag,
@@ -785,7 +785,14 @@ const Chat = (props) => {
          style={{margin: 10}}
          >
         {convoSelectIsOpen ? (
-           <VStack>
+           <VStack
+          //  backgroundColor="#F2F2F2"
+           border="2px"
+           boxSizing="border-box"
+           borderRadius="8px"
+           borderColor="RGBA(146, 194, 237, .8)"
+           borderAlpha=".2"
+           >
             {convoList && convoList.map((conversation, idx) => {
              return (
                <Button onClick={() => {
@@ -794,14 +801,20 @@ const Chat = (props) => {
                  setConvoSelectIsOpen(false);
                  setInterlocutorName(conversation.name);
                 }}
-                border={(conversation.name === interlocutorName) ?
-                  '2px' : '0px'}
                 colorScheme='gray'
+                variant={(conversation.name === interlocutorName) ?
+                    'solid' : 'outline'}
+                // border={(conversation.name === interlocutorName) ?
+                //   '2px' : '0px'}
+                // borderColor="#92C2ED"
+                // boxSizing="border-box"
+                width="100%"
                 key={idx + conversation.id}>{conversation.name}
                  </Button>
             )})}
             </VStack>) :
-            <Button onClick={() => {
+            <Button
+            onClick={() => {
               setConvoSelectIsOpen(true);
             }}
             >{interlocutorName}</Button>}
