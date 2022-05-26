@@ -234,8 +234,13 @@ const Profile = () => {
               />
             </Form.Group>
 
-            <Button type="submit">Save Changes</Button>
-            <Button variant="secondary" className="ms-3" onClick={handleCancel}>
+            <Button
+            variant="dark"
+            type="submit">Save Changes</Button>
+            <Button
+            variant="secondary"
+            className="ms-3"
+            onClick={handleCancel}>
               Cancel
             </Button>
           </Form>

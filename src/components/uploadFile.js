@@ -201,6 +201,7 @@ const UploadFile = () => {
           {value.tags[value.tags.length - 1] !== '' && (
             <Button
               type="button"
+              variant="dark"
               className="me-3"
               onClick={() => setValue({ ...value, tags: [...value.tags, ''] })}>
               Add another Tag
@@ -209,13 +210,17 @@ const UploadFile = () => {
           {value.tags[0] && (
             <Button
               type="button"
-              variant="danger"
+              variant="secondary"
               onClick={() => setValue({ ...value, tags: [''] })}>
               Clear All Tags
             </Button>
           )}
         </Form.Group>
-        <Button className="mb-2" type="submit" disabled={show === true}>
+        <Button
+        variant="dark"
+        className="mb-2"
+        type="submit"
+        disabled={show === true}>
           Upload Image
         </Button>
       </Form>
