@@ -133,14 +133,14 @@ const SignUp = () => {
             />
           </Form.Group>
           <Button
-            variant="primary"
+            variant="dark"
             type="submit"
             disabled={uploaded}
             className="me-5 mb-3 w-100">
             Submit
           </Button>
           <Button
-            variant="primary"
+            variant="dark"
             className="w-100"
             onClick={() => demoAccount()}>
             Sign in with a Demo account
