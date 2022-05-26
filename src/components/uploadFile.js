@@ -202,6 +202,7 @@ const UploadFile = () => {
             <Button
               type="button"
               className="me-3"
+              variant="dark"
               onClick={() => setValue({ ...value, tags: [...value.tags, ''] })}>
               Add another Tag
             </Button>
@@ -215,7 +216,11 @@ const UploadFile = () => {
             </Button>
           )}
         </Form.Group>
-        <Button className="mb-2" type="submit" disabled={show === true}>
+        <Button
+        variant="dark"
+        className="mb-2"
+        type="submit"
+        disabled={show === true}>
           Upload Image
         </Button>
       </Form>
