@@ -11,10 +11,8 @@ const Footer = () => {
             Ink Buzz was created in 20 days by:
           </Heading>
           {/* </div> */}
-
           <hr className="clearfix w-100 d-md-none my-3" />
-
-          <div className="col-md-2 mb-md-0 mb-3">
+          <div className="col-md-2 mb-md-0 mb-3" style={{display:'flex', flexDirection:'column', maxWidth:'256px'}}>
             <img src="/images/alec.webp" alt="alec eiber" />
             <Heading size="sm" className="text-uppercase mt-2">
               <a href="https://www.aleceiber.com">Alec Eiber</a>
@@ -29,7 +27,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col-md-2 mb-md-0 mb-3">
+          <div className="col-md-2 mb-md-0 mb-3" style={{display:'flex', flexDirection:'column', maxWidth:'256px'}}>
             <img src="/images/don.webp" alt="don romaniello" />
             <Heading size="sm" className="text-uppercase mt-2">
               Don Romaniello
@@ -46,7 +44,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col-md-2 mb-md-0 mb-3">
+          <div className="col-md-2 mb-md-0 mb-3" style={{display:'flex', flexDirection:'column', maxWidth:'256px'}}>
             <img src="/images/jacob.webp" alt="jacob shivers" />
             <Heading size="sm" className="text-uppercase mt-2">
               Jacob Shivers
@@ -63,7 +61,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col-md-2 mb-md-0 mb-3">
+          <div className="col-md-2 mb-md-0 mb-3" style={{display:'flex', flexDirection:'column', maxWidth:'256px'}}>
             <img src="/images/james.webp" alt="james carmody" />
             <Heading size="sm" className="text-uppercase mt-2">
               James Carmody
