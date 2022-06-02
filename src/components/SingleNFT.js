@@ -95,77 +95,77 @@ const SingleNFT = (props) => {
     setAddress(nameFromDoc.data().accounts[0]);
   }, [data]);
 
-  useEffect(() => {
-    changeOwner();
-  }, [message]);
+  // useEffect(() => {
+  //   changeOwner();
+  // }, [message]);
 
-  const changeOwner = async () => {
-    if (message == null) {
-      return;
-    }
-    let seller = data.creator;
-    let sellerId = data.creatorId;
-    let timestamp = Timestamp.fromMillis(Date.now());
-    if (data.owner) {
-      seller = data.owner;
-      sellerId = data.ownerId;
-    }
-    try {
-      await updateDoc(doc(db, "users", `${sellerId}`), {
-        billOfSale: arrayUnion({
-          nftName: data.name,
-          nftId: data.id,
-          creator: data.creator,
-          creatorId: data.creatorId,
-          seller: seller,
-          sellerId: sellerId,
-          buyer: user.name,
-          buyerId: user.data.id,
-          linkTransaction: message,
-          timestamp,
-        }),
-      });
+  // const changeOwner = async () => {
+  //   if (message == null) {
+  //     return;
+  //   }
+  //   let seller = data.creator;
+  //   let sellerId = data.creatorId;
+  //   let timestamp = Timestamp.fromMillis(Date.now());
+  //   if (data.owner) {
+  //     seller = data.owner;
+  //     sellerId = data.ownerId;
+  //   }
+  //   try {
+  //     await updateDoc(doc(db, "users", `${sellerId}`), {
+  //       billOfSale: arrayUnion({
+  //         nftName: data.name,
+  //         nftId: data.id,
+  //         creator: data.creator,
+  //         creatorId: data.creatorId,
+  //         seller: seller,
+  //         sellerId: sellerId,
+  //         buyer: user.name,
+  //         buyerId: user.data.id,
+  //         linkTransaction: message,
+  //         timestamp,
+  //       }),
+  //     });
 
-      await updateDoc(doc(db, "users", `${user.data.id}`), {
-        billOfSale: arrayUnion({
-          nftName: data.name,
-          nftId: data.id,
-          creator: data.creator,
-          creatorId: data.creatorId,
-          seller: seller,
-          sellerId: sellerId,
-          buyer: user.name,
-          buyerId: user.data.id,
-          linkTransaction: message,
-          timestamp,
-        }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
+  //     await updateDoc(doc(db, "users", `${user.data.id}`), {
+  //       billOfSale: arrayUnion({
+  //         nftName: data.name,
+  //         nftId: data.id,
+  //         creator: data.creator,
+  //         creatorId: data.creatorId,
+  //         seller: seller,
+  //         sellerId: sellerId,
+  //         buyer: user.name,
+  //         buyerId: user.data.id,
+  //         linkTransaction: message,
+  //         timestamp,
+  //       }),
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
 
-    try {
-      await updateDoc(doc(db, "users", `${user.data.id}`), {
-        images: arrayUnion({
-          data,
-        }),
-      });
-      //removed from user
-      await updateDoc(doc(db, "users", `${sellerId}`), {
-        images: arrayRemove({
-          data,
-        }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
-    toast.success("Image bought");
-  };
+  //   try {
+  //     await updateDoc(doc(db, "users", `${user.data.id}`), {
+  //       images: arrayUnion({
+  //         data,
+  //       }),
+  //     });
+  //     //removed from user
+  //     await updateDoc(doc(db, "users", `${sellerId}`), {
+  //       images: arrayRemove({
+  //         data,
+  //       }),
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  //   toast.success("Image bought");
+  // };
   //function that loads photo
   const getPhoto = useCallback(async () => {
     let getIt = await getDownloadURL(ref(storage, data.smallImage));
     setPhoto(getIt);
-
+    console.log(data)
     //checking if user has artist on follow
     if (
       user.following &&

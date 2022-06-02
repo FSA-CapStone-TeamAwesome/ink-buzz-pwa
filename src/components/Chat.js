@@ -50,8 +50,10 @@ import {
 import { toHex, truncateAddress } from './wallet_stuff/utils';
 import { ethers } from 'ethers';
 
+
 const Chat = (props) => {
   injectStyle();
+
   const user = useSelector((state) => state.user.user);
 
   const [convoList, setConvoList] = useState([]);
@@ -108,6 +110,8 @@ const Chat = (props) => {
 
   useEffect(() => {
     if (myId) {
+
+
       let q = query(
         collection(db, 'messages/queue', myId),
         orderBy('timestamp', 'desc'),
@@ -168,6 +172,8 @@ const Chat = (props) => {
 
   useEffect(() => {
     if (myId) {
+
+
       const unsub = onSnapshot(doc(db, 'users', `${myId}`), (doc) => {
         setConvoList(doc.data().chatsWith);
       });
@@ -537,6 +543,8 @@ const Chat = (props) => {
 
     try {
       //from your side, you REMOVE the array with them in it
+
+      let nft = user.images.find((o) => o.name === NFT.name)
       const chatsRef = doc(db, 'users', `${user.data.id}`);
       await updateDoc(chatsRef, {
         chatsWith: arrayRemove({
@@ -545,15 +553,31 @@ const Chat = (props) => {
           role: 'seller',
           nft: NFT,
         }),
-      });
+        billOfSale: arrayUnion({
+          nftName: NFT.name,
+          nftId: NFT.id,
+          creator: NFT.creator,
+          creatorId: NFT.creatorId,
+          seller: myName,
+          sellerId: myId,
+          buyer: nameFromDoc,
+          buyerId: interlocutor,
+          linkTransaction: cryptoURL,
+          timestamp,
+        }),
+        images: arrayRemove(nft),
 
+
+
+      });
       await updateDoc(chatsRef, {
         chatsWith: arrayUnion({
           name: nameFromDoc,
           id: interlocutor,
-          role: null,
-        }),
-      });
+          role: null
+        })
+      })
+
 
       //correcting the other parties' log reset
       await updateDoc(nameRef, {
@@ -563,53 +587,33 @@ const Chat = (props) => {
           role: 'buyer',
           nft: NFT,
         }),
+        billOfSale: arrayUnion({
+          nftName: NFT.name,
+          nftId: NFT.id,
+          creator: NFT.creator,
+          creatorId: NFT.creatorId,
+          seller: myName,
+          sellerId: myId,
+          buyer: nameFromDoc,
+          buyerId: interlocutor,
+          linkTransaction: cryptoURL,
+          timestamp,
+        }),
+        images: arrayUnion(nft),
       });
-
       await updateDoc(nameRef, {
-        chatsWith: arrayUnion({
+        chatsWith: arrayRemove({
           name: myName,
           id: myId,
-          role: null,
-        }),
-      });
+          role: null
+        })
+      })
+
     } catch (err) {
       console.log(err);
     }
 
-    try {
-      let change = await doc(db, 'users', `${interlocutor}`);
-      await updateDoc(change, {
-        billOfSale: arrayUnion({
-          nftName: NFT.name,
-          nftId: NFT.id,
-          creator: NFT.creator,
-          creatorId: NFT.creatorId,
-          seller: myName,
-          sellerId: myId,
-          buyer: nameFromDoc,
-          buyerId: interlocutor,
-          linkTransaction: cryptoURL,
-          timestamp,
-        }),
-      });
-      //removed from user
-      await updateDoc(doc(db, 'users', `${myId}`), {
-        billOfSale: arrayUnion({
-          nftName: NFT.name,
-          nftId: NFT.id,
-          creator: NFT.creator,
-          creatorId: NFT.creatorId,
-          seller: myName,
-          sellerId: myId,
-          buyer: nameFromDoc,
-          buyerId: interlocutor,
-          linkTransaction: cryptoURL,
-          timestamp,
-        }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
+
 
     try {
       await addDoc(collection(db, `messages/queue/${message.recipient}`), {
@@ -652,19 +656,6 @@ const Chat = (props) => {
         console.log(err);
       }
 
-      try {
-        let nft = user.images.find((o) => o.name === NFT.name);
-        await updateDoc(doc(db, 'users', `${interlocutor}`), {
-          images: arrayUnion(nft),
-        });
-        //removed from user
-        await updateDoc(doc(db, 'users', `${myId}`), {
-          images: arrayRemove(nft),
-        });
-      } catch (err) {
-        console.log(err);
-      }
-
       setSeller(null);
       setNFT(null);
       setTransaction(null);
@@ -672,6 +663,7 @@ const Chat = (props) => {
   }
 
   async function manageTransaction() {
+
     const internalNFT = list[ripValue];
     let timestamp = Timestamp.fromMillis(Date.now());
     let fromAddress = '';
