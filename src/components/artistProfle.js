@@ -131,7 +131,8 @@ const ArtistProfile = () => {
   };
 
   const onPageLoad = useCallback(async () => {
-    await dispatch(getProfile(profileId));
+    const search = {profileId, search : 'artist'}
+    await dispatch(getProfile(search));
   }, [dispatch, profileId]);
 
   useEffect(() => {

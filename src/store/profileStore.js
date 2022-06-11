@@ -4,12 +4,18 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getProfile = createAsyncThunk(
   "profile/getProfileStatus",
-  async (profileId, thunkAPI) => {
+  async (searchPara, thunkAPI) => {
+    const {profileId, search} = searchPara
     let userRef = await doc(db, "users", profileId);
     let getProfile = await getDoc(userRef);
-    let profileInfo = await getProfile.data();
+    console.log(search)
+    if(search === 'artist') {
+      const {following, followers, name, data, profilePic, images} = await getProfile.data()
+      let profileInfo =  {following, followers, name, data, profilePic, images}
+      console.log('its here')
+      return profileInfo
+    }
 
-    return profileInfo;
   }
 );
 
@@ -25,7 +31,8 @@ export const updateProfile = createAsyncThunk(
 
       let profRef = await doc(db, "users", artistProfile.data.id);
       let getProf = await getDoc(profRef);
-      let artistInfo = await getProf.data();
+      let {following, followers, name, data, profilePic, images } = await getProf.data();
+      const artistInfo = {following, followers, name, data, profilePic, images }
 
       return artistInfo;
     } catch (err) {
