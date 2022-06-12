@@ -1,15 +1,21 @@
 import { doc, getDoc, query, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
+import { getAuth } from "firebase/auth";
 export const getProfile = createAsyncThunk(
   "profile/getProfileStatus",
-  async (profileId, thunkAPI) => {
+  async (searchPara, thunkAPI) => {
+    const {profileId, search} = searchPara
     let userRef = await doc(db, "users", profileId);
     let getProfile = await getDoc(userRef);
-    let profileInfo = await getProfile.data();
 
-    return profileInfo;
+    if(search === 'artist') {
+      const {following, followers, name, data, profilePic, images} = await getProfile.data()
+      let profileInfo =  {following, followers, name, data, profilePic, images}
+
+      return profileInfo
+    }
+
   }
 );
 
@@ -20,13 +26,15 @@ export const updateProfile = createAsyncThunk(
 
       const { artistProfile, update } = profileData;
 
+
       let artistProf = await doc(db, "users", `${artistProfile.data.id}`);
       await updateDoc(artistProf, update);
 
       let profRef = await doc(db, "users", artistProfile.data.id);
       let getProf = await getDoc(profRef);
-      let artistInfo = await getProf.data();
-
+      let {following, followers, name, data, profilePic, images } = await getProf.data();
+      const artistInfo = {following, followers, name, data, profilePic, images }
+      console.log(artistInfo)
       return artistInfo;
     } catch (err) {
       console.log(err);
