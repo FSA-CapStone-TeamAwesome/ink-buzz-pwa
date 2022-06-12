@@ -14,6 +14,9 @@ import { updateProfile } from '../store/profileStore';
 import { db } from '../config/firebase';
 import FollowCard from './FollowCard';
 import FavoriteCard from './FavoriteCard';
+import { getAuth } from 'firebase/auth';
+import { startAuth, auth } from '../config/firebase';
+
 
 const ArtistProfile = () => {
   injectStyle();
@@ -35,6 +38,8 @@ const ArtistProfile = () => {
       navigate('/signIn');
       return;
     }
+
+
 
     //for removing from followers/following
     if (
@@ -154,7 +159,7 @@ const ArtistProfile = () => {
   useEffect(() => {
     onPageLoad();
   }, [onPageLoad]);
-
+  console.log(artist)
   return (
     <Container className="mt-3">
       {artistProfile && artist.data ? (
